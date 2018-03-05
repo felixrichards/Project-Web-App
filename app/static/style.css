@@ -1,0 +1,70 @@
+body
+{
+    font-family:Arial;
+    background-color: #eeeeee;
+}
+#target
+{
+    font-size:16px;
+    text-align: left;
+    clear: left; 
+    border:1px solid black;
+    height: 424px; 
+    min-width: 870px;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+/*border-style: solid;*/
+}
+#canv_cont
+{
+    float:left;
+    margin: 0px auto;
+    padding-right: 30px;
+}
+#questions
+{
+    /* width: 50%; */
+    /* display: inline; */
+    /* margin: 0 auto; */
+    /* position:absolute; */
+    /* right:0; */
+    display: inline-block;
+    width: calc(100% - 454px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#q_title
+{
+    display: block;
+    font-size:40px;
+    height: 100px;
+}
+#q_body
+{
+    display: block;
+    height: 150px;
+    font-size:12px;
+}
+#q_buttons
+{
+    display: block;
+}
+.heading{
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.button
+{
+    background-color: #FFFFFF;
+    border: 1px solid grey;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    float: left;
+    width: 30%;
+    height: 100px;
+    display: none;
+    font-size: 16px;
+}

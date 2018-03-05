@@ -1,15 +1,14 @@
+from flask import render_template
 from app import app
 
 @app.route('/')
 @app.route('/index')
 def index():
-    user={'username':'felix'}
-    return '''
-<html>
-    <head>
-        <title>Home Page - GC</title>
-    </head>
-    <body>
-        <h1>Hello, ''' + user['username'] + '''!</h1>
-    </body>
-</html>'''
+    user={'username':'Felix'}
+    return render_template('index.html', title='Home',user=user)
+    
+@app.route('/annotate')
+def annotate():
+    file=genFile()
+    return render_template('annotate.html',file=file)
+    

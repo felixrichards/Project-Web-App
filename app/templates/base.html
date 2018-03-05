@@ -1,0 +1,14 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - GC</title>
+        {% else %}
+        <title>Welcome to GC.</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>GC: <a href="/index">Home</a> <a href="/annotate">Annotate</a></div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>
