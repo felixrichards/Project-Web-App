@@ -1,11 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-     <div id="target">
-        <div id="canv_cont">
-            <canvas id="canvasImage" width="400" height="400" style="background-color:#EEE"></canvas>
-            <canvas id="canvasDraw" width="400" height="400" style="background-color:#EEE"></canvas>
-            <script src="canvasDrawer.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotation.css')}}">
+    <div id="target">
+        <div id="canv_cont" style="width: {{dim.width}}; height:{{dim.height}};">
+            <canvas class="imageCanvas" id="imageCanvas" style="background-color:#EEE"></canvas>
+            <script>
+                var imageCanvas = document.getElementById("imageCanvas");
+                var ctxImage = imageCanvas.getContext("2d");
+                var w={{dim.width}}
+                var h={{dim.height}}
+                init()
+                
+                // Makes w/h of canvas same as image
+                function init(){
+                    galaxy=new Image();
+                    galaxy.onload=function(){
+                        imageCanvas.width=w;
+                        imageCanvas.height=h;
+                        ctxImage.drawImage(galaxy, 0, 0,w,h);
+                    }
+                    galaxy.src="{{url_for('static', filename=file.name)}}.jpg";
+                }
+            </script>
+            <canvas class="drawCanvas" id="drawCanvas" ></canvas>
+            <script src="{{ url_for('static', filename='canvasDrawer.js') }}"></script>
         </div>
     </div>
 {% endblock %}

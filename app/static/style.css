@@ -21,6 +21,7 @@ body
     float:left;
     margin: 0px auto;
     padding-right: 30px;
+    position: relative;
 }
 #questions
 {

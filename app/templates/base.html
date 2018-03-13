@@ -1,13 +1,14 @@
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
 <html>
     <head>
         {% if title %}
-        <title>{{ title }} - GC</title>
+        <title>{{ title }} - Galaxy stuff</title>
         {% else %}
-        <title>Welcome to GC.</title>
+        <title>Welcome.</title>
         {% endif %}
     </head>
     <body>
-        <div>GC: <a href="/index">Home</a> <a href="/annotate">Annotate</a></div>
+        <div>Galaxy stuff: <a href="/index">Home</a> <a href="/annotate">Annotate</a></div>
         <hr>
         {% block content %}{% endblock %}
     </body>
