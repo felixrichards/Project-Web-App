@@ -15,9 +15,9 @@ init()
 var buttons=[]
 var shapes=[]
 buttons.push(createButton(5,5,20,20,function(){state.shape="Rect";}))
-buttons.push(createButton(35,5,20,20,function(){state.shape="Circle";}))
-buttons.push(createButton(65,5,20,20,function(){state.shape="Ellipse";}))
-buttons.push(createButton(95,5,20,20,function(){state.shape=null; shapes=[];}))
+buttons.push(createButton(30,5,20,20,function(){state.shape="Circle";}))
+buttons.push(createButton(55,5,20,20,function(){state.shape="Ellipse";}))
+buttons.push(createButton(80,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
 
 function createButton(x, y, w, h, behaviour){
     redraw()
@@ -41,10 +41,52 @@ function createButton(x, y, w, h, behaviour){
     }
 }
 
-function createShape(x0,y0,x,x,shape){
+// Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
+function createShape(x0,y0,x,y,shape){
+    function isInsideRect(pos){
+        rect={
+            x:x0,
+            y:y0,
+            w:x-x0,
+            h:y-y0
+        }
+        return isInside(pos,rect);
+    }
+    function isInsideCircle(pos){
+        circle={
+            r: Math.pow(Math.pow(x-x0,2)+Math.pow(y-y0,2),1/2)/2,
+            x: x0+(x-x0)/2,
+            y: y0+(y-y0)/2
+            
+        }
+        if (Math.pow(pos.x-circle.x,2)+Math.pow(pos.y-circle.y,2)<Math.pow(circle.r,2)){
+            return true;
+        }
+        return false;
+    }
+    function isInsideEllipse(pos){
+        
+    }
+    var fn=eval("isInside"+shape);
     return {
         shape:shape,
-        redraw: function(){drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y);}
+        x:x,
+        y:y,
+        x0:x0,
+        y0:y0,
+        w:x-x0,
+        h:y-y0,
+        redraw: function(){drawShape(x0,y0,x-x0,y-y0,shape);console.log(this.x);},
+        isInside: fn,
+        selected: false,
+        move: function(pos){
+            console.log(this.x);
+            this.x=pos.x;
+            console.log(this.x);
+            this.y=pos.y;
+            this.x0=pos.x+w;
+            this.y0=pos.y+h;
+        }
     }
 }
 
@@ -67,7 +109,8 @@ function resetCanvas(){
         buttons[i].redraw();
     }
     for (var i=0;i<shapes.length;i++){
-        // shapes[i].redraw();
+        console.log(shapes[i].shape);
+        shapes[i].redraw();
     }
 }
 
@@ -76,6 +119,7 @@ var flag=1;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     buttonPressed=false;
+    shapePressed=false;
     // Check user is clicking canvas
     for (var i=0;i<buttons.length;i++){
         if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
@@ -83,29 +127,38 @@ element.addEventListener("mousedown", function(e){
             buttonPressed=true;
         }
     }
-    if (isInside(mP_0,drawerRect)&&!buttonPressed){
+    
+    for (var i=0;i<shapes.length;i++){
+        if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
+            shapePressed=true;
+            state.selectedNo=i;
+        }
+    }
+    if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]){
         flag = 0;
         t_0=e.timeStamp;
     }
 }, false);
 element.addEventListener("mousemove", function(e){
-    // console.log(flag);
     shapeDrawn=false;
-    if (flag===0){
+    if (state.selectedNo>-1){
+        resetCanvas();
+        shapes[state.selectedNo].move(mP);
+    } else if (flag===0){
         mP=getMousePos(drawCanvas,e);
         t=e.timeStamp;
         // Check user is dragging (150 was chosen from experiments)
-        if (t-t_0>150){
+        if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
-            drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y);
+            drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
             shapeDrawn=true;
         }
     }
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
+    state.selectedNo=-1
     if (shapeDrawn){
-        console.log("helo");
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
     }
 }, false);
@@ -127,13 +180,14 @@ function isInside(pos,rect){
 function defaultState(){
     return {
         drawing: false,
-        shape: "None"
+        shape: "None",
+        selectedNo: -1
     }
 }
 
 // Chooses the shape to draw
-function drawShape(x0,y0,x,y){
-    var fn=window["draw"+state.shape];
+function drawShape(x0,y0,x,y,shape){
+    var fn=window["draw"+shape];
     if(typeof fn === 'function') {
         fn(x0,y0,x,y);
     }
