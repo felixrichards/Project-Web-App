@@ -45,20 +45,22 @@ function createButton(x, y, w, h, behaviour){
 function createShape(x0,y0,x,y,shape){
     function isInsideRect(pos){
         rect={
-            x:x0,
-            y:y0,
-            w:x-x0,
-            h:y-y0
+            x:this.x0,
+            y:this.y0,
+            w:this.w,
+            h:this.h
         }
         return isInside(pos,rect);
     }
     function isInsideCircle(pos){
         circle={
-            r: Math.pow(Math.pow(x-x0,2)+Math.pow(y-y0,2),1/2)/2,
-            x: x0+(x-x0)/2,
-            y: y0+(y-y0)/2
-            
+            r: Math.pow(Math.pow(this.w,2)+Math.pow(this.h,2),1/2)/2,
+            x: this.x+this.w/2,
+            y: this.y+this.h/2
         }
+        // console.log("Circle x :"+circle.x+" y: "+circle.y+" r: "+circle.r);
+        // console.log("Pos x :"+pos.x+" y: "+pos.y+" r: "+pos.r);
+        // console.log("Diff x:"+Math.pow(pos.x-circle.x,2)+" y:"+Math.pow(pos.y-circle.y,2)+" r:"+Math.pow(circle.r,2));
         if (Math.pow(pos.x-circle.x,2)+Math.pow(pos.y-circle.y,2)<Math.pow(circle.r,2)){
             return true;
         }
@@ -68,28 +70,33 @@ function createShape(x0,y0,x,y,shape){
         
     }
     var fn=eval("isInside"+shape);
+    
     return {
         shape:shape,
-        x:x,
-        y:y,
+        x:x0,
+        y:y0,
         x0:x0,
         y0:y0,
         w:x-x0,
         h:y-y0,
-        redraw: function(){drawShape(x0,y0,x-x0,y-y0,shape);console.log(this.x);},
+        redraw: function(){drawShape(this.x,this.y,this.w,this.h,shape);},
         isInside: fn,
         selected: false,
-        move: function(pos){
-            console.log(this.x);
-            this.x=pos.x;
-            console.log(this.x);
-            this.y=pos.y;
-            this.x0=pos.x+w;
-            this.y0=pos.y+h;
+        move: function(pos,pos_0){
+            this.x=this.x0+pos.x-pos_0.x;
+            this.y=this.y0+pos.y-pos_0.y;
+        },
+        changePos: function(){
+            this.x0=this.x;
+            this.y0=this.y;
         }
     }
 }
+function createBoundingBox(){
+    function draw(){
+    }
 
+}
 
 // Makes w/h of canvas same as image
 function init(){
@@ -109,7 +116,7 @@ function resetCanvas(){
         buttons[i].redraw();
     }
     for (var i=0;i<shapes.length;i++){
-        console.log(shapes[i].shape);
+        // console.log(shapes[i].shape);
         shapes[i].redraw();
     }
 }
@@ -120,6 +127,7 @@ element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     buttonPressed=false;
     shapePressed=false;
+    t_0=e.timeStamp;
     // Check user is clicking canvas
     for (var i=0;i<buttons.length;i++){
         if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
@@ -128,7 +136,8 @@ element.addEventListener("mousedown", function(e){
         }
     }
     
-    for (var i=0;i<shapes.length;i++){
+    // Check user is clicking shapes (reverse loop for z-order)
+    for (var i=shapes.length-1;i>=0;i--){
         if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
             shapePressed=true;
             state.selectedNo=i;
@@ -136,17 +145,18 @@ element.addEventListener("mousedown", function(e){
     }
     if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]){
         flag = 0;
-        t_0=e.timeStamp;
     }
 }, false);
 element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
+    t=e.timeStamp;
+    mP=getMousePos(drawCanvas,e);
     if (state.selectedNo>-1){
-        resetCanvas();
-        shapes[state.selectedNo].move(mP);
+        if (t-t_0>100){
+            shapes[state.selectedNo].move(mP,mP_0);
+            resetCanvas();
+        }
     } else if (flag===0){
-        mP=getMousePos(drawCanvas,e);
-        t=e.timeStamp;
         // Check user is dragging (150 was chosen from experiments)
         if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
@@ -157,6 +167,10 @@ element.addEventListener("mousemove", function(e){
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
+    if (state.selectedNo>-1){
+        shapes[state.selectedNo].changePos();
+        resetCanvas();
+    }
     state.selectedNo=-1
     if (shapeDrawn){
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
