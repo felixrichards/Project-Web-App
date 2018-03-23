@@ -53,11 +53,7 @@ function createShape(x0,y0,x,y,shape){
         return isInside(pos,rect);
     }
     function isInsideCircle(pos){
-        circle={
-            r: Math.pow(Math.pow(this.w,2)+Math.pow(this.h,2),1/2)/2,
-            x: this.x+this.w/2,
-            y: this.y+this.h/2
-        }
+        circle=cartesianToPolar(this);
         // console.log("Circle x :"+circle.x+" y: "+circle.y+" r: "+circle.r);
         // console.log("Pos x :"+pos.x+" y: "+pos.y+" r: "+pos.r);
         // console.log("Diff x:"+Math.pow(pos.x-circle.x,2)+" y:"+Math.pow(pos.y-circle.y,2)+" r:"+Math.pow(circle.r,2));
@@ -79,23 +75,69 @@ function createShape(x0,y0,x,y,shape){
         y0:y0,
         w:x-x0,
         h:y-y0,
-        redraw: function(){drawShape(this.x,this.y,this.w,this.h,shape);},
+        redraw: function(){
+            drawShape(this.x,this.y,this.w,this.h,shape); 
+            if (this.selected) {
+                console.log("Drawing bounding rect");
+                boundingRect.redraw();
+                
+            }
+        },
         isInside: fn,
         selected: false,
         move: function(pos,pos_0){
             this.x=this.x0+pos.x-pos_0.x;
             this.y=this.y0+pos.y-pos_0.y;
+            console.log(this);
         },
         changePos: function(){
             this.x0=this.x;
             this.y0=this.y;
-        }
+        },
+        resetPos: function(){
+            this.x=this.x0;
+            this.y=this.y0;
+        },
+        boundingRect: createBoundingRect.apply(this)
     }
 }
-function createBoundingBox(){
-    function draw(){
+function createBoundingRect(shape){
+    console.log(shape)
+    if (shape.shape=="Circle"){
+        circle=cartesianToPolar(this);
+        boundingRect.x=circle.x-circle.r;
+        boundingRect.y=circle.y-circle.r;
+        boundingRect.w=circle.r*2;
+        boundingRect.h=circle.r*2;
+    } else {
+        boundingRect=shape;
     }
+    
+    boundingRect.redraw=drawBoundingRect;
+    
+    function drawBoundingRect(){
+        ctx.beginPath();
+        ctx.rect(this.x,this.y,this.w,this.h);
+        ctx.stroke();
+        console.log(this);
+    }
+    
+    // returning boundingRect directly was giving problems with 'this' object. below is a workaround
+    return {
+        x:boundingRect.x,
+        y:boundingRect.y,
+        w:boundingRect.w,
+        h:boundingRect.h,
+        redraw: drawBoundingRect
+    };
+}
 
+function cartesianToPolar(shape){
+    return {
+        r: Math.pow(Math.pow(shape.w,2)+Math.pow(shape.h,2),1/2)/2,
+        x: shape.x+shape.w/2,
+        y: shape.y+shape.h/2
+    };
 }
 
 // Makes w/h of canvas same as image
@@ -127,6 +169,7 @@ element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     buttonPressed=false;
     shapePressed=false;
+    state.resetSelected();
     t_0=e.timeStamp;
     // Check user is clicking canvas
     for (var i=0;i<buttons.length;i++){
@@ -140,7 +183,8 @@ element.addEventListener("mousedown", function(e){
     for (var i=shapes.length-1;i>=0;i--){
         if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
             shapePressed=true;
-            state.selectedNo=i;
+            state.selectShape(i);
+            shapes[state.focusNo].selected=true;
         }
     }
     if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]){
@@ -151,9 +195,9 @@ element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
     t=e.timeStamp;
     mP=getMousePos(drawCanvas,e);
-    if (state.selectedNo>-1){
+    if (state.focusNo>-1){
         if (t-t_0>100){
-            shapes[state.selectedNo].move(mP,mP_0);
+            shapes[state.focusNo].move(mP,mP_0);
             resetCanvas();
         }
     } else if (flag===0){
@@ -167,11 +211,11 @@ element.addEventListener("mousemove", function(e){
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
-    if (state.selectedNo>-1){
-        shapes[state.selectedNo].changePos();
+    if (state.focusNo>-1){
+        shapes[state.focusNo].changePos();
         resetCanvas();
     }
-    state.selectedNo=-1
+    state.focusNo=-1
     if (shapeDrawn){
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
     }
@@ -195,7 +239,19 @@ function defaultState(){
     return {
         drawing: false,
         shape: "None",
-        selectedNo: -1
+        focusNo: -1,
+        selectedNo: -1,
+        selectShape: function(i){
+            this.focusNo=i;
+            this.selectedNo=i;
+        },
+        resetSelected: function(){
+            if (this.selectedNo>-1) {
+                shapes[this.selectedNo].selected=false;
+            }
+            this.focusNo=-1;
+            this.selectedNo=-1;
+        }
     }
 }
 
