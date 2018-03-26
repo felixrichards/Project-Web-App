@@ -14,12 +14,14 @@ init()
 
 var buttons=[]
 var shapes=[]
-buttons.push(createButton(5,5,20,20,function(){state.shape="Rect";}))
-buttons.push(createButton(30,5,20,20,function(){state.shape="Circle";}))
-buttons.push(createButton(55,5,20,20,function(){state.shape="Ellipse";}))
-buttons.push(createButton(80,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
+button_x_shift=5;
+buttons.push(new Button(button_x_shift,5,20,20,function(){state.shape="Rect";}))
+buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state.shape="Circle";}))
+buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state.shape="Ellipse";}))
+buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
+buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
 
-function createButton(x, y, w, h, behaviour){
+var Button=function(x, y, w, h, behaviour){
     redraw()
     function redraw(){
         ctx.beginPath();
@@ -67,6 +69,42 @@ function createShape(x0,y0,x,y,shape){
     }
     var fn=eval("isInside"+shape);
     
+    function createBoundingRect(shape){
+        boundingRect={};
+        if (shape.shape=="Circle"){
+            circle=cartesianToPolar(shape);
+            boundingRect.x=circle.x-circle.r;
+            boundingRect.y=circle.y-circle.r;
+            boundingRect.w=circle.r*2;
+            boundingRect.h=circle.r*2;
+        } else {
+            boundingRect=shape;
+        }
+        
+        function drawBoundingRect(shape){
+            console.log(shape);
+            ctx.beginPath();
+            ctx.rect(shape.x,shape.y,shape.w,shape.h);
+            ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
+            ctx.stroke();
+        }
+        // console.log(boundingRect)
+        // returning boundingRect directly was giving problems with 'this' object. below is a workaround
+        return {
+            x:boundingRect.x,
+            y:boundingRect.y,
+            w:boundingRect.w,
+            h:boundingRect.h,
+            redraw: function(){
+                console.log(this)
+                drawBoundingRect(this);
+            },
+            isInside: function(pos){
+                return isInside(pos,{x:this.x,y:this.y,w:this.w,h:this.h});
+            }
+        };
+    }
+    
     return {
         shape:shape,
         x:x0,
@@ -78,9 +116,7 @@ function createShape(x0,y0,x,y,shape){
         redraw: function(){
             drawShape(this.x,this.y,this.w,this.h,shape); 
             if (this.selected) {
-                console.log("Drawing bounding rect");
-                boundingRect.redraw();
-                
+                this.createBoundingRect();
             }
         },
         isInside: fn,
@@ -88,7 +124,6 @@ function createShape(x0,y0,x,y,shape){
         move: function(pos,pos_0){
             this.x=this.x0+pos.x-pos_0.x;
             this.y=this.y0+pos.y-pos_0.y;
-            console.log(this);
         },
         changePos: function(){
             this.x0=this.x;
@@ -98,38 +133,20 @@ function createShape(x0,y0,x,y,shape){
             this.x=this.x0;
             this.y=this.y0;
         },
-        boundingRect: createBoundingRect.apply(this)
+        boundingRect: 0,
+        createBoundingRect: function(){
+            this.boundingRect=createBoundingRect(this);
+            this.boundingRect.redraw()
+        },
+        action: "move"
     }
 }
-function createBoundingRect(shape){
-    console.log(shape)
-    if (shape.shape=="Circle"){
-        circle=cartesianToPolar(this);
-        boundingRect.x=circle.x-circle.r;
-        boundingRect.y=circle.y-circle.r;
-        boundingRect.w=circle.r*2;
-        boundingRect.h=circle.r*2;
-    } else {
-        boundingRect=shape;
-    }
-    
-    boundingRect.redraw=drawBoundingRect;
-    
-    function drawBoundingRect(){
-        ctx.beginPath();
-        ctx.rect(this.x,this.y,this.w,this.h);
-        ctx.stroke();
-        console.log(this);
-    }
-    
-    // returning boundingRect directly was giving problems with 'this' object. below is a workaround
-    return {
-        x:boundingRect.x,
-        y:boundingRect.y,
-        w:boundingRect.w,
-        h:boundingRect.h,
-        redraw: drawBoundingRect
-    };
+
+// Deletes a given shape - Work an undo here??
+function deleteShape(i){
+    shapes.splice(i,1);
+    state.resetSelected();
+    resetCanvas();
 }
 
 function cartesianToPolar(shape){
@@ -163,13 +180,16 @@ function resetCanvas(){
     }
 }
 
+// ---------
 // Handles mouse activity for shape drawing
+// ---------
+
 var flag=1;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     buttonPressed=false;
     shapePressed=false;
-    state.resetSelected();
+    
     t_0=e.timeStamp;
     // Check user is clicking canvas
     for (var i=0;i<buttons.length;i++){
@@ -178,25 +198,33 @@ element.addEventListener("mousedown", function(e){
             buttonPressed=true;
         }
     }
-    
+    shapeAction=0;
     // Check user is clicking shapes (reverse loop for z-order)
-    for (var i=shapes.length-1;i>=0;i--){
-        if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
-            shapePressed=true;
-            state.selectShape(i);
-            shapes[state.focusNo].selected=true;
+    if (state.selectedNo>-1&&shapes[state.selectedNo].boundingRect.isInside(mP_0)){
+        shapePressed=true;
+        state.selectShape(state.selectedNo);
+    } else {
+        state.resetSelected();
+        for (var i=shapes.length-1;i>=0;i--){
+            if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
+                shapePressed=true;
+                state.selectShape(i);
+                shapes[state.focusNo].selected=true;
+            }
         }
     }
+    
     if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]){
         flag = 0;
     }
+    resetCanvas();
 }, false);
 element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
     t=e.timeStamp;
     mP=getMousePos(drawCanvas,e);
     if (state.focusNo>-1){
-        if (t-t_0>100){
+        if (t-t_0>25){
             shapes[state.focusNo].move(mP,mP_0);
             resetCanvas();
         }
@@ -213,13 +241,23 @@ element.addEventListener("mouseup", function(e){
     flag=1;
     if (state.focusNo>-1){
         shapes[state.focusNo].changePos();
-        resetCanvas();
     }
-    state.focusNo=-1
     if (shapeDrawn){
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
+        state.selectShape(shapes.length-1);
+        shapes[state.focusNo].selected=true;
+    }
+    // Unfocus anything
+    state.focusNo=-1
+    resetCanvas();
+}, false);
+element.addEventListener("keydown", function(e){
+    if (e.keyCode==46&&state.selectedNo>-1){
+        deleteShape(state.selectedNo);
     }
 }, false);
+
+
 
 // Returns mouse position relative to (passed) canvas
 function getMousePos(drawCanvas, evt) {
@@ -247,7 +285,9 @@ function defaultState(){
         },
         resetSelected: function(){
             if (this.selectedNo>-1) {
-                shapes[this.selectedNo].selected=false;
+                try{
+                    shapes[this.selectedNo].selected=false;
+                } catch(err) {}
             }
             this.focusNo=-1;
             this.selectedNo=-1;
