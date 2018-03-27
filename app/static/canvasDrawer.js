@@ -15,11 +15,12 @@ init()
 var buttons=[]
 var shapes=[]
 button_x_shift=5;
+button_x_inc=25;
 buttons.push(createButton(button_x_shift,5,20,20,function(){state.shape="Rect";}))
-buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state.shape="Circle";}))
-buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state.shape="Ellipse";}))
-buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
-buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state.shape="Circle";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state.shape="Ellipse";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
 
 function createRect(x, y, w, h){
     return {
@@ -48,6 +49,20 @@ function createButton(x, y, w, h, behaviour){
 
 // Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
 function createShape(x0,y0,x,y,shape){
+    normaliseCoords();
+    function normaliseCoords(){
+        var temp;
+        if (x0>x){
+            temp=x;
+            x=x0;
+            x0=temp;
+        }
+        if (y0>y){
+            temp=y;
+            y=y0;
+            y0=temp;
+        }
+    }
     function isInsideRect(pos){
         rect=createRect(this.x0,this.y0,this.w,this.h);
         return isInside(pos,rect);
@@ -80,30 +95,66 @@ function createShape(x0,y0,x,y,shape){
             ctx.beginPath();
             ctx.rect(shape.x,shape.y,shape.w,shape.h);
             ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
+            ctx.lineWidth=1;
             ctx.stroke();
+            ctx.closePath();
         }
         
         var amendBoxes=function(){
-            var amendBox=function(rect,dir){
+            var amendBox=function(loc,dir){
+                boxW=10;
+                
+                function drawAmendRect(shape){
+                    ctx.beginPath();
+                    ctx.rect(shape.x,shape.y,shape.w,shape.h);
+                    ctx.fillStyle="rgba(255, 255, 255, 0.5)";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                
                 return {
-                    rect: rect,
+                    rect: createRect(loc.x-boxW/2,loc.y-boxW/2,boxW,boxW),
                     dir: dir,
-                    isInside: isInside(rect),
+                    isInside: function(pos){
+                        return isInside(pos,this.rect);
+                    },
                     redraw: function(){
-                        drawBoundingRect(rect);
+                        drawAmendRect(this.rect);
                     }
                 }
             }
             
-            // amendBoxes.push(amendBox());
+            var j=0
+            var x_n=boundingRect.x;
+            var y_n=boundingRect.y;
+            var w_n=boundingRect.w;
+            var h_n=boundingRect.h;
+            var amendBoxes=[];
+            amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n},j++));     //Up
+            amendBoxes.push(amendBox({x:x_n+w_n,y:y_n},j++));       //UpRight
+            amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n/2},j++)); //Right
+            amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n},j++));   //DownRight
+            amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n+h_n},j++)); //Down
+            amendBoxes.push(amendBox({x:x_n,y:y_n+h_n},j++));       //DownLeft
+            amendBoxes.push(amendBox({x:x_n,y:y_n+h_n/2},j++));     //Left
+            amendBoxes.push(amendBox({x:x_n,y:y_n},j++));           //UpLeft
             return {
+                getBox: function(i){return amendBoxes[i];},
                 redraw: function(){
-                    // for (var i=0;i<8;i++) amendBoxes[i].redraw();
+                    for (var i=0;i<8;i++) amendBoxes[i].redraw();
+                },
+                isInside: function(pos){
+                    for (var i=0;i<8;i++) {
+                        if (amendBoxes[i].isInside(pos)) {
+                            return i;
+                        }
+                    }
+                    return -1;
                 }
             }
         }
-        // console.log(boundingRect)
-        // returning boundingRect directly was giving problems with 'this' object. below is a workaround
+        
+        // boundingRect object return
         return {
             x:boundingRect.x,
             y:boundingRect.y,
@@ -116,15 +167,19 @@ function createShape(x0,y0,x,y,shape){
             },
             isInside: function(pos){
                 // Check for amend points
-                if (-1){
-                    
+                amendIdx=this.amendBoxes.isInside(pos);
+                if (amendIdx>-1){
+                    setSelfSelectedIdx(amendIdx);
+                    return true
+                } else if (isInside(pos,{x:this.x,y:this.y,w:this.w,h:this.h})) {
+                    setSelfSelectedIdx(-1);
+                    return true;
                 }
-                return isInside(pos,{x:this.x,y:this.y,w:this.w,h:this.h});
             }
         };
     }
     
-    return {
+    var selfObj={
         shape:shape,
         x:x0,
         y:y0,
@@ -132,6 +187,8 @@ function createShape(x0,y0,x,y,shape){
         y0:y0,
         w:x-x0,
         h:y-y0,
+        w0:x-x0,
+        h0:y-y0,
         redraw: function(){
             drawShape(this.x,this.y,this.w,this.h,shape); 
             if (this.selected) {
@@ -144,21 +201,81 @@ function createShape(x0,y0,x,y,shape){
             this.x=this.x0+pos.x-pos_0.x;
             this.y=this.y0+pos.y-pos_0.y;
         },
+        amend: function(pos,pos_0,dir){
+            var inc=0;
+            console.log(dir);
+            if (dir==0){
+                this.y=this.y0+(pos.y-pos_0.y);
+                this.h=this.h0-(pos.y-pos_0.y);
+            }else if (dir==1){
+                this.y=this.y0+(pos.y-pos_0.y);
+                this.h=this.h0-(pos.y-pos_0.y);
+                this.w=this.w0+(pos.x-pos_0.x);
+            }else if (dir==2){
+                this.w=this.w0+(pos.x-pos_0.x);
+            }else if (dir==3){
+                this.w=this.w0+(pos.x-pos_0.x);
+                this.h=this.h0+(pos.y-pos_0.y);
+            }else if (dir==4){
+                this.h=this.h0+(pos.y-pos_0.y);
+            }else if (dir==5){
+                this.h=this.h0+(pos.y-pos_0.y);
+                this.x=this.x0+(pos.x-pos_0.x);
+                this.w=this.w0-(pos.x-pos_0.x);
+            }else if (dir==6){
+                this.x=this.x0+(pos.x-pos_0.x);
+                this.w=this.w0-(pos.x-pos_0.x);
+            }else if (dir==7){
+                this.x=this.x0+(pos.x-pos_0.x);
+                this.w=this.w0-(pos.x-pos_0.x);
+                this.y=this.y0+(pos.y-pos_0.y);
+                this.h=this.h0-(pos.y-pos_0.y);
+            }
+        },
         changePos: function(){
+            this.normaliseCoords();
             this.x0=this.x;
             this.y0=this.y;
+            this.w0=this.w;
+            this.h0=this.h;
+            this.selectedIdx=-1;
         },
         resetPos: function(){
             this.x=this.x0;
             this.y=this.y0;
+            this.w=this.w0;
+            this.h=this.h0;
+            this.selectedIdx=-1;
         },
         boundingRect: 0,
         createBoundingRect: function(){
             this.boundingRect=createBoundingRect(this);
             this.boundingRect.redraw()
         },
-        action: "move"
+        selectedIdx:-1,
+        interact: function(pos,pos_0){
+            if (this.selectedIdx==-1) this.move(pos,pos_0);
+            else {
+                this.amend(pos,pos_0,this.selectedIdx);
+            }
+        },
+        normaliseCoords: function (){
+            var temp;
+            if (this.w<0){
+            }
+            if (this.h<0){
+            }
+            this.w+this.x-this.x0,
+            this.h+this.y-this.y0,
+            this.w0+this.x-this.x0,
+            this.h0+this.y-this.y0,
+            this.createBoundingRect();
+        }
     }
+    function setSelfSelectedIdx(idx){
+        selfObj.selectedIdx=idx;}
+    
+    return selfObj;
 }
 
 // Deletes a given shape - Work an undo here??
@@ -243,8 +360,8 @@ element.addEventListener("mousemove", function(e){
     t=e.timeStamp;
     mP=getMousePos(drawCanvas,e);
     if (state.focusNo>-1){
-        if (t-t_0>25){
-            shapes[state.focusNo].move(mP,mP_0);
+        if (t-t_0>75){
+            shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
         }
     } else if (flag===0){
