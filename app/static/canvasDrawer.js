@@ -15,13 +15,21 @@ init()
 var buttons=[]
 var shapes=[]
 button_x_shift=5;
-buttons.push(new Button(button_x_shift,5,20,20,function(){state.shape="Rect";}))
-buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state.shape="Circle";}))
-buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state.shape="Ellipse";}))
-buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
-buttons.push(new Button(button_x_shift+=25,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
+buttons.push(createButton(button_x_shift,5,20,20,function(){state.shape="Rect";}))
+buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state.shape="Circle";}))
+buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state.shape="Ellipse";}))
+buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
+buttons.push(createButton(button_x_shift+=25,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
 
-var Button=function(x, y, w, h, behaviour){
+function createRect(x, y, w, h){
+    return {
+        x:x,
+        y:y,
+        w:w,
+        h:h
+    };
+}
+function createButton(x, y, w, h, behaviour){
     redraw()
     function redraw(){
         ctx.beginPath();
@@ -32,12 +40,7 @@ var Button=function(x, y, w, h, behaviour){
     }
     
     return {
-        rect: {
-            x:x,
-            y:y,
-            w:w,
-            h:h
-        },
+        rect: createRect(x, y, w, h),
         behaviour: behaviour,
         redraw: redraw
     }
@@ -46,19 +49,11 @@ var Button=function(x, y, w, h, behaviour){
 // Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
 function createShape(x0,y0,x,y,shape){
     function isInsideRect(pos){
-        rect={
-            x:this.x0,
-            y:this.y0,
-            w:this.w,
-            h:this.h
-        }
+        rect=createRect(this.x0,this.y0,this.w,this.h);
         return isInside(pos,rect);
     }
     function isInsideCircle(pos){
         circle=cartesianToPolar(this);
-        // console.log("Circle x :"+circle.x+" y: "+circle.y+" r: "+circle.r);
-        // console.log("Pos x :"+pos.x+" y: "+pos.y+" r: "+pos.r);
-        // console.log("Diff x:"+Math.pow(pos.x-circle.x,2)+" y:"+Math.pow(pos.y-circle.y,2)+" r:"+Math.pow(circle.r,2));
         if (Math.pow(pos.x-circle.x,2)+Math.pow(pos.y-circle.y,2)<Math.pow(circle.r,2)){
             return true;
         }
@@ -69,7 +64,7 @@ function createShape(x0,y0,x,y,shape){
     }
     var fn=eval("isInside"+shape);
     
-    function createBoundingRect(shape){
+    var createBoundingRect=function(shape){
         boundingRect={};
         if (shape.shape=="Circle"){
             circle=cartesianToPolar(shape);
@@ -82,11 +77,30 @@ function createShape(x0,y0,x,y,shape){
         }
         
         function drawBoundingRect(shape){
-            console.log(shape);
             ctx.beginPath();
             ctx.rect(shape.x,shape.y,shape.w,shape.h);
             ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
             ctx.stroke();
+        }
+        
+        var amendBoxes=function(){
+            var amendBox=function(rect,dir){
+                return {
+                    rect: rect,
+                    dir: dir,
+                    isInside: isInside(rect),
+                    redraw: function(){
+                        drawBoundingRect(rect);
+                    }
+                }
+            }
+            
+            // amendBoxes.push(amendBox());
+            return {
+                redraw: function(){
+                    // for (var i=0;i<8;i++) amendBoxes[i].redraw();
+                }
+            }
         }
         // console.log(boundingRect)
         // returning boundingRect directly was giving problems with 'this' object. below is a workaround
@@ -95,11 +109,16 @@ function createShape(x0,y0,x,y,shape){
             y:boundingRect.y,
             w:boundingRect.w,
             h:boundingRect.h,
+            amendBoxes:amendBoxes(),
             redraw: function(){
-                console.log(this)
                 drawBoundingRect(this);
+                this.amendBoxes.redraw();
             },
             isInside: function(pos){
+                // Check for amend points
+                if (-1){
+                    
+                }
                 return isInside(pos,{x:this.x,y:this.y,w:this.w,h:this.h});
             }
         };
