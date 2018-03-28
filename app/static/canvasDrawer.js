@@ -4,6 +4,9 @@ var ctx = drawCanvas.getContext("2d");
 var element=window;
 var parentDiv = document.getElementById("canv_cont");
 var state=defaultState();
+document.getElementById('drawCanvas').onmousedown = function(){
+  return false;
+};
 var drawerRect={
     x:0,
     y:0,
@@ -49,6 +52,7 @@ function createButton(x, y, w, h, behaviour){
 
 // Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
 function createShape(x0,y0,x,y,shape){
+    var shape_factor=1;
     normaliseCoords();
     function normaliseCoords(){
         var temp;
@@ -61,6 +65,15 @@ function createShape(x0,y0,x,y,shape){
             temp=y;
             y=y0;
             y0=temp;
+        }
+        if (shape=="Circle"){
+            circle=cartesianToPolar({x:x0,y:y0,w:x-x0,h:y-y0});
+            root_two=Math.pow(2,1/2);
+            x0=circle.x-circle.r/root_two;
+            y0=circle.y-circle.r/root_two;
+            x=circle.x+circle.r/root_two;
+            y=circle.y+circle.r/root_two;
+            shape_factor=1/root_two;
         }
     }
     function isInsideRect(pos){
@@ -82,6 +95,7 @@ function createShape(x0,y0,x,y,shape){
     var createBoundingRect=function(shape){
         boundingRect={};
         if (shape.shape=="Circle"){
+            
             circle=cartesianToPolar(shape);
             boundingRect.x=circle.x-circle.r;
             boundingRect.y=circle.y-circle.r;
@@ -261,9 +275,14 @@ function createShape(x0,y0,x,y,shape){
         },
         normaliseCoords: function (){
             var temp;
+            console.log(this);
             if (this.w<0){
+                this.x+=this.w;
+                this.w=-this.w;
             }
             if (this.h<0){
+                this.y+=this.h;
+                this.h=-this.h;
             }
             this.w+this.x-this.x0,
             this.h+this.y-this.y0,
@@ -273,7 +292,9 @@ function createShape(x0,y0,x,y,shape){
         }
     }
     function setSelfSelectedIdx(idx){
-        selfObj.selectedIdx=idx;}
+        selfObj.selectedIdx=idx;
+    }
+    console.log(selfObj);
     
     return selfObj;
 }
