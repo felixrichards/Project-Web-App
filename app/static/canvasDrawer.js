@@ -15,16 +15,22 @@ var drawerRect={
 };
 init()
 
-var buttons=[]
-var shapes=[]
-button_x_shift=5;
-button_x_inc=25;
-buttons.push(createButton(button_x_shift,5,20,20,function(){state.shape="Rect";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state.shape="Circle";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state.shape="Ellipse";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,20,20,function(){state=defaultState(); shapes=[]; resetCanvas();}))
 
+
+// Initialise buttons and shapes arrays
+var buttons=[];
+var shapes=[];
+var button_x_shift=5;
+var button_size=25;
+var button_x_inc=button_x_shift+button_size;
+buttons.push(createButton(button_x_shift,5,button_size,button_size,function(){state.shape="Rect";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Circle";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Ellipse";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Line";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state=defaultState(true); shapes=[]; resetCanvas();}))
+
+// Returns an object (rectangle) with left, top, width and height attributes
 function createRect(x, y, w, h){
     return {
         x:x,
@@ -33,14 +39,17 @@ function createRect(x, y, w, h){
         h:h
     };
 }
+
+// Returns an object (button) with positional attributes and a function (behaviour) to run when pressed
 function createButton(x, y, w, h, behaviour){
     redraw()
     function redraw(){
-        ctx.beginPath();
-        ctx.rect(x,y,w,h);
-        ctx.fillStyle='rgba(255,255,255,0.2)';
-        ctx.fill();
-        ctx.closePath();
+        drawRect(x,y,w,h,true);
+//         ctx.beginPath();
+//         ctx.rect(x,y,w,h);
+//         ctx.fillStyle='rgba(255,255,255,0.2)';
+//         ctx.fill();
+//         ctx.closePath();
     }
     
     return {
@@ -88,6 +97,9 @@ function createShape(x0,y0,x,y,shape){
         return false;
     }
     function isInsideEllipse(pos){
+        
+    }
+    function isInsideLine(pos){
         
     }
     var fn=eval("isInside"+shape);
@@ -299,11 +311,13 @@ function createShape(x0,y0,x,y,shape){
     return selfObj;
 }
 
-// Deletes a given shape - Work an undo here??
-function deleteShape(i){
-    shapes.splice(i,1);
-    state.resetSelected();
-    resetCanvas();
+// Deletes a given shape, default is selected shape - Work an undo here??
+function deleteShape(i=state.selectedNo){
+    if (i>-1) {
+        shapes.splice(i,1);
+        state.resetSelected();
+        resetCanvas();
+    }
 }
 
 function cartesianToPolar(shape){
@@ -340,6 +354,12 @@ function resetCanvas(){
 // ---------
 // Handles mouse activity for shape drawing
 // ---------
+
+// Makes cursor change for buttons
+function updateCursor(pos){
+    if (isInsideButtons(pos)) document.body.style.cursor = "pointer";
+    else document.body.style.cursor = "auto";
+}
 
 var flag=1;
 element.addEventListener("mousedown", function(e){
@@ -392,7 +412,7 @@ element.addEventListener("mousemove", function(e){
             drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
             shapeDrawn=true;
         }
-    }
+    } else updateCursor(mP);
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
@@ -409,12 +429,10 @@ element.addEventListener("mouseup", function(e){
     resetCanvas();
 }, false);
 element.addEventListener("keydown", function(e){
-    if (e.keyCode==46&&state.selectedNo>-1){
-        deleteShape(state.selectedNo);
+    if (e.keyCode==46){
+        deleteShape();
     }
 }, false);
-
-
 
 // Returns mouse position relative to (passed) canvas
 function getMousePos(drawCanvas, evt) {
@@ -430,10 +448,13 @@ function isInside(pos,rect){
     return pos.x > rect.x && pos.x < rect.x+rect.w && pos.y < rect.y+rect.h && pos.y > rect.y
 }
 
-function defaultState(){
-    return {
+function isInsideButtons(pos){
+    for (var i=0;i<buttons.length;i++) if (isInside(pos,buttons[i].rect)) return true;
+}
+
+function defaultState(keep_shape=false){
+    var outObj={
         drawing: false,
-        shape: "None",
         focusNo: -1,
         selectedNo: -1,
         selectShape: function(i){
@@ -450,29 +471,34 @@ function defaultState(){
             this.selectedNo=-1;
         }
     }
+    if (keep_shape) outObj.shape=state.shape;
+    else outObj.shape="None";
+    return outObj;
 }
 
 // Chooses the shape to draw
-function drawShape(x0,y0,x,y,shape){
+function drawShape(x,y,w,h,shape){
     var fn=window["draw"+shape];
     if(typeof fn === 'function') {
-        fn(x0,y0,x,y);
+        fn(x,y,w,h);
     }
 }
 
 // Draws rectangle with given parameters
-function drawRect(x0,y0,x,y){
+function drawRect(x,y,w,h,button=false){
     ctx.beginPath();
-    ctx.rect(x0,y0,x,y);
-    ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+    ctx.rect(x,y,w,h);
+    if (button) ctx.fillStyle='rgba(255,255,255,0.2)';
+    else ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     ctx.fill();
+    ctx.closePath();
 }
 
 // Draws circle with given parameters
-function drawCircle(x0,y0,x,y){
+function drawCircle(x,y,w,h){
     ctx.beginPath();
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
-    ctx.arc(x0+x/2,y0+y/2,Math.sqrt(Math.pow(x/2,2)+Math.pow(y/2,2)),0,2*Math.PI);
+    ctx.arc(x+w/2,y+h/2,Math.sqrt(Math.pow(w/2,2)+Math.pow(h/2,2)),0,2*Math.PI);
     //ctx.arc(x0,y0,Math.sqrt(Math.pow(x,2)+Math.pow(y,2)),0,2*Math.PI);
     ctx.fill();
 }
@@ -495,6 +521,20 @@ function drawEllipse(x0,y0,x,y){
         x0,y0-y/2);
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     ctx.fill();
+    ctx.closePath();
+}
+
+// Draws a bezier curve with given parameters
+function drawLine(x0,y0,x,y,x1=(x0+x)/3,y1=(y0+y)/3,x2=2*(x0+x)/3,y2=2*(y0+y)/3){
+    ctx.beginPath();
+    ctx.moveTo(x0,y0);
+    ctx.bezierCurveTo(
+        x1,y1,
+        x2,y2,
+        x,y);
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
+    ctx.stroke();
     ctx.closePath();
 }
 
