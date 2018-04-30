@@ -62,7 +62,7 @@ function createButton(x, y, w, h, behaviour){
 // Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
 function createShape(x0,y0,x,y,shape){
     var shape_factor=1;
-    normaliseCoords();
+    if (shape!="Line") normaliseCoords();
     function normaliseCoords(){
         var temp;
         if (x0>x){
@@ -107,7 +107,6 @@ function createShape(x0,y0,x,y,shape){
     var createBoundingRect=function(shape){
         boundingRect={};
         if (shape.shape=="Circle"){
-            
             circle=cartesianToPolar(shape);
             boundingRect.x=circle.x-circle.r;
             boundingRect.y=circle.y-circle.r;
@@ -118,12 +117,17 @@ function createShape(x0,y0,x,y,shape){
         }
         
         function drawBoundingRect(shape){
-            ctx.beginPath();
-            ctx.rect(shape.x,shape.y,shape.w,shape.h);
-            ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
-            ctx.lineWidth=1;
-            ctx.stroke();
-            ctx.closePath();
+            console.log(shape);
+            if (shape.shape=="Line"){
+                
+            } else {
+                ctx.beginPath();
+                ctx.rect(shape.x,shape.y,shape.w,shape.h);
+                ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
+                ctx.lineWidth=1;
+                ctx.stroke();
+                ctx.closePath();
+            }
         }
         
         var amendBoxes=function(){
@@ -151,26 +155,45 @@ function createShape(x0,y0,x,y,shape){
             }
             
             var j=0
-            var x_n=boundingRect.x;
-            var y_n=boundingRect.y;
-            var w_n=boundingRect.w;
-            var h_n=boundingRect.h;
-            var amendBoxes=[];
-            amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n},j++));     //Up
-            amendBoxes.push(amendBox({x:x_n+w_n,y:y_n},j++));       //UpRight
-            amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n/2},j++)); //Right
-            amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n},j++));   //DownRight
-            amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n+h_n},j++)); //Down
-            amendBoxes.push(amendBox({x:x_n,y:y_n+h_n},j++));       //DownLeft
-            amendBoxes.push(amendBox({x:x_n,y:y_n+h_n/2},j++));     //Left
-            amendBoxes.push(amendBox({x:x_n,y:y_n},j++));           //UpLeft
+            var amendBoxes=createAmendBoxes(shape);
+            function createAmendBoxes(shape){
+                var x_n=boundingRect.x;
+                var y_n=boundingRect.y;
+                
+                var amendBoxes=[];
+                if (shape.shape=="Line"){
+                    var x1_n=boundingRect.x1;
+                    var y1_n=boundingRect.y1;
+                    var x2_n=boundingRect.x2;
+                    var y2_n=boundingRect.y2;
+                    var x3_n=boundingRect.x3;
+                    var y3_n=boundingRect.y3;
+                    amendBoxes.push(amendBox({x:x_n,y:y_n},j++));     //Up
+                    amendBoxes.push(amendBox({x:x1_n,y:y1_n},j++));       //UpRight
+                    amendBoxes.push(amendBox({x:x2_n,y:y2_n},j++));     //Up
+                    amendBoxes.push(amendBox({x:x3_n,y:y3_n},j++));       //UpRight
+                } else {
+                    var w_n=boundingRect.w;
+                    var h_n=boundingRect.h;
+                    amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n},j++));     //Up
+                    amendBoxes.push(amendBox({x:x_n+w_n,y:y_n},j++));       //UpRight
+                    amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n/2},j++)); //Right
+                    amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n},j++));   //DownRight
+                    amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n+h_n},j++)); //Down
+                    amendBoxes.push(amendBox({x:x_n,y:y_n+h_n},j++));       //DownLeft
+                    amendBoxes.push(amendBox({x:x_n,y:y_n+h_n/2},j++));     //Left
+                    amendBoxes.push(amendBox({x:x_n,y:y_n},j++));           //UpLeft
+                }
+                return amendBoxes;
+            }
+            
             return {
                 getBox: function(i){return amendBoxes[i];},
                 redraw: function(){
-                    for (var i=0;i<8;i++) amendBoxes[i].redraw();
+                    for (var i=0;i<amendBoxes.length;i++) amendBoxes[i].redraw();
                 },
                 isInside: function(pos){
-                    for (var i=0;i<8;i++) {
+                    for (var i=0;i<amendBoxes.length;i++) {
                         if (amendBoxes[i].isInside(pos)) {
                             return i;
                         }
@@ -188,7 +211,7 @@ function createShape(x0,y0,x,y,shape){
             h:boundingRect.h,
             amendBoxes:amendBoxes(),
             redraw: function(){
-                drawBoundingRect(this);
+                drawBoundingRect(shape);
                 this.amendBoxes.redraw();
             },
             isInside: function(pos){
@@ -205,31 +228,24 @@ function createShape(x0,y0,x,y,shape){
         };
     }
     
-    var selfObj={
-        shape:shape,
-        x:x0,
-        y:y0,
-        x0:x0,
-        y0:y0,
-        w:x-x0,
-        h:y-y0,
-        w0:x-x0,
-        h0:y-y0,
-        redraw: function(){
-            drawShape(this.x,this.y,this.w,this.h,shape); 
-            if (this.selected) {
-                this.createBoundingRect();
+    function amend(pos,pos_0,dir){
+        var inc=0;
+        console.log(dir);
+        if (this.shape=="Line") {
+            if (dir==0){
+                this.x=pos.x;
+                this.y=pos.y;
+            }else if (dir==1){
+                this.x1=pos.x;
+                this.y1=pos.y;
+            }else if (dir==2){
+                this.x2=pos.x;
+                this.y2=pos.y;
+            }else if (dir==3){
+                this.x3=pos.x;
+                this.y3=pos.y;
             }
-        },
-        isInside: fn,
-        selected: false,
-        move: function(pos,pos_0){
-            this.x=this.x0+pos.x-pos_0.x;
-            this.y=this.y0+pos.y-pos_0.y;
-        },
-        amend: function(pos,pos_0,dir){
-            var inc=0;
-            console.log(dir);
+        } else {
             if (dir==0){
                 this.y=this.y0+(pos.y-pos_0.y);
                 this.h=this.h0-(pos.y-pos_0.y);
@@ -257,7 +273,36 @@ function createShape(x0,y0,x,y,shape){
                 this.y=this.y0+(pos.y-pos_0.y);
                 this.h=this.h0-(pos.y-pos_0.y);
             }
+        }
+    }
+    
+    var selfObj={
+        shape:shape,
+        x:x0,
+        y:y0,
+        x0:x0,
+        y0:y0,
+        w:x-x0,
+        h:y-y0,
+        w0:x-x0,
+        h0:y-y0,
+        redraw: function(){
+            if (this.shape=="Line") drawLine(this.x,this.y
+                                            ,this.x3,this.y3
+                                            ,this.x1,this.y1
+                                            ,this.x2,this.y2);
+            else drawShape(this.x,this.y,this.w,this.h,shape); 
+            if (this.selected) {
+                this.createBoundingRect();
+            }
         },
+        isInside: fn,
+        selected: false,
+        move: function(pos,pos_0){
+            this.x=this.x0+pos.x-pos_0.x;
+            this.y=this.y0+pos.y-pos_0.y;
+        },
+        amend: amend,
         changePos: function(){
             this.normaliseCoords();
             this.x0=this.x;
@@ -306,6 +351,15 @@ function createShape(x0,y0,x,y,shape){
     function setSelfSelectedIdx(idx){
         selfObj.selectedIdx=idx;
     }
+    if (shape=="Line") {
+        selfObj.x1=selfObj.x+selfObj.w/3;
+        selfObj.y1=selfObj.y+selfObj.h/3;
+        selfObj.x2=selfObj.x+2*selfObj.w/3;
+        selfObj.y2=selfObj.y+2*selfObj.h/3;
+        selfObj.x3=selfObj.x+selfObj.w;
+        selfObj.y3=selfObj.y+selfObj.h;
+    }
+    
     console.log(selfObj);
     
     return selfObj;
@@ -412,7 +466,8 @@ element.addEventListener("mousemove", function(e){
             drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
             shapeDrawn=true;
         }
-    } else updateCursor(mP);
+    }
+    updateCursor(mP);
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
@@ -479,7 +534,9 @@ function defaultState(keep_shape=false){
 // Chooses the shape to draw
 function drawShape(x,y,w,h,shape){
     var fn=window["draw"+shape];
-    if(typeof fn === 'function') {
+    if (shape=="Line"){
+        drawLine(x,y,x+w,y+h)
+    }else if(typeof fn === 'function') {
         fn(x,y,w,h);
     }
 }
@@ -525,13 +582,17 @@ function drawEllipse(x0,y0,x,y){
 }
 
 // Draws a bezier curve with given parameters
-function drawLine(x0,y0,x,y,x1=(x0+x)/3,y1=(y0+y)/3,x2=2*(x0+x)/3,y2=2*(y0+y)/3){
+function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(y3-y)/3){
     ctx.beginPath();
-    ctx.moveTo(x0,y0);
+    ctx.moveTo(x,y);
+//     console.log("x="+x+". y="+y);
+//     console.log("w="+w+". h="+h);
+//     console.log("(x1,y1)=("+x1+","+y1+")");
+//     console.log("(x2,y2)=("+x2+","+y2+")");
     ctx.bezierCurveTo(
         x1,y1,
         x2,y2,
-        x,y);
+        x3,y3);
     ctx.lineWidth = 6;
     ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
     ctx.stroke();
