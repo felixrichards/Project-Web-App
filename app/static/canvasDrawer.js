@@ -21,7 +21,7 @@ init()
 var buttons=[];
 var shapes=[];
 var button_x_shift=5;
-var button_size=25;
+var button_size=32;
 var button_x_inc=button_x_shift+button_size;
 buttons.push(createButton(button_x_shift,5,button_size,button_size,function(){state.shape="Rect";}))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Circle";}))
@@ -45,17 +45,13 @@ function createButton(x, y, w, h, behaviour){
     redraw()
     function redraw(){
         drawRect(x,y,w,h,true);
-//         ctx.beginPath();
-//         ctx.rect(x,y,w,h);
-//         ctx.fillStyle='rgba(255,255,255,0.2)';
-//         ctx.fill();
-//         ctx.closePath();
     }
     
     return {
         rect: createRect(x, y, w, h),
         behaviour: behaviour,
-        redraw: redraw
+        redraw: redraw,
+        cursor: "pointer"
     }
 }
 
@@ -97,7 +93,13 @@ function createShape(x0,y0,x,y,shape){
         return false;
     }
     function isInsideEllipse(pos){
-        
+        ellipse=cartesianToElliptical(this);
+        if (Math.pow((pos.x-ellipse.x)/ellipse.w,2)+Math.pow((pos.y-ellipse.y)/ellipse.h,2)<=1){
+            console.log(ellipse)
+            console.log(pos)
+            return true;
+        }
+        return false;
     }
     function isInsideLine(pos){
         
@@ -117,7 +119,6 @@ function createShape(x0,y0,x,y,shape){
         }
         
         function drawBoundingRect(shape){
-            console.log(shape);
             if (shape.shape=="Line"){
                 
             } else {
@@ -131,12 +132,15 @@ function createShape(x0,y0,x,y,shape){
         }
         
         var amendBoxes=function(){
-            var amendBox=function(loc,dir){
+            var amendBox=function(loc,dir,c){
                 boxW=10;
                 
                 function drawAmendRect(shape){
                     ctx.beginPath();
                     ctx.rect(shape.x,shape.y,shape.w,shape.h);
+                    ctx.lineWidth=1;
+                    ctx.strokeStyle="rgba(25, 25, 25, 0.5)";
+                    ctx.stroke();
                     ctx.fillStyle="rgba(255, 255, 255, 0.5)";
                     ctx.fill();
                     ctx.closePath();
@@ -145,6 +149,7 @@ function createShape(x0,y0,x,y,shape){
                 return {
                     rect: createRect(loc.x-boxW/2,loc.y-boxW/2,boxW,boxW),
                     dir: dir,
+                    cursor: "pointer",
                     isInside: function(pos){
                         return isInside(pos,this.rect);
                     },
@@ -154,7 +159,7 @@ function createShape(x0,y0,x,y,shape){
                 }
             }
             
-            var j=0
+            var j=1;
             var amendBoxes=createAmendBoxes(shape);
             function createAmendBoxes(shape){
                 var x_n=boundingRect.x;
@@ -188,17 +193,17 @@ function createShape(x0,y0,x,y,shape){
             }
             
             return {
-                getBox: function(i){return amendBoxes[i];},
+                getBox: function(i){return amendBoxes[i-1];},
                 redraw: function(){
                     for (var i=0;i<amendBoxes.length;i++) amendBoxes[i].redraw();
                 },
                 isInside: function(pos){
                     for (var i=0;i<amendBoxes.length;i++) {
                         if (amendBoxes[i].isInside(pos)) {
-                            return i;
+                            return amendBoxes[i].dir;
                         }
                     }
-                    return -1;
+                    return 0;
                 }
             }
         }
@@ -209,65 +214,71 @@ function createShape(x0,y0,x,y,shape){
             y:boundingRect.y,
             w:boundingRect.w,
             h:boundingRect.h,
+            shape: shape.shape,
             amendBoxes:amendBoxes(),
             redraw: function(){
-                drawBoundingRect(shape);
+                drawBoundingRect(this);
                 this.amendBoxes.redraw();
+            },
+            selectBox: function(idx){
+                setSelfSelectedIdx(idx);
             },
             isInside: function(pos){
                 // Check for amend points
                 amendIdx=this.amendBoxes.isInside(pos);
-                if (amendIdx>-1){
-                    setSelfSelectedIdx(amendIdx);
-                    return true
-                } else if (isInside(pos,{x:this.x,y:this.y,w:this.w,h:this.h})) {
-                    setSelfSelectedIdx(-1);
-                    return true;
+                if (amendIdx>0) return amendIdx;
+                if (isInside(pos,this)) {
+                    return -1;
                 }
-            }
+                return 0;
+            },
+            getObj: function(idx){
+                if (idx==-1) return this;
+                return this.amendBoxes.getBox(idx);
+            },
+            cursor: "move"
         };
     }
     
     function amend(pos,pos_0,dir){
         var inc=0;
-        console.log(dir);
         if (this.shape=="Line") {
-            if (dir==0){
+            if (dir==1){
                 this.x=pos.x;
                 this.y=pos.y;
-            }else if (dir==1){
+            }else if (dir==2){
                 this.x1=pos.x;
                 this.y1=pos.y;
-            }else if (dir==2){
+            }else if (dir==3){
                 this.x2=pos.x;
                 this.y2=pos.y;
-            }else if (dir==3){
+            }else if (dir==4){
                 this.x3=pos.x;
                 this.y3=pos.y;
             }
         } else {
-            if (dir==0){
+            if (dir==1){
                 this.y=this.y0+(pos.y-pos_0.y);
                 this.h=this.h0-(pos.y-pos_0.y);
-            }else if (dir==1){
-                this.y=this.y0+(pos.y-pos_0.y);
-                this.h=this.h0-(pos.y-pos_0.y);
-                this.w=this.w0+(pos.x-pos_0.x);
             }else if (dir==2){
+                this.y=this.y0+(pos.y-pos_0.y);
+                this.h=this.h0-(pos.y-pos_0.y);
                 this.w=this.w0+(pos.x-pos_0.x);
             }else if (dir==3){
                 this.w=this.w0+(pos.x-pos_0.x);
-                this.h=this.h0+(pos.y-pos_0.y);
             }else if (dir==4){
+                this.w=this.w0+(pos.x-pos_0.x);
                 this.h=this.h0+(pos.y-pos_0.y);
             }else if (dir==5){
                 this.h=this.h0+(pos.y-pos_0.y);
-                this.x=this.x0+(pos.x-pos_0.x);
-                this.w=this.w0-(pos.x-pos_0.x);
             }else if (dir==6){
+                this.h=this.h0+(pos.y-pos_0.y);
                 this.x=this.x0+(pos.x-pos_0.x);
                 this.w=this.w0-(pos.x-pos_0.x);
             }else if (dir==7){
+                this.x=this.x0+(pos.x-pos_0.x);
+                this.w=this.w0-(pos.x-pos_0.x);
+            }else if (dir==8){
                 this.x=this.x0+(pos.x-pos_0.x);
                 this.w=this.w0-(pos.x-pos_0.x);
                 this.y=this.y0+(pos.y-pos_0.y);
@@ -286,6 +297,7 @@ function createShape(x0,y0,x,y,shape){
         h:y-y0,
         w0:x-x0,
         h0:y-y0,
+        cursor: "pointer",
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
                                             ,this.x3,this.y3
@@ -304,19 +316,19 @@ function createShape(x0,y0,x,y,shape){
         },
         amend: amend,
         changePos: function(){
-            this.normaliseCoords();
+            if (this.shape!="Line") this.normaliseCoords();
             this.x0=this.x;
             this.y0=this.y;
             this.w0=this.w;
             this.h0=this.h;
-            this.selectedIdx=-1;
+            this.selectedIdx=0;
         },
         resetPos: function(){
             this.x=this.x0;
             this.y=this.y0;
             this.w=this.w0;
             this.h=this.h0;
-            this.selectedIdx=-1;
+            this.selectedIdx=0;
         },
         boundingRect: 0,
         createBoundingRect: function(){
@@ -331,8 +343,6 @@ function createShape(x0,y0,x,y,shape){
             }
         },
         normaliseCoords: function (){
-            var temp;
-            console.log(this);
             if (this.w<0){
                 this.x+=this.w;
                 this.w=-this.w;
@@ -341,10 +351,6 @@ function createShape(x0,y0,x,y,shape){
                 this.y+=this.h;
                 this.h=-this.h;
             }
-            this.w+this.x-this.x0,
-            this.h+this.y-this.y0,
-            this.w0+this.x-this.x0,
-            this.h0+this.y-this.y0,
             this.createBoundingRect();
         }
     }
@@ -358,10 +364,10 @@ function createShape(x0,y0,x,y,shape){
         selfObj.y2=selfObj.y+2*selfObj.h/3;
         selfObj.x3=selfObj.x+selfObj.w;
         selfObj.y3=selfObj.y+selfObj.h;
+        selfObj.w=0;
+        selfObj.h=0;
     }
-    
     console.log(selfObj);
-    
     return selfObj;
 }
 
@@ -382,11 +388,21 @@ function cartesianToPolar(shape){
     };
 }
 
+function cartesianToElliptical(shape){
+    return {
+        w: shape.w*(1/Math.pow(3,1/4))/2,
+        h: shape.h/2,
+        x: shape.x+shape.w/2,
+        y: shape.y+shape.h/2
+    };
+}
+
 // Makes w/h of canvas same as image
 function init(){
     var background = document.getElementById("imageCanvas");
     drawCanvas.width=drawerRect.w
     drawCanvas.height=drawerRect.h;
+    drawCanvas.cursor="auto";
 }
 
 function clrCanvas(){
@@ -400,7 +416,6 @@ function resetCanvas(){
         buttons[i].redraw();
     }
     for (var i=0;i<shapes.length;i++){
-        // console.log(shapes[i].shape);
         shapes[i].redraw();
     }
 }
@@ -410,37 +425,43 @@ function resetCanvas(){
 // ---------
 
 // Makes cursor change for buttons
-function updateCursor(pos){
-    if (isInsideButtons(pos)) document.body.style.cursor = "pointer";
-    else document.body.style.cursor = "auto";
-}
+// function updateCursor(pos){
+    // if (isInsideButtons(pos)) document.body.style.cursor = "pointer";
+    // else document.body.style.cursor = "auto";
+// }
 
 var flag=1;
+var focusObject=null;
+var buttonPressed=false;
+var shapePressed=false;
+var cursorLock=false;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     buttonPressed=false;
     shapePressed=false;
+    cursorLock=true;
+    
     
     t_0=e.timeStamp;
-    // Check user is clicking canvas
+    // Check user is clicking buttons
     for (var i=0;i<buttons.length;i++){
         if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
             buttons[i].behaviour();
             buttonPressed=true;
         }
     }
-    shapeAction=0;
+    
     // Check user is clicking shapes (reverse loop for z-order)
-    if (state.selectedNo>-1&&shapes[state.selectedNo].boundingRect.isInside(mP_0)){
-        shapePressed=true;
+    var temp;
+    if (state.selectedNo>-1&&(idx=shapes[state.selectedNo].boundingRect.isInside(mP_0))){
+        shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
     } else {
         state.resetSelected();
         for (var i=shapes.length-1;i>=0;i--){
             if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
-                shapePressed=true;
                 state.selectShape(i);
-                shapes[state.focusNo].selected=true;
+                shapes[i].selectedIdx=-1;
             }
         }
     }
@@ -448,10 +469,19 @@ element.addEventListener("mousedown", function(e){
     if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]){
         flag = 0;
     }
+    focusObject=getFocusObject(getMousePos(drawCanvas,e));
+    updateCursor(focusObject.cursor);
+    
     resetCanvas();
 }, false);
 element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
+    
+    //Check if object is not currently being used
+    console.log(state.focusNo);
+    if (!cursorLock) focusObject=getFocusObject(getMousePos(drawCanvas,e));
+    updateCursor(focusObject.cursor);
+    
     t=e.timeStamp;
     mP=getMousePos(drawCanvas,e);
     if (state.focusNo>-1){
@@ -471,13 +501,13 @@ element.addEventListener("mousemove", function(e){
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
+    cursorLock=false;
     if (state.focusNo>-1){
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
         state.selectShape(shapes.length-1);
-        shapes[state.focusNo].selected=true;
     }
     // Unfocus anything
     state.focusNo=-1
@@ -498,6 +528,34 @@ function getMousePos(drawCanvas, evt) {
     };
 }
 
+function updateCursor(c="auto"){
+    document.body.style.cursor=c;
+}
+
+function getFocusObject(pos){
+    for (var i=0;i<buttons.length;i++){
+        if (isInside(pos,buttons[i].rect)){
+            return buttons[i];
+        }
+    }
+    
+    var boundingIdx;
+    if (state.selectedNo>-1&&(boundingIdx=shapes[state.selectedNo].boundingRect.isInside(pos))){
+        return shapes[state.selectedNo].boundingRect.getObj(boundingIdx);
+    } else {
+        for (var i=shapes.length-1;i>=0;i--){
+            if (shapes[i].isInside(pos)){
+                return shapes[i];
+            }
+        }
+    }
+    
+    if (isInside(pos,drawerRect)&&shapes!=[]){
+        return drawCanvas;
+    }
+    return {cursor: "auto"}
+}
+
 // Check if a given position is inside a given rectangle
 function isInside(pos,rect){
     return pos.x > rect.x && pos.x < rect.x+rect.w && pos.y < rect.y+rect.h && pos.y > rect.y
@@ -515,6 +573,8 @@ function defaultState(keep_shape=false){
         selectShape: function(i){
             this.focusNo=i;
             this.selectedNo=i;
+            shapePressed=true;
+            shapes[i].selected=true;
         },
         resetSelected: function(){
             if (this.selectedNo>-1) {

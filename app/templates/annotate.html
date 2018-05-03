@@ -3,13 +3,14 @@
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotation.css')}}">
     <div id="target">
-        <div id="canv_cont" style="width: {{dim.width}}; height:{{dim.height}};">
+        <div id="canv_cont" style="width: {{dim.width}}; height:{{dim.width}};">
             <canvas class="imageCanvas" id="imageCanvas" style="background-color:#EEE"></canvas>
             <script>
                 var imageCanvas = document.getElementById("imageCanvas");
                 var ctxImage = imageCanvas.getContext("2d");
-                var w={{dim.width}}
-                var h={{dim.height}}
+                var w={{dim.image_width}};
+                var h={{dim.image_width}};
+                console.log("w "+w+", h "+h);
                 init()
                 
                 // Makes w/h of canvas same as image

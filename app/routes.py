@@ -12,7 +12,8 @@ def index():
 @app.route('/annotate')
 def annotate():
     file=genFile()
-    return render_template('annotate.html',title='Annotate',file=file,dim={'width':600,'height':600})
+    dim={'width':1000,'height':1000,'image_width':500,'image_height':500}
+    return render_template('annotate.html',title='Annotate',file=file,dim=dim)
     
 def genFile(survey=None):
     if (survey==None):
