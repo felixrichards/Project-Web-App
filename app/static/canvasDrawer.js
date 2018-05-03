@@ -297,13 +297,15 @@ function createShape(x0,y0,x,y,shape){
         h:y-y0,
         w0:x-x0,
         h0:y-y0,
+        sigma: 0,
+        sigma_0: 0,
         cursor: "pointer",
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
                                             ,this.x3,this.y3
                                             ,this.x1,this.y1
                                             ,this.x2,this.y2);
-            else drawShape(this.x,this.y,this.w,this.h,shape); 
+            else drawShape(this.x,this.y,this.w,this.h,shape,this.sigma); 
             if (this.selected) {
                 this.createBoundingRect();
             }
@@ -592,27 +594,28 @@ function defaultState(keep_shape=false){
 }
 
 // Chooses the shape to draw
-function drawShape(x,y,w,h,shape){
+function drawShape(x,y,w,h,shape,rotate=0){
     var fn=window["draw"+shape];
     if (shape=="Line"){
         drawLine(x,y,x+w,y+h)
     }else if(typeof fn === 'function') {
-        fn(x,y,w,h);
+        fn(x,y,w,h,rotate);
     }
 }
 
 // Draws rectangle with given parameters
-function drawRect(x,y,w,h,button=false){
+function drawRect(x,y,w,h,button=false,rotate=0){
     ctx.beginPath();
     ctx.rect(x,y,w,h);
     if (button) ctx.fillStyle='rgba(255,255,255,0.2)';
     else ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+    ctx.rotate(rotate);
     ctx.fill();
     ctx.closePath();
 }
 
 // Draws circle with given parameters
-function drawCircle(x,y,w,h){
+function drawCircle(x,y,w,h,rotate=0){
     ctx.beginPath();
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     ctx.arc(x+w/2,y+h/2,Math.sqrt(Math.pow(w/2,2)+Math.pow(h/2,2)),0,2*Math.PI);
@@ -621,7 +624,7 @@ function drawCircle(x,y,w,h){
 }
 
 // Draws circle with given parameters
-function drawEllipse(x0,y0,x,y){
+function drawEllipse(x0,y0,x,y,rotate=0){
     ctx.beginPath();
     // Transform coordinates
     x0=(x0+x/2); 
@@ -642,7 +645,7 @@ function drawEllipse(x0,y0,x,y){
 }
 
 // Draws a bezier curve with given parameters
-function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(y3-y)/3){
+function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(y3-y)/3,rotate=0){
     ctx.beginPath();
     ctx.moveTo(x,y);
 //     console.log("x="+x+". y="+y);
