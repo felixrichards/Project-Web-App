@@ -2,8 +2,8 @@
 
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotation.css')}}">
-    <div id="target">
-        <div id="canv_cont" style="width: {{dim.width}}; height:{{dim.width}};">
+    <div id="target" style="width: {{dim.width+200}}; height:{{dim.height}};">
+        <div id="canv_cont">
             <canvas class="imageCanvas" id="imageCanvas" style="background-color:#EEE"></canvas>
             <script>
                 var imageCanvas = document.getElementById("imageCanvas");
@@ -26,6 +26,29 @@
             </script>
             <canvas class="drawCanvas" id="drawCanvas" ></canvas>
             <script src="{{ url_for('static', filename='canvasDrawer.js') }}"></script>
+        </div>
+        <div class="extra" style="width: 200; height: {{dim.height}};">
+            <div class="tables" id="obj_table_div" style="width: 200; height:85%;">
+                <table class="obj_table" id="obj_table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Shape</th>
+                            <th>ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <script>
+                    $('tbody').sortable();
+                </script>
+                <script src="{{ url_for('static', filename='tableManager.js') }}"></script>
+            </div>
+            <div class="buttons" style="width: 200; height:15%;">
+                <form action="/annotate/submit">
+                    <input class= "button" type="submit" value="Submit" />
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

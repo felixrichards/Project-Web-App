@@ -1,35 +1,55 @@
-body
-{
+body{
     font-family:Arial;
     background-color: #eeeeee;
+}
+table{
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+td, th{
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+.button{
+    background-color: #FFFFFF;
+    border: 1px solid grey;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    float: left;
+    font-size: 16px;
+    height: 100%;
+    width: 100%;
+}
+
+.selected {
+    background-color: #dddddd;
 }
 #target
 {
     font-size:16px;
     text-align: left;
     clear: left; 
-    border:1px solid black;
-    height: 424px; 
-    min-width: 870px;
+    border:1px solid black; 
+    min-width: 700px;
     max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
-/*border-style: solid;*/
 }
 #canv_cont
 {
     float:left;
     margin: 0px auto;
-    padding-right: 30px;
     position: relative;
+    width:800;
+    height:700;
+    background-color: #333333;
 }
 #questions
 {
-    /* width: 50%; */
-    /* display: inline; */
-    /* margin: 0 auto; */
-    /* position:absolute; */
-    /* right:0; */
     display: inline-block;
     width: calc(100% - 454px);
     overflow: hidden;
@@ -51,21 +71,28 @@ body
 {
     display: block;
 }
-.heading{
+.extra
+{
+    float:right;
+    width:200px;
+    height:100%;
+}
+.heading
+{
     font-weight: bold;
     text-transform: uppercase;
 }
-.button
-{
-    background-color: #FFFFFF;
-    border: 1px solid grey;
-    color: black;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    float: left;
-    width: 30%;
-    height: 100px;
-    display: none;
-    font-size: 16px;
-}
+/* .button */
+/* { */
+    /* background-color: #FFFFFF; */
+    /* border: 1px solid grey; */
+    /* color: black; */
+    /* padding: 15px 32px; */
+    /* text-align: center; */
+    /* text-decoration: none; */
+    /* float: left; */
+    /* width: 30%; */
+    /* height: 100px; */
+    /* display: none; */
+    /* font-size: 16px; */
+/* } */

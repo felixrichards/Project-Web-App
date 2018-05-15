@@ -20,15 +20,22 @@ init()
 // Initialise buttons and shapes arrays
 var buttons=[];
 var shapes=[];
+var id_count=0;
 var button_x_shift=5;
 var button_size=32;
 var button_x_inc=button_x_shift+button_size;
-buttons.push(createButton(button_x_shift,5,button_size,button_size,function(){state.shape="Rect";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Circle";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Ellipse";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.shape="Line";}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state.resetSelected(); shapes.pop(); resetCanvas();}))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,function(){state=defaultState(true); shapes=[]; resetCanvas();}))
+buttons.push(createButton(button_x_shift,5,button_size,button_size,
+    function(){state.shape="Rect";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    function(){state.shape="Circle";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    function(){state.shape="Ellipse";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    function(){state.shape="Line";}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    function(){state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);}))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);}))
 
 // Returns an object (rectangle) with left, top, width and height attributes
 function createRect(x, y, w, h){
@@ -300,6 +307,7 @@ function createShape(x0,y0,x,y,shape){
         sigma: 0,
         sigma_0: 0,
         cursor: "pointer",
+        id: id_count++,
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
                                             ,this.x3,this.y3
@@ -369,8 +377,15 @@ function createShape(x0,y0,x,y,shape){
         selfObj.w=0;
         selfObj.h=0;
     }
-    console.log(selfObj);
     return selfObj;
+}
+
+function getShapeByID(id){
+    for (var j=0;j<shapes.length;j++){
+        if (id==shapes[j].id) {
+            return j;
+        }
+    }
 }
 
 // Deletes a given shape, default is selected shape - Work an undo here??
@@ -379,6 +394,7 @@ function deleteShape(i=state.selectedNo){
         shapes.splice(i,1);
         state.resetSelected();
         resetCanvas();
+        updateTable(shapes);
     }
 }
 
@@ -442,7 +458,7 @@ element.addEventListener("mousedown", function(e){
     buttonPressed=false;
     shapePressed=false;
     cursorLock=true;
-    
+    updateRows();
     
     t_0=e.timeStamp;
     // Check user is clicking buttons
@@ -480,7 +496,6 @@ element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
     
     //Check if object is not currently being used
-    console.log(state.focusNo);
     if (!cursorLock) focusObject=getFocusObject(getMousePos(drawCanvas,e));
     updateCursor(focusObject.cursor);
     
@@ -577,6 +592,9 @@ function defaultState(keep_shape=false){
             this.selectedNo=i;
             shapePressed=true;
             shapes[i].selected=true;
+            updateTable(shapes);
+            console.log("Updating rows with index "+i);
+            updateRows(i);
         },
         resetSelected: function(){
             if (this.selectedNo>-1) {
@@ -625,6 +643,11 @@ function drawCircle(x,y,w,h,rotate=0){
 
 // Draws circle with given parameters
 function drawEllipse(x0,y0,x,y,rotate=0){
+    if (rotate!=0){
+        ctx.save();
+        ctx.translate(x0,y0);
+        ctx.rotate(rotate);
+    }
     ctx.beginPath();
     // Transform coordinates
     x0=(x0+x/2); 
@@ -642,6 +665,11 @@ function drawEllipse(x0,y0,x,y,rotate=0){
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     ctx.fill();
     ctx.closePath();
+    if (rotate!=0){
+        ctx.rotate(-rotate);
+        ctx.translate(-x0,-y0);
+        ctx.restore();
+    }
 }
 
 // Draws a bezier curve with given parameters
