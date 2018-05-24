@@ -12,32 +12,47 @@ td, th{
     text-align: left;
     padding: 8px;
 }
+span{
+    border: 1px solid black;
+    height: calc(100% - 1px);
+    width: calc(100% - 1px);
+}
+
 .button{
+    align-items: center;
     background-color: #FFFFFF;
-    border: 1px solid grey;
     color: black;
-    padding: 15px 32px;
+    display: flex;
+    justify-content: center;
     text-align: center;
     text-decoration: none;
     float: left;
     font-size: 16px;
     height: 100%;
     width: 100%;
+
+}
+.button:hover{
+    background-color: #fafafa;
 }
 
 .selected {
     background-color: #dddddd;
 }
+.tables{
+    border: 1px solid black;
+}
+
 #target
 {
-    font-size:16px;
-    text-align: left;
+    border:1px solid black;
     clear: left; 
-    border:1px solid black; 
-    min-width: 700px;
-    max-width: 1400px;
+    font-size:16px;
     margin-left: auto;
     margin-right: auto;
+    min-width: 700px;
+    max-width: 1400px;
+    text-align: left;
 }
 #canv_cont
 {

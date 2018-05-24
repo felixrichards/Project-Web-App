@@ -50,17 +50,13 @@ function updateRows(selected_idx=-1){
         $('#obj_table tbody tr').removeClass("selected");
     }
     if (selected_idx>-1){
-        // if ($('#obj_table tbody tr:eq('+selected_idx+')').hasClass("selected")) console.log("yes");
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq('+selected_idx+')').addClass("selected");
-        
-        // if ($('#obj_table tbody tr:eq('+selected_idx+')').hasClass("selected")) console.log("still  yes");
     }
 }
 
 $(document).on("click", "#obj_table tbody tr", function(e) {
     var index = $(this).index();
-    // $(this).addClass("selected");
     z_order=getZOrder();
     index=z_order[index];
     s_index=getShapeByID(index);

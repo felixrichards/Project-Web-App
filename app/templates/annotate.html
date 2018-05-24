@@ -10,7 +10,6 @@
                 var ctxImage = imageCanvas.getContext("2d");
                 var w={{dim.image_width}};
                 var h={{dim.image_width}};
-                console.log("w "+w+", h "+h);
                 init()
                 
                 // Makes w/h of canvas same as image
@@ -45,9 +44,24 @@
                 <script src="{{ url_for('static', filename='tableManager.js') }}"></script>
             </div>
             <div class="buttons" style="width: 200; height:15%;">
-                <form action="/annotate/submit">
-                    <input class= "button" type="submit" value="Submit" />
-                </form>
+                <a href=# class="button" id="submit">Submit</a>
+                <script>
+                    $(function() {
+                        $('a#submit').bind('click', function() {
+                            $.ajax({
+                                data: JSON.stringify(shapes),
+                                contentType: "application/json; charset=utf-8",
+                                type:'POST',
+                                success: function(response){
+                                    //console.log(response);
+                                },
+                                error: function(error){
+                                    console.log(error);
+                                }
+                            })
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
