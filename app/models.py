@@ -1,6 +1,7 @@
 from datetime import datetime
 from app import db
 from sqlalchemy.sql import func
+import sqlalchemy.types as types
 
 class Galaxy(db.Model):
     g_id = db.Column(db.Integer, primary_key=True)
@@ -15,7 +16,7 @@ class Annotation(db.Model):
     a_id = db.Column(db.Integer, primary_key=True)
     g_id = db.Column(db.Integer, db.ForeignKey('galaxy.g_id'))
     timestamp = db.Column(db.DateTime, index=True, default=func.now(), server_default=func.now())
-    x0 = db.Column(db.Float(64))
+    shapes = db.Column(types.JSON())
     
     def __repr__(self):
         return '<Annotation ID: {}. Galaxy ID: {}. Timestamp: {}>'.format(self.a_id, self.g_id, self.timestamp)
