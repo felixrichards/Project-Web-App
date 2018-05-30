@@ -16,7 +16,12 @@ class Annotation(db.Model):
     a_id = db.Column(db.Integer, primary_key=True)
     g_id = db.Column(db.Integer, db.ForeignKey('galaxy.g_id'))
     timestamp = db.Column(db.DateTime, index=True, default=func.now(), server_default=func.now())
-    shapes = db.Column(types.JSON())
+    shapes = db.relationship('Shape', backref='name', lazy='dynamic')
     
     def __repr__(self):
         return '<Annotation ID: {}. Galaxy ID: {}. Timestamp: {}>'.format(self.a_id, self.g_id, self.timestamp)
+        
+class Shape(db.Model):
+    s_id = db.Column(db.Integer, primary_key=True)
+    a_id = db.Column(db.Integer, db.ForeignKey('annotation.a_id'))
+    
