@@ -1,15 +1,16 @@
+from flask import render_template, request, jsonify,flash, redirect,url_for,session
 from flask.views import View,MethodView
 from app import app,db
 from app.models import Galaxy, Annotation
 from app.utils import get_random_galaxy
 
 class AnnotateView(MethodView):
-    galaxy={}
     
     def get(self, g_id=None,g_name=None,g_survey=None):
         if g_id is None and g_name is None and g_survey is None:
             # no given id or name
             galaxy=get_random_galaxy()
+            return redirect(url_for('annotate_by_id',g_id=galaxy.g_id))
         
         if g_id is not None:
             # find galaxy by id
@@ -27,11 +28,16 @@ class AnnotateView(MethodView):
             # incorrect id or name
             galaxy=get_random_galaxy()
             
-            
+        session['g_id']=galaxy.g_id
+        
+        print("In get request")
+        print(session['g_id'])
         dim={'width':800,'height':700,'image_width':500,'image_height':500}
         return render_template('annotate.html',title='Annotate',file=galaxy,dim=dim)
     
-    def post(self):
+    def post(self,g_id=None,g_name=None):
         shapes=request.get_json()
-        a = Annotation(galaxy)
-        print(shapes[0])
+        print("In post request")
+        print(session['g_id'])
+        a = Annotation(g_id=session['g_id'],shapes=shapes)
+        return ""
