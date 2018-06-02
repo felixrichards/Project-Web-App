@@ -10,6 +10,7 @@ class AnnotateView(MethodView):
         if g_id is None and g_name is None and g_survey is None:
             # no given id or name
             galaxy=get_random_galaxy()
+            # comment out to keep url as /annotate
             return redirect(url_for('annotate_by_id',g_id=galaxy.g_id))
         
         if g_id is not None:
