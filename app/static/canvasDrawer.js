@@ -148,11 +148,11 @@ function createShape(x0,y0,x,y,shape){
         }
         
         var amendBoxes=function(){
-            var amendBox=function(loc,dir,theta=0,p={x:0,y:0}){
+            var amendBox=function(loc,dir,theta=0,p={x:0,y:0},r_shift=0){
                 boxW=10;
-                console.log(this.p);
                 function drawAmendRect(shape,p){
                     shape.p=p;
+                    if (dir==9) shape.colour="rgba(20, 200, 20, 0.5)";
                     drawRect(shape,false,false,true);
                 }
                 
@@ -166,8 +166,17 @@ function createShape(x0,y0,x,y,shape){
                         return isInsideRect(pos,this.rect);
                     },
                     redraw: function(){
-                        // console.log(this.p);
                         drawAmendRect(this.rect,this.p);
+                        if (dir==9) {
+                            // console.log(r_shift)
+                            // ctx.beginPath();
+                            // ctx.moveTo(loc.x,loc.y);
+                            // ctx.lineTo(loc.x,loc.y+r_shift);
+                            // ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
+                            // ctx.lineWidth=1;
+                            // ctx.stroke();
+                            // ctx.closePath;
+                        }
                     }
                 }
             }
@@ -194,7 +203,9 @@ function createShape(x0,y0,x,y,shape){
                     var w_n=boundingRect.w;
                     var h_n=boundingRect.h;
                     var t=boundingRect.theta;
-                    var p={x:boundingRect.x+boundingRect.w/2,y:boundingRect.y+boundingRect.h/2}
+                    // var p={x:boundingRect.x+boundingRect.w/2,y:boundingRect.y+boundingRect.h/2}
+                    var p=shape.centre;
+                    var r_shift=20;
                     amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n},j++,t,p));     //Up
                     amendBoxes.push(amendBox({x:x_n+w_n,y:y_n},j++,t,p));       //UpRight
                     amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n/2},j++,t,p)); //Right
@@ -203,6 +214,8 @@ function createShape(x0,y0,x,y,shape){
                     amendBoxes.push(amendBox({x:x_n,y:y_n+h_n},j++,t,p));       //DownLeft
                     amendBoxes.push(amendBox({x:x_n,y:y_n+h_n/2},j++,t,p));     //Left
                     amendBoxes.push(amendBox({x:x_n,y:y_n},j++,t,p));           //UpLeft
+                    if (shape.shape!="Circle") 
+                        amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n-r_shift},j++,t,p,r_shift));           //Rotation
                 }
                 return amendBoxes;
             }
@@ -280,9 +293,7 @@ function createShape(x0,y0,x,y,shape){
             }else{
                 var x_shift=rotateXCoord(pos.x-pos_0.x,pos.y-pos_0.y,-this.theta);
                 var y_shift=rotateYCoord(pos.x-pos_0.x,pos.y-pos_0.y,-this.theta);
-                // console.log("x_shift is "+x_shift+". y_shift is "+y_shift);
             }
-            // console.log(dir);
             if (dir==1){
                 this.y=this.y0+y_shift;
                 this.h=this.h0-y_shift;
@@ -309,6 +320,8 @@ function createShape(x0,y0,x,y,shape){
                 this.w=this.w0-x_shift;
                 this.y=this.y0+y_shift;
                 this.h=this.h0-y_shift;
+            }else if (dir==9){
+                this.theta=Math.atan((pos.x-this.x-this.w/2)/(pos.y-this.y-this.h/2))
             }
         }
     }
@@ -327,13 +340,15 @@ function createShape(x0,y0,x,y,shape){
         theta_0: 0,
         centre:{
             x:x0+(x-x0)/2,
-            y:y0+(y-y0)/2
+            y:y0+(y-y0)/2,
+            x0:x0+(x-x0)/2,
+            y0:y0+(y-y0)/2
         },
         cursor: "pointer",
         id: id_count++,
         updateCentre: function(){
-            this.centre.x=this.x+this.w/2;
-            this.centre.y=this.y+this.h/2;
+            this.centre.x=this.centre.x0+this.x-this.x0;
+            this.centre.y=this.centre.y0+this.y-this.y0;
         },
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
@@ -357,12 +372,14 @@ function createShape(x0,y0,x,y,shape){
         amend: amend,
         changePos: function(){
             if (this.shape!="Line") this.normaliseCoords();
+            this.centre.x0=this.centre.x;
+            this.centre.y0=this.centre.y;
             this.x0=this.x;
             this.y0=this.y;
             this.w0=this.w;
             this.h0=this.h;
             this.selectedIdx=0;
-            // this.updateCentre();
+            // 
         },
         resetPos: function(){
             this.x=this.x0;
@@ -473,12 +490,6 @@ function resetCanvas(){
 // ---------
 // Handles mouse activity for shape drawing
 // ---------
-
-// Makes cursor change for buttons
-// function updateCursor(pos){
-    // if (isInsideButtons(pos)) document.body.style.cursor = "pointer";
-    // else document.body.style.cursor = "auto";
-// }
 
 var flag=1;
 var focusObject=null;
@@ -682,6 +693,7 @@ function drawRect(shape,button=false,bounding=false,amend=false){
         ctx.lineWidth=1;
         ctx.stroke();
         ctx.fillStyle="rgba(255, 255, 255, 0.5)";
+        if (typeof shape.colour!="undefined") ctx.fillStyle=shape.colour;
     }
     else ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     
@@ -703,19 +715,34 @@ function drawCircle(shape){
 // Draws circle with given parameters
 function drawEllipse(shape){
     ctx.beginPath();
+    console.log(shape);
     // Transform coordinates
-    x0=(x0+x/2); 
-    y0=(y0+y/2);
+    var e;
+    if (shape.theta!=0) {
+        shape.shape="Ellipse";
+        e=rotateRect(shape,shape.p); 
+        console.log(e);
+    }else{
+        e={
+            x_t_l:shape.x,              y_t_l:shape.y,
+            x_t_c:shape.x+shape.w/2,    y_t_c:shape.y,
+            x_t_r:shape.x+shape.w,      y_t_r:shape.y,
+            x_b_l:shape.x,              y_b_l:shape.y+shape.h,
+            x_b_c:shape.x+shape.w/2,    y_b_c:shape.y+shape.h,
+            x_b_r:shape.x+shape.w,      y_b_r:shape.y+shape.h
+        }
+    }
+    console.log(e);
     // Draw two bezier curves between top and bottom of bounding box
-    ctx.moveTo(x0,y0-y/2);
+    ctx.moveTo(e.x_t_c,e.y_t_c);
     ctx.bezierCurveTo(
-        x0+x/2,y0-y/2,
-        x0+x/2,y0+y/2,
-        x0,y0+y/2);
+        e.x_t_r,e.y_t_r,
+        e.x_b_r,e.y_b_r,
+        e.x_b_c,e.y_b_c);
     ctx.bezierCurveTo(
-        x0-x/2,y0+y/2,
-        x0-x/2,y0-y/2,
-        x0,y0-y/2);
+        e.x_b_l,e.y_b_l,
+        e.x_t_l,e.y_t_l,
+        e.x_t_c,e.y_t_c);
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     ctx.fill();
     ctx.closePath();
@@ -758,9 +785,13 @@ function rotateRect(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
     o.x_b_r=rotateXCoord(rect.x+rect.w,rect.y+rect.h,rect.theta,p);
     o.y_b_r=rotateYCoord(rect.x+rect.w,rect.y+rect.h,rect.theta,p);
     
-    if (shape="Ellipse"){
-        
+    if (rect.shape=="Ellipse"){
+        o.x_t_c=rotateXCoord(rect.x+rect.w/2,rect.y,rect.theta,p)
+        o.y_t_c=rotateYCoord(rect.x+rect.w/2,rect.y,rect.theta,p)
+        o.x_b_c=rotateXCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
+        o.y_b_c=rotateYCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
+        console.log(o);
     }
-    
+    console.log(o);
     return o;
 }
