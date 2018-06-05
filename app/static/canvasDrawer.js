@@ -3,8 +3,6 @@ var drawCanvas = document.getElementById("drawCanvas");
 var UICanvas = document.getElementById("UICanvas");
 var ctx = drawCanvas.getContext("2d");
 var ui_ctx = UICanvas.getContext("2d");
-ui_ctx.font = "30px Arial";
-ui_ctx.textAlign = "center";
 
 var element=window;
 var parentDiv = document.getElementById("canv_cont");
@@ -73,6 +71,8 @@ function createButton(x, y, w, h, behaviour, img){
         btn.ctx.fillStyle='rgba(255,255,255,0.2)';
         btn.ctx.fill();
         btn.ctx.closePath();
+        btn.ctx.font = "24px Arial";
+        btn.ctx.textAlign = "center";
         
         if (btn.draw) btn.ctx.beginPath()
         if (btn.img=="Rect"){
@@ -103,11 +103,11 @@ function createButton(x, y, w, h, behaviour, img){
                 x,y+h,
                 x+w,y+h);
         } else if (btn.img=="Undo"){
-            btn.ctx.fillText("U",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.2);
+            btn.ctx.fillText("U",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
         } else if (btn.img=="Delete"){
-            btn.ctx.fillText("D",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.2);
+            btn.ctx.fillText("D",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
         } else if (btn.img=="Reset"){
-            btn.ctx.fillText("R",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.2);
+            btn.ctx.fillText("R",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
         }
         
         if (btn.draw){
@@ -143,7 +143,7 @@ function createButton(x, y, w, h, behaviour, img){
                 if (!this.draw){
                     setTimeout(function(){
                         temp_this.unclick();
-                    }, 25);
+                    }, 50);
                 }
             }
         },

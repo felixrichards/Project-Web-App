@@ -26,17 +26,15 @@ class Annotation(db.Model):
         print("In annotation record creation")
         print(self)
         for shape in shapes:
-            print(shape)
             s = Shape(a_id=self.a_id,shape=shape['shape'],x0=shape['x0'],
                  y0=shape['y0'],sigma=shape['sigma'])
-            print(s)
             if shape['shape']=='Rect':
                 s.w=shape['w']
                 s.h=shape['h']
             if shape['shape']=='Circle':
                 s.r=shape['r']
             if shape['shape']=='Ellipse':
-                s.w=shape['w']
+                s.w=shape['w']*3**(-1/4)
                 s.h=shape['h']
             if shape['shape']=='Line':
                 s.x1=shape['x1']
