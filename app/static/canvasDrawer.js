@@ -1,12 +1,27 @@
 // Setup
 var drawCanvas = document.getElementById("drawCanvas");
+var UICanvas = document.getElementById("UICanvas");
 var ctx = drawCanvas.getContext("2d");
+var ui_ctx = UICanvas.getContext("2d");
+ui_ctx.font = "30px Arial";
+ui_ctx.textAlign = "center";
+
 var element=window;
 var parentDiv = document.getElementById("canv_cont");
 var state=defaultState();
+
+// Stops mouse activity on canvas interfering with content outside canvas (e.g. highlighting text)
 document.getElementById('drawCanvas').onmousedown = function(){
   return false;
 };
+document.getElementById('imageCanvas').onmousedown = function(){
+  return false;
+};
+document.getElementById('UICanvas').onmousedown = function(){
+  return false;
+};
+
+
 var drawerRect={
     x:0,
     y:0,
@@ -25,17 +40,19 @@ var button_x_shift=5;
 var button_size=32;
 var button_x_inc=button_x_shift+button_size;
 buttons.push(createButton(button_x_shift,5,button_size,button_size,
-    function(){state.shape="Rect";}))
+    function(){state.shape="Rect";},"Rect"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Circle";}))
+    function(){state.shape="Circle";},"Circle"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Ellipse";}))
+    function(){state.shape="Ellipse";},"Ellipse"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Line";}))
+    function(){state.shape="Line";},"Line"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);}))
+    function(){state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);},"Undo"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);}))
+    function(){deleteShape();},"Delete"))
+buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
 
 // Returns an object (rectangle) with left, top, width and height attributes
 function createRect(x, y, w, h,theta=0){
@@ -45,23 +62,113 @@ function createRect(x, y, w, h,theta=0){
         w:w,
         h:h,
         theta:theta
-    };
+    }; 
 }
 
 // Returns an object (button) with positional attributes and a function (behaviour) to run when pressed
-function createButton(x, y, w, h, behaviour){
+function createButton(x, y, w, h, behaviour, img){
+    drawButton=function(btn){
+        btn.ctx.beginPath();
+        btn.ctx.rect(btn.rect.x,btn.rect.y,btn.rect.w,btn.rect.h);
+        btn.ctx.fillStyle='rgba(255,255,255,0.2)';
+        btn.ctx.fill();
+        btn.ctx.closePath();
+        
+        if (btn.draw) btn.ctx.beginPath()
+        if (btn.img=="Rect"){
+            btn.ctx.rect(btn.rect.x+5,btn.rect.y+8,btn.rect.w-10,btn.rect.h-16);
+        } else if (btn.img=="Circle"){
+            btn.ctx.arc(btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/2,
+                Math.sqrt(Math.pow(btn.rect.w/4,2)+Math.pow(btn.rect.h/4,2)),
+                0,2*Math.PI);
+        } else if (btn.img=="Ellipse"){
+            var x=btn.rect.x-2; var y=btn.rect.y+8;
+            var w=btn.rect.w+4; var h=btn.rect.h-16;
+            btn.ctx.moveTo(x+w/2,y);
+            btn.ctx.bezierCurveTo(
+                x+w,y,
+                x+w,y+h,
+                x+w/2,y+h);
+            btn.ctx.bezierCurveTo(
+                x,y+h,
+                x,y,
+                x+w/2,y);
+            
+        } else if (btn.img=="Line"){
+            var x=btn.rect.x+5; var y=btn.rect.y+5;
+            var w=22; var h=22;
+            btn.ctx.moveTo(x,y)
+            btn.ctx.bezierCurveTo(
+                x+w,y,
+                x,y+h,
+                x+w,y+h);
+        } else if (btn.img=="Undo"){
+            btn.ctx.fillText("U",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.2);
+        } else if (btn.img=="Delete"){
+            btn.ctx.fillText("D",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.2);
+        } else if (btn.img=="Reset"){
+            btn.ctx.fillText("R",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.2);
+        }
+        
+        if (btn.draw){
+            if (btn.img!="Line"){
+                btn.ctx.fillStyle="rgba(255, 0, 0, 0.4)";
+                btn.ctx.fill();
+            } else {
+                btn.ctx.strokeStyle="rgba(255, 0, 0, 0.4)";
+                btn.ctx.lineWidth=4;
+                btn.ctx.stroke();
+            }
+            btn.ctx.closePath();
+        }
+    }
     o={
         rect: createRect(x, y, w, h),
+        img: img,
+        draw:false,
+        ctx: ui_ctx,
         behaviour: behaviour,
         redraw: function redraw(){
-            drawRect(this.rect,true);
+            drawButton(this);
         },
-        cursor: "pointer"
+        cursor: "pointer",
+        clicked: false,
+        click: function(){
+            if (!this.clicked) {
+                if (this.draw) resetButtons();
+                this.clicked=true;
+                this.redraw();
+                this.behaviour();
+                var temp_this=this;
+                if (!this.draw){
+                    setTimeout(function(){
+                        temp_this.unclick();
+                    }, 25);
+                }
+            }
+        },
+        unclick: function(){
+            if (this.clicked) {
+                this.clicked=false;
+                this.clear();
+                this.redraw();
+            }
+        },
+        clear: function(){
+            this.ctx.clearRect(this.rect.x,this.rect.y,this.rect.w,this.rect.h);
+        }
     }
+    if (o.img=="Rect"||o.img=="Circle"||o.img=="Ellipse"||o.img=="Line") o.draw=true;
     o.redraw();
     
     
     return o;
+}
+
+function resetButtons(){
+    for (var i=0;i<buttons.length;i++){
+        buttons[i].unclick();
+    }
 }
 
 // Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
@@ -167,16 +274,6 @@ function createShape(x0,y0,x,y,shape){
                     },
                     redraw: function(){
                         drawAmendRect(this.rect,this.p);
-                        if (dir==9) {
-                            // console.log(r_shift)
-                            // ctx.beginPath();
-                            // ctx.moveTo(loc.x,loc.y);
-                            // ctx.lineTo(loc.x,loc.y+r_shift);
-                            // ctx.strokeStyle="rgba(255, 255, 255, 0.5)";
-                            // ctx.lineWidth=1;
-                            // ctx.stroke();
-                            // ctx.closePath;
-                        }
                     }
                 }
             }
@@ -203,7 +300,6 @@ function createShape(x0,y0,x,y,shape){
                     var w_n=boundingRect.w;
                     var h_n=boundingRect.h;
                     var t=boundingRect.theta;
-                    // var p={x:boundingRect.x+boundingRect.w/2,y:boundingRect.y+boundingRect.h/2}
                     var p=shape.centre;
                     var r_shift=20;
                     amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n},j++,t,p));     //Up
@@ -479,9 +575,9 @@ function clrCanvas(){
 function resetCanvas(){
     clrCanvas();
     init();
-    for (var i=0;i<buttons.length;i++){
-        buttons[i].redraw();
-    }
+    // for (var i=0;i<buttons.length;i++){
+        // buttons[i].redraw();
+    // }
     for (var i=0;i<shapes.length;i++){
         shapes[i].redraw();
     }
@@ -507,7 +603,7 @@ element.addEventListener("mousedown", function(e){
     // Check user is clicking buttons
     for (var i=0;i<buttons.length;i++){
         if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
-            buttons[i].behaviour();
+            buttons[i].click();
             buttonPressed=true;
         }
     }
@@ -715,13 +811,11 @@ function drawCircle(shape){
 // Draws circle with given parameters
 function drawEllipse(shape){
     ctx.beginPath();
-    console.log(shape);
     // Transform coordinates
     var e;
     if (shape.theta!=0) {
         shape.shape="Ellipse";
         e=rotateRect(shape,shape.p); 
-        console.log(e);
     }else{
         e={
             x_t_l:shape.x,              y_t_l:shape.y,
@@ -732,7 +826,6 @@ function drawEllipse(shape){
             x_b_r:shape.x+shape.w,      y_b_r:shape.y+shape.h
         }
     }
-    console.log(e);
     // Draw two bezier curves between top and bottom of bounding box
     ctx.moveTo(e.x_t_c,e.y_t_c);
     ctx.bezierCurveTo(
@@ -790,8 +883,6 @@ function rotateRect(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
         o.y_t_c=rotateYCoord(rect.x+rect.w/2,rect.y,rect.theta,p)
         o.x_b_c=rotateXCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
         o.y_b_c=rotateYCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
-        console.log(o);
     }
-    console.log(o);
     return o;
 }

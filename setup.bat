@@ -5,3 +5,4 @@ pip install flask_migrate
 pip install flask_wtf
 set FLASK_APP=GC.py
 flask run
+pause

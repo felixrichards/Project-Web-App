@@ -60,7 +60,9 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     z_order=getZOrder();
     index=z_order[index];
     s_index=getShapeByID(index);
+    console.log(s_index);
     state.selectShape(s_index);
     shapes[s_index].selectedIdx=0;
     resetCanvas();
+    cursorLock=false;
 });

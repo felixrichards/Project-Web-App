@@ -4,13 +4,14 @@
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotation.css')}}">
     <div id="target" style="width: {{dim.width+200}}; height:{{dim.height}};">
         <div id="canv_cont">
-            <canvas class="imageCanvas" id="imageCanvas" style="background-color:#EEE"></canvas>
+            <canvas class="imageCanvas" id="imageCanvas" style="background-color:#333333"></canvas>
             <script>
                 var imageCanvas = document.getElementById("imageCanvas");
-                var ctxImage = imageCanvas.getContext("2d");
+                var img_ctx = imageCanvas.getContext("2d");
                 var w={{dim.image_width}};
                 var h={{dim.image_width}};
                 var csrf_token="{{csrf_token()}}";
+                var static_url="{{url_for('static', filename='')}}"
                 init()
                 
                 
@@ -27,12 +28,13 @@
                     galaxy.onload=function(){
                         imageCanvas.width=w;
                         imageCanvas.height=h;
-                        ctxImage.drawImage(galaxy, 0, 0,w,h);
+                        img_ctx.drawImage(galaxy, 0, 0,w,h);
                     }
                     galaxy.src="{{url_for('static', filename=file.name)}}.jpg";
                 }
             </script>
             <canvas class="drawCanvas" id="drawCanvas" ></canvas>
+            <canvas class="UICanvas" id="UICanvas" ></canvas>
             <script src="{{ url_for('static', filename='canvasDrawer.js') }}"></script>
         </div>
         <div class="extra" style="width: 200; height: {{dim.height}};">
