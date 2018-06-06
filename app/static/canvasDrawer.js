@@ -446,6 +446,24 @@ function createShape(x0,y0,x,y,shape){
             this.centre.x=this.centre.x0+this.x-this.x0;
             this.centre.y=this.centre.y0+this.y-this.y0;
         },
+        testCentre: function(){
+            // console.log(this.centre);
+            // console.log("x "+(this.x+this.w/2)+" y "+(this.y+this.h/2));
+            console.log(this.h);
+            console.log(this.h0);
+            if (this.centre.x!=this.x+this.w/2||this.centre.y!=this.y+this.h/2){
+                if (this.theta==0){
+                    this.centre.x=this.x+this.w/2;
+                    this.centre.y=this.y+this.h/2;
+                } else {
+                    var cx=Math.round(rotateXCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
+                    var cy=Math.round(rotateYCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
+                    console.log("cx "+cx+" cy "+cy);
+                    this.centre.x=cx;
+                    this.centre.y=cy;
+                }
+            }
+        },
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
                                             ,this.x3,this.y3
@@ -468,14 +486,17 @@ function createShape(x0,y0,x,y,shape){
         amend: amend,
         changePos: function(){
             if (this.shape!="Line") this.normaliseCoords();
+            this.testCentre();
             this.centre.x0=this.centre.x;
             this.centre.y0=this.centre.y;
-            this.x0=this.x;
-            this.y0=this.y;
+            // this.x0=this.x;
+            // this.y0=this.y;
+            this.x0=this.centre.x-this.w/2;
+            this.y0=this.centre.y-this.h/2;
             this.w0=this.w;
             this.h0=this.h;
             this.selectedIdx=0;
-            // 
+            // console.log("Update");
         },
         resetPos: function(){
             this.x=this.x0;
@@ -573,11 +594,9 @@ function clrCanvas(){
 }
 
 function resetCanvas(){
+    // console.log("reset")
     clrCanvas();
     init();
-    // for (var i=0;i<buttons.length;i++){
-        // buttons[i].redraw();
-    // }
     for (var i=0;i<shapes.length;i++){
         shapes[i].redraw();
     }
@@ -594,6 +613,7 @@ var shapePressed=false;
 var cursorLock=false;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
+    console.log(mP_0);
     buttonPressed=false;
     shapePressed=false;
     cursorLock=true;
