@@ -1,6 +1,7 @@
 // Setup
 var drawCanvas = document.getElementById("drawCanvas");
 var UICanvas = document.getElementById("UICanvas");
+
 var ctx = drawCanvas.getContext("2d");
 var ui_ctx = UICanvas.getContext("2d");
 
@@ -26,6 +27,7 @@ var drawerRect={
     w:parentDiv.clientWidth,
     h:parentDiv.clientHeight
 };
+UICanvas.width=drawerRect.w;
 init()
 
 
@@ -37,6 +39,10 @@ var id_count=0;
 var button_x_shift=5;
 var button_size=32;
 var button_x_inc=button_x_shift+button_size;
+var button_x_right_shift=drawerRect.w;
+// button_x_right_shift=300
+
+//Left sitting buttons
 buttons.push(createButton(button_x_shift,5,button_size,button_size,
     function(){state.shape="Rect";},"Rect"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
@@ -45,12 +51,15 @@ buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size
     function(){state.shape="Ellipse";},"Ellipse"))
 buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
     function(){state.shape="Line";},"Line"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);},"Undo"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){deleteShape();},"Delete"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
+    
+//Right sitting buttons
+buttons.push(createButton(button_x_right_shift-=button_x_inc,5,button_size,button_size,
     function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
+buttons.push(createButton(button_x_right_shift-=button_x_inc,5,button_size,button_size,
+    function(){deleteShape();},"Delete"))
+buttons.push(createButton(button_x_right_shift-=button_x_inc,5,button_size,button_size,
+    function(){state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);},"Undo"))
+
 
 // Returns an object (rectangle) with left, top, width and height attributes
 function createRect(x, y, w, h,theta=0){
@@ -199,7 +208,7 @@ function createShape(x0,y0,x,y,shape){
     }
     function isInsideRect(pos,obj=this){
         if (obj.theta!=0) {
-            if (typeof obj.p==="undefined"){
+            if (typeof obj.p==="undefined"){    // Check if object needs to be rotated its pivot, if not, use centre
                 var pos_r={
                     x:rotateXCoord(pos.x,pos.y,-obj.theta,obj.centre),
                     y:rotateYCoord(pos.x,pos.y,-obj.theta,obj.centre)
@@ -221,8 +230,15 @@ function createShape(x0,y0,x,y,shape){
         }
         return false;
     }
-    function isInsideEllipse(pos){
+    function isInsideEllipse(pos,obj=this){
         ellipse=cartesianToElliptical(this);
+        if (obj.theta!=0){
+            var pos_r={
+                x:rotateXCoord(pos.x,pos.y,-obj.theta,obj.centre),
+                y:rotateYCoord(pos.x,pos.y,-obj.theta,obj.centre)
+            }
+            pos=pos_r;
+        }
         if (Math.pow((pos.x-ellipse.x)/ellipse.w,2)+Math.pow((pos.y-ellipse.y)/ellipse.h,2)<=1){
             return true;
         }
@@ -382,6 +398,50 @@ function createShape(x0,y0,x,y,shape){
                 this.x3=pos.x;
                 this.y3=pos.y;
             }
+        } else if (this.shape=="Circle") {
+            var x_shift=(pos.x-pos_0.x)/shape_factor;
+            var y_shift=(pos.y-pos_0.y)/shape_factor;
+            if (dir==1){
+                this.x=this.x0+y_shift/2;
+                this.y=this.y0+y_shift/2;
+                this.w=this.w0-y_shift;
+                this.h=this.h0-y_shift;
+            }else if (dir==2){
+                this.x=this.x0-x_shift/2;
+                this.y=this.y0+y_shift/2;
+                this.w=this.w0+x_shift;
+                this.h=this.h0-y_shift;
+            }else if (dir==3){
+                this.x=this.x0-x_shift/2;
+                this.y=this.y0-x_shift/2;
+                this.w=this.w0+x_shift;
+                this.h=this.h0+x_shift;
+            }else if (dir==4){
+                this.x=this.x0-x_shift/2;
+                this.y=this.y0-y_shift/2;
+                this.w=this.w0+x_shift;
+                this.h=this.h0+y_shift;
+            }else if (dir==5){
+                this.x=this.x0-y_shift/2;
+                this.y=this.y0-y_shift/2;
+                this.w=this.w0+y_shift;
+                this.h=this.h0+y_shift;
+            }else if (dir==6){
+                this.x=this.x0+x_shift/2;
+                this.y=this.y0-y_shift/2;
+                this.w=this.w0-x_shift;
+                this.h=this.h0+y_shift;
+            }else if (dir==7){
+                this.x=this.x0+x_shift/2;
+                this.y=this.y0+x_shift/2;
+                this.w=this.w0-x_shift;
+                this.h=this.h0-x_shift;
+            }else if (dir==8){
+                this.x=this.x0+x_shift/2;
+                this.y=this.y0+y_shift/2;
+                this.w=this.w0-x_shift;
+                this.h=this.h0-y_shift;
+            }
         } else {
             if (this.theta==0){
                 var x_shift=pos.x-pos_0.x;
@@ -447,10 +507,6 @@ function createShape(x0,y0,x,y,shape){
             this.centre.y=this.centre.y0+this.y-this.y0;
         },
         testCentre: function(){
-            // console.log(this.centre);
-            // console.log("x "+(this.x+this.w/2)+" y "+(this.y+this.h/2));
-            console.log(this.h);
-            console.log(this.h0);
             if (this.centre.x!=this.x+this.w/2||this.centre.y!=this.y+this.h/2){
                 if (this.theta==0){
                     this.centre.x=this.x+this.w/2;
@@ -458,7 +514,6 @@ function createShape(x0,y0,x,y,shape){
                 } else {
                     var cx=Math.round(rotateXCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
                     var cy=Math.round(rotateYCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    console.log("cx "+cx+" cy "+cy);
                     this.centre.x=cx;
                     this.centre.y=cy;
                 }
@@ -489,14 +544,13 @@ function createShape(x0,y0,x,y,shape){
             this.testCentre();
             this.centre.x0=this.centre.x;
             this.centre.y0=this.centre.y;
-            // this.x0=this.x;
-            // this.y0=this.y;
             this.x0=this.centre.x-this.w/2;
             this.y0=this.centre.y-this.h/2;
             this.w0=this.w;
             this.h0=this.h;
+            this.x=this.x0;
+            this.y=this.y0;
             this.selectedIdx=0;
-            // console.log("Update");
         },
         resetPos: function(){
             this.x=this.x0;
@@ -584,7 +638,8 @@ function cartesianToElliptical(shape){
 // Makes w/h of canvas same as image
 function init(){
     var background = document.getElementById("imageCanvas");
-    drawCanvas.width=drawerRect.w
+    // UICanvas.width=drawerRect.w;
+    drawCanvas.width=drawerRect.w;
     drawCanvas.height=drawerRect.h;
     drawCanvas.cursor="auto";
 }
@@ -613,7 +668,7 @@ var shapePressed=false;
 var cursorLock=false;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
-    console.log(mP_0);
+    // console.log(mP_0);
     buttonPressed=false;
     shapePressed=false;
     cursorLock=true;
@@ -678,10 +733,10 @@ element.addEventListener("mousemove", function(e){
 element.addEventListener("mouseup", function(e){
     flag=1;
     cursorLock=false;
-    if (state.focusNo>-1){
+    if (state.focusNo>-1){  // If user was interacting with a shape
         shapes[state.focusNo].changePos();
     }
-    if (shapeDrawn){
+    if (shapeDrawn){        
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
         state.selectShape(shapes.length-1);
     }
@@ -781,6 +836,13 @@ function drawShape(x,y,w,h,shape,theta=0,p={x:x+w/2,y:y+h/2}){
 }
 
 function drawRect(shape,button=false,bounding=false,amend=false){
+    
+    // console.log("caller is " + drawRect.caller);
+    if (!button&&!bounding&&!amend&&shape.theta!=0){
+        console.log("Coord at shape drawing is");
+        console.log(shape.x+", "+shape.y);
+    }
+    
     ctx.beginPath();
     if (shape.theta==0){
         ctx.rect(shape.x,shape.y,shape.w,shape.h);
@@ -826,6 +888,7 @@ function drawCircle(shape){
         0,2*Math.PI);
     //ctx.arc(x0,y0,Math.sqrt(Math.pow(x,2)+Math.pow(y,2)),0,2*Math.PI);
     ctx.fill();
+    ctx.closePath();
 }
 
 // Draws circle with given parameters
