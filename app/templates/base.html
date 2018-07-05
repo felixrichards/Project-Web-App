@@ -17,8 +17,24 @@
         {% endif %}
     </head>
     <body>
-        <div>Galaxy stuff: <a href="/index">Home</a> <a href="/annotate">Annotate</a></div>
-        <hr>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#news">News</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn">Acknowledgement</a>
+                <div class="dropdown-content">
+                    <a href="#">Our Team</a>
+                    <a href="#">Funders</a>
+                </div>
+            </li>
+            <li><a href="annotate" class="getInvolved">Get Involved</a></li>
+        </ul>
+        <div class="footer">
+            <a href="#news1">About</a>
+            <a href="#news2">Contact Us</a>
+            <a href="#news3">FAQ</a>
+            <a href="#news4">Privacy Policy</a>
+        </div>
         {% block content %}{% endblock %}
     </body>
 </html>

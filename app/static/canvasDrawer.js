@@ -53,12 +53,14 @@ buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size
     function(){state.shape="Line";},"Line"))
     
 //Right sitting buttons
-buttons.push(createButton(button_x_right_shift-=button_x_inc,5,button_size,button_size,
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
-buttons.push(createButton(button_x_right_shift-=button_x_inc,5,button_size,button_size,
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function(){deleteShape();},"Delete"))
-buttons.push(createButton(button_x_right_shift-=button_x_inc,5,button_size,button_size,
-    function(){state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);},"Undo"))
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); }, "Undo"))
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+    function () { showHideTable(); }, "Table"))
 
 
 // Returns an object (rectangle) with left, top, width and height attributes
@@ -112,11 +114,13 @@ function createButton(x, y, w, h, behaviour, img){
                 x,y+h,
                 x+w,y+h);
         } else if (btn.img=="Undo"){
-            btn.ctx.fillText("U",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
+            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
         } else if (btn.img=="Delete"){
-            btn.ctx.fillText("D",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
+            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
         } else if (btn.img=="Reset"){
-            btn.ctx.fillText("R",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
+            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
+        } else if (btn.img == "Table") {
+            btn.ctx.fillText("", btn.rect.x + btn.rect.w / 2, btn.rect.y + btn.rect.h / 1.31);
         }
         
         if (btn.draw){
@@ -618,6 +622,17 @@ function deleteShape(i=state.selectedNo){
     }
 }
 
+function showHideTable()
+{
+    if (document.getElementById("mySidenav").style.width == "250px")
+    {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+    else {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+}
+
 function cartesianToPolar(shape){
     return {
         r: Math.pow(Math.pow(shape.w,2)+Math.pow(shape.h,2),1/2)/2,
@@ -669,7 +684,7 @@ var cursorLock=false;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     // console.log(mP_0);
-    buttonPressed=false;
+    buttonPressed = false;
     shapePressed=false;
     cursorLock=true;
     updateRows();
@@ -682,23 +697,23 @@ element.addEventListener("mousedown", function(e){
             buttonPressed=true;
         }
     }
-    
+
     // Check user is clicking shapes (reverse loop for z-order)
     var temp;
-    if (state.selectedNo>-1&&(idx=shapes[state.selectedNo].boundingRect.isInside(mP_0))){
+    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0))&&!preventDrawing){
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
     } else {
         state.resetSelected();
         for (var i=shapes.length-1;i>=0;i--){
-            if (shapes[i].isInside(mP_0)&&!buttonPressed&&!shapePressed){
+            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing){
                 state.selectShape(i);
                 shapes[i].selectedIdx=-1;
             }
         }
     }
     
-    if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]){
+    if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]&&!preventDrawing){
         flag = 0;
     }
     focusObject=getFocusObject(getMousePos(drawCanvas,e));

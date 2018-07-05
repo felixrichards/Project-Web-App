@@ -2,7 +2,59 @@
 
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotation.css')}}">
-    <div id="target" style="width: {{dim.width+200}}; height:{{dim.height}};">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotatePage.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div id="mySidenav" class="sidenav">
+        <div class="extra" style="width:  100%; height: 99%;">
+            <div class="tables" id="obj_table_div" style="width: 100%;  height:100%;">
+                <div class="filterBlock">
+                    <div class="square" id="all" tabindex='0'>
+                        <svg>
+                            <rect x="5" y="5.5" width="5" height="5" fill="red" />
+                            <circle cx="22" cy="8" r="3" fill="red" />
+                            <ellipse cx="8" cy="22" rx="4" ry="3" fill="red" />
+                            <line x1="20" y1="20" x2="25" y2="25" style="stroke:rgb(255,0,0);stroke-width:2" />
+                        </svg>
+                    </div>
+                    <div class="square" id="rect" tabindex='1'>
+                        <svg>
+                            <rect x="8" y="8" width="15" height="15" fill="red"/>
+                        </svg>
+                    </div>
+                    <div class="square" id="circle" tabindex='2'>
+                        <svg>
+                            <circle cx="15" cy="15" r="8" fill="red" />
+                        </svg>
+                    </div>
+                    <div class="square" id="ellipse" tabindex='3'>
+                        <svg>
+                            <ellipse cx="15" cy="15" rx="10" ry="5" fill="red" />
+                        </svg>
+                    </div>
+                    <div class="square" id="line" tabindex='4'>
+                        <svg>
+                            <line x1="5" y1="5" x2="22" y2="22" style="stroke:rgb(255,0,0);stroke-width:2" />
+                        </svg>
+                    </div>
+                </div>
+                <table class="obj_table" id="obj_table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Shape</th>
+                            <th>ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <script>
+                    $('tbody').sortable();
+                </script>
+                <script src="{{ url_for('static', filename='tableManager.js') }}"></script>
+            </div>
+        </div>
+    </div>
+    <div id="target">
         <div id="canv_cont">
             <canvas class="imageCanvas" id="imageCanvas" style="background-color:#333333"></canvas>
             <script>
@@ -32,41 +84,31 @@
                     }
                     galaxy.src="{{url_for('static', filename=file.name)}}.jpg";
                 }
+
+
             </script>
             <canvas class="drawCanvas" id="drawCanvas" ></canvas>
             <canvas class="UICanvas" id="UICanvas"></canvas>
             <script src="{{ url_for('static', filename='canvasDrawer.js') }}"></script>
-        </div>
-        <div class="extra" style="width: 200; height: {{dim.height}};">
-            <div class="tables" id="obj_table_div" style="width: 200; height:85%;">
-                <table class="obj_table" id="obj_table" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Shape</th>
-                            <th>ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <script>
-                    $('tbody').sortable();
-                </script>
-                <script src="{{ url_for('static', filename='tableManager.js') }}"></script>
-            </div>
-            <div class="buttons" style="width: 200; height:15%;">
+
+            <i class="fa fa-trash-o" id="bin"></i>
+            <i class="fa fa-undo" id="restart"></i>
+            <i class="fa fa-long-arrow-left" id="undo"></i>
+            <i class="fa fa-table" id="table"></i>
+
+            <div class="submitButton" id="submitButton">
                 <a href=# class="button" id="submit">Submit</a>
                 <script>
-                    $(function() {
-                        $('a#submit').bind('click', function() {
+                    $(function () {
+                        $('a#submit').bind('click', function () {
                             $.ajax({
                                 data: JSON.stringify(shapes),
                                 contentType: "application/json; charset=utf-8",
-                                type:'POST',
-                                success: function(response){
+                                type: 'POST',
+                                success: function (response) {
                                     //console.log(response);
                                 },
-                                error: function(error){
+                                error: function (error) {
                                     console.log(error);
                                 }
                             })
@@ -74,6 +116,12 @@
                     });
                 </script>
             </div>
-        </div>
     </div>
+  </div>
+
+<script>
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+</script>
 {% endblock %}
