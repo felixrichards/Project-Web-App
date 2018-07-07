@@ -92,6 +92,7 @@ function submitAppear(shapes) {
         element.style.opacity = "0"
         document.getElementById('submitButton').style.WebkitTransition = 'opacity 1s';
         document.getElementById('submitButton').style.MozTransition = 'opacity 1s';
+        document.getElementById("mySidenav").style.width = "0";
     }
     else 
     {
@@ -108,10 +109,7 @@ function updateRows(selected_idx=-1){
 
     if (selected_idx > -1) {
 
-        let index = globalShapes.findIndex(el => el.id === selected_idx)
-        console.log(selected_idx);
-        console.log(index);
-
+        let index = globalShapes.findIndex(el => el.id === selected_idx);
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + index + ')').addClass("selected");
     }
@@ -124,12 +122,14 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     index=z_order[index];
     s_index=getShapeByID(index);
     state.selectShape(s_index);
-    shapes[s_index].selectedIdx=0;
-    cursorLock=false;
+    shapes[s_index].selectedIdx = 0;
+    resetCanvas();
+    cursorLock = false;
 });
 
 $(document).on("click", ".square", function (e) {
     updateTable(shapes)
+    document.getElementById("mySidenav").style.width = "250px";
 });
 
 $('.square').on('click', function () {
@@ -142,4 +142,16 @@ $(".sidenav").hover(function () {
    preventDrawing = true
 }, function () {
    preventDrawing = false;
+    });
+
+$("ul").hover(function () {
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+    });
+
+$(".footer").hover(function () {
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
 });

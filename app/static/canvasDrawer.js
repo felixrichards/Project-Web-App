@@ -20,17 +20,26 @@ document.getElementById('UICanvas').onmousedown = function(){
   return false;
 };
 
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById("all").style.backgroundColor = '#818181';
+}, false);
 
 var drawerRect={
     x:0,
     y:0,
-    w:parentDiv.clientWidth,
-    h:parentDiv.clientHeight
+    w:document.getElementById("canv_cont").clientWidth,
+    h:document.getElementById("canv_cont").clientHeight
 };
-UICanvas.width=drawerRect.w;
+UICanvas.width = document.getElementById("canv_cont").clientWidth;
 init()
 
-
+window.onresize = function (event) {
+    state = defaultState(true);
+    shapes = [];
+    updateTable(shapes);
+    resetCanvas();
+    id_count = 0;
+};
 
 // Initialise buttons and shapes arrays
 var buttons=[];
@@ -56,9 +65,9 @@ buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function(){deleteShape();},"Delete"))
+    function () { deleteShape(); reorderID(shapes); minusCount();},"Delete"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); }, "Undo"))
+    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); minusCount();}, "Undo"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () { showHideTable(); }, "Table"))
 
@@ -72,6 +81,21 @@ function createRect(x, y, w, h,theta=0){
         h:h,
         theta:theta
     }; 
+}
+
+function minusCount()
+{
+    if (id_count > 0)
+    {
+        id_count--;
+    }
+}
+
+function reorderID(shapes) {
+    for (var i = 0; i < shapes.length; i++) {
+        shapes[i].id = i
+    }
+    updateTable(shapes);
 }
 
 // Returns an object (button) with positional attributes and a function (behaviour) to run when pressed
@@ -654,8 +678,8 @@ function cartesianToElliptical(shape){
 function init(){
     var background = document.getElementById("imageCanvas");
     // UICanvas.width=drawerRect.w;
-    drawCanvas.width=drawerRect.w;
-    drawCanvas.height=drawerRect.h;
+    drawCanvas.width = document.getElementById("canv_cont").clientWidth;
+    drawCanvas.height = document.getElementById("canv_cont").clientHeight;
     drawCanvas.cursor="auto";
 }
 
@@ -680,12 +704,14 @@ var flag=1;
 var focusObject=null;
 var buttonPressed=false;
 var shapePressed=false;
-var cursorLock=false;
+var cursorLock = false;
+var tablePressed;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     // console.log(mP_0);
-    buttonPressed = false;
-    shapePressed=false;
+    buttonPressed=false;
+    shapePressed = false;
+    tablePressed = false;
     cursorLock=true;
     updateRows();
     
@@ -694,30 +720,41 @@ element.addEventListener("mousedown", function(e){
     for (var i=0;i<buttons.length;i++){
         if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
             buttons[i].click();
-            buttonPressed=true;
-        }
-    }
-
-    // Check user is clicking shapes (reverse loop for z-order)
-    var temp;
-    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0))&&!preventDrawing){
-        shapes[state.selectedNo].boundingRect.selectBox(idx);
-        state.selectShape(state.selectedNo);
-    } else {
-        state.resetSelected();
-        for (var i=shapes.length-1;i>=0;i--){
-            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing){
-                state.selectShape(i);
-                shapes[i].selectedIdx=-1;
+            buttonPressed = true;
+            tablePressed = false;
+            if (i == 7 )
+            {
+                tablePressed = true
             }
         }
     }
     
-    if (isInside(mP_0,drawerRect)&&!buttonPressed&&!shapePressed&&shapes!=[]&&!preventDrawing){
+    // Check user is clicking shapes (reverse loop for z-order)
+    var temp;
+    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing) {
+        shapes[state.selectedNo].boundingRect.selectBox(idx);
+        state.selectShape(state.selectedNo);
+ 
+    } else {
+        console.log(2);
+        state.resetSelected();
+        for (var i = shapes.length - 1; i >= 0; i--) {
+            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing) {
+                state.selectShape(i);
+                shapes[i].selectedIdx = -1;
+            }
+        }
+    }
+
+    if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing) {
         flag = 0;
     }
-    focusObject=getFocusObject(getMousePos(drawCanvas,e));
-    updateCursor(focusObject.cursor);
+    focusObject = getFocusObject(getMousePos(drawCanvas, e));
+    updateCursor(focusObject.cursor); 
+
+    if (!buttonPressed && !preventDrawing && !(isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing)) {
+        document.getElementById("mySidenav").style.width = "0";
+    }
     
     resetCanvas();
 }, false);
@@ -729,18 +766,22 @@ element.addEventListener("mousemove", function(e){
     updateCursor(focusObject.cursor);
     
     t=e.timeStamp;
-    mP=getMousePos(drawCanvas,e);
-    if (state.focusNo>-1){
+    mP = getMousePos(drawCanvas, e);
+    if (state.focusNo > -1) {
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
+            if (shapePressed)
+            {
+         
+            }
         }
     } else if (flag===0){
         // Check user is dragging (150 was chosen from experiments)
         if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
             drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
-            shapeDrawn=true;
+            shapeDrawn = true;       
         }
     }
     updateCursor(mP);
@@ -753,7 +794,13 @@ element.addEventListener("mouseup", function(e){
     }
     if (shapeDrawn){        
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
-        state.selectShape(shapes.length-1);
+        state.selectShape(shapes.length - 1);
+        document.getElementById("all").style.backgroundColor = '#818181';
+        document.getElementById("rect").style.backgroundColor = '#404040';
+        document.getElementById("circle").style.backgroundColor = '#404040';
+        document.getElementById("ellipse").style.backgroundColor = '#404040';
+        document.getElementById("line").style.backgroundColor = '#404040';
+        updateTable(shapes);
     }
     // Unfocus anything
     state.focusNo=-1
@@ -825,17 +872,28 @@ function defaultState(keep_shape=false){
             updateRows(i);
         },
         resetSelected: function(){
-            if (this.selectedNo>-1) {
+            if (this.selectedNo > -1 && !tablePressed) {
                 try{
                     shapes[this.selectedNo].selected=false;
-                } catch(err) {}
+                } catch (err) { }
+
+                this.focusNo = -1;
+                this.selectedNo = -1;
             }
-            this.focusNo=-1;
-            this.selectedNo=-1;
+            if (tablePressed)
+            {
+                try {
+                    shapes[this.selectedNo].selected = true; 
+                    shapePressed = true;
+                    updateTable(shapes);
+                    updateRows(this.selectedNo);
+                } catch (err) { }
+            }
         }
     }
     if (keep_shape) outObj.shape=state.shape;
-    else outObj.shape="None";
+    else outObj.shape = "None";
+    id_count = 0;
     return outObj;
 }
 

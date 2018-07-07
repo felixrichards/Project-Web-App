@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotation.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='annotatePage.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="tutorial"><a>Tutorial</a></div>
     <div id="mySidenav" class="sidenav">
         <div class="extra" style="width:  100%; height: 99%;">
             <div class="tables" id="obj_table_div" style="width: 100%;  height:100%;">
@@ -118,10 +119,4 @@
             </div>
     </div>
   </div>
-
-<script>
-    function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-    }
-</script>
 {% endblock %}
