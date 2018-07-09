@@ -20,6 +20,7 @@ document.getElementById('UICanvas').onmousedown = function(){
   return false;
 };
 
+// Highlight all shapes filter when page is loaded.
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("all").style.backgroundColor = '#818181';
 }, false);
@@ -32,14 +33,6 @@ var drawerRect={
 };
 UICanvas.width = document.getElementById("canv_cont").clientWidth;
 init()
-
-window.onresize = function (event) {
-    state = defaultState(true);
-    shapes = [];
-    updateTable(shapes);
-    resetCanvas();
-    id_count = 0;
-};
 
 // Initialise buttons and shapes arrays
 var buttons=[];
@@ -63,11 +56,11 @@ buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size
     
 //Right sitting buttons
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+    function () { deleteShape();},"Delete"))
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);}, "Undo"))
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { deleteShape(); reorderID(shapes); minusCount();},"Delete"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); minusCount();}, "Undo"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () { showHideTable(); }, "Table"))
 
@@ -81,21 +74,6 @@ function createRect(x, y, w, h,theta=0){
         h:h,
         theta:theta
     }; 
-}
-
-function minusCount()
-{
-    if (id_count > 0)
-    {
-        id_count--;
-    }
-}
-
-function reorderID(shapes) {
-    for (var i = 0; i < shapes.length; i++) {
-        shapes[i].id = i
-    }
-    updateTable(shapes);
 }
 
 // Returns an object (button) with positional attributes and a function (behaviour) to run when pressed
@@ -629,31 +607,21 @@ function createShape(x0,y0,x,y,shape){
 }
 
 function getShapeByID(id){
-    for (var j=0;j<shapes.length;j++){
-        if (id==shapes[j].id) {
+    for (var j = 0; j < shapes.length;j++){
+        if (id == shapes[j].id) {
             return j;
         }
     }
 }
 
 // Deletes a given shape, default is selected shape - Work an undo here??
-function deleteShape(i=state.selectedNo){
-    if (i>-1) {
-        shapes.splice(i,1);
+function deleteShape(i = state.selectedNo) {
+    let indexs = shapes.findIndex(el => el.id === globalShapes[i].id);
+    if (indexs>-1) {
+        shapes.splice(indexs,1);
         state.resetSelected();
         resetCanvas();
         updateTable(shapes);
-    }
-}
-
-function showHideTable()
-{
-    if (document.getElementById("mySidenav").style.width == "250px")
-    {
-        document.getElementById("mySidenav").style.width = "0";
-    }
-    else {
-        document.getElementById("mySidenav").style.width = "250px";
     }
 }
 
@@ -706,6 +674,7 @@ var buttonPressed=false;
 var shapePressed=false;
 var cursorLock = false;
 var tablePressed;
+var tableButton = 7;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     // console.log(mP_0);
@@ -722,7 +691,8 @@ element.addEventListener("mousedown", function(e){
             buttons[i].click();
             buttonPressed = true;
             tablePressed = false;
-            if (i == 7 )
+            // For keeping last highlighted shape when table button is clicked
+            if (i == tableButton )
             {
                 tablePressed = true
             }
@@ -734,9 +704,8 @@ element.addEventListener("mousedown", function(e){
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
- 
+
     } else {
-        console.log(2);
         state.resetSelected();
         for (var i = shapes.length - 1; i >= 0; i--) {
             if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing) {
@@ -749,13 +718,10 @@ element.addEventListener("mousedown", function(e){
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing) {
         flag = 0;
     }
+
     focusObject = getFocusObject(getMousePos(drawCanvas, e));
     updateCursor(focusObject.cursor); 
-
-    if (!buttonPressed && !preventDrawing && !(isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing)) {
-        document.getElementById("mySidenav").style.width = "0";
-    }
-    
+   
     resetCanvas();
 }, false);
 element.addEventListener("mousemove", function(e){
@@ -771,10 +737,6 @@ element.addEventListener("mousemove", function(e){
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
-            if (shapePressed)
-            {
-         
-            }
         }
     } else if (flag===0){
         // Check user is dragging (150 was chosen from experiments)
@@ -795,12 +757,7 @@ element.addEventListener("mouseup", function(e){
     if (shapeDrawn){        
         shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
         state.selectShape(shapes.length - 1);
-        document.getElementById("all").style.backgroundColor = '#818181';
-        document.getElementById("rect").style.backgroundColor = '#404040';
-        document.getElementById("circle").style.backgroundColor = '#404040';
-        document.getElementById("ellipse").style.backgroundColor = '#404040';
-        document.getElementById("line").style.backgroundColor = '#404040';
-        updateTable(shapes);
+        allShapes();
     }
     // Unfocus anything
     state.focusNo=-1
@@ -811,6 +768,16 @@ element.addEventListener("keydown", function(e){
         deleteShape();
     }
 }, false);
+
+// Remove filter when drawing a shape
+function allShapes() {
+    document.getElementById("all").style.backgroundColor = '#818181';
+    document.getElementById("rect").style.backgroundColor = '#404040';
+    document.getElementById("circle").style.backgroundColor = '#404040';
+    document.getElementById("ellipse").style.backgroundColor = '#404040';
+    document.getElementById("line").style.backgroundColor = '#404040';
+    updateTable(shapes);
+}
 
 // Returns mouse position relative to (passed) canvas
 function getMousePos(drawCanvas, evt) {
@@ -880,6 +847,8 @@ function defaultState(keep_shape=false){
                 this.focusNo = -1;
                 this.selectedNo = -1;
             }
+
+            // If table button is pressed last highlighted shape is preserved
             if (tablePressed)
             {
                 try {
@@ -893,7 +862,6 @@ function defaultState(keep_shape=false){
     }
     if (keep_shape) outObj.shape=state.shape;
     else outObj.shape = "None";
-    id_count = 0;
     return outObj;
 }
 

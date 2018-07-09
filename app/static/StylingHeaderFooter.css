@@ -1,0 +1,86 @@
+body, html {
+    font-family: Arial;
+    height: 100%;
+    margin: 0;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    text-align: center;
+}
+
+li {
+    display: inline;
+    list-style: none;
+}
+
+li a, .dropbtn {
+    display: inline-block;
+    color: white;
+    font-weight:bold;
+    text-align: center;
+    padding: 20px 40px;
+    text-decoration: none;
+}
+
+li a:hover, .dropdown:hover .dropbtn {
+    text-decoration:underline;
+}
+
+li.dropdown {
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 9;
+}
+
+.dropdown-content a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    background-color: #333;
+    width:100%;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.getInvolved{
+    color:red;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #404040;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    padding: 20px 20px 20px 20px;
+    z-index:9;
+}
+
+.footer a {
+    margin: 20px 20px 20px 20px;
+    text-decoration: none;
+    color:inherit;
+    font-size:10px;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}

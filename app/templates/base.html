@@ -1,4 +1,5 @@
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingHeaderFooter.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingHamburgerMenu.css')}}">
 <link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
@@ -17,23 +18,40 @@
         {% endif %}
     </head>
     <body>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="#news">News</a></li>
-            <li class="dropdown">
-                <a href="javascript:void(0)" class="dropbtn">Acknowledgement</a>
-                <div class="dropdown-content">
-                    <a href="#">Our Team</a>
-                    <a href="#">Funders</a>
+        <script src="{{ url_for('static', filename='JavascriptHamburgerMenu.js') }}"></script>
+        <ul class="navMain">
+            <li>
+                <div class="container" id="x" onclick="myFunction(this)">
+                    <div class="bar1"></div>
+                    <div class="bar2"></div>
+                    <div class="bar3"></div>
                 </div>
             </li>
-            <li><a href="annotate" class="getInvolved">Get Involved</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="#news">News</a></li>
+            <li class="dropdown" id="dropdown">
+                <a  class="dropbtn">Acknowledgement</a>
+                <div class="dropdown-content">
+                    <a href="/MeetTheTeam">Our Team</a>
+                    <a href="/Funding">Funders</a>
+                </div>
+            </li>
+            <li><a href="Annotate" class="getInvolved">Get Involved</a></li>
         </ul>
         <div class="footer">
             <a href="#news1">About</a>
             <a href="#news2">Contact Us</a>
             <a href="#news3">FAQ</a>
             <a href="#news4">Privacy Policy</a>
+        </div>
+        <div id="myNav" class="overlay">
+            <div class="overlay-content">
+                <a href="/">Home</a>
+                <a href="#news">News</a>
+                <a href="/MeetTheTeam">Our Team</a>
+                <a href="/Funding">Funders</a>
+                <a href="Annotate" class="getInvolved">Get Involved</a>
+            </div>
         </div>
         {% block content %}{% endblock %}
     </body>

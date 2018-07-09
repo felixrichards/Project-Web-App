@@ -1,0 +1,79 @@
+﻿{% extends "Base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingScrollBar.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingFundingTeam.css')}}">
+<body>
+    <div class="parallaxScroll">
+        <div class="parallax funding">
+
+            <div class="teamMemberContainer">
+                <div class="imageContainer left">
+                    <img class="Funding1Photo" src='../static/SwanseaLogo.jpg'>
+                </div>
+                <div class="textContainer">
+                    <h3>Swansea University</h3>
+                    <p>
+                        <a href="http://www.swansea.ac.uk/" target="_blank">Swansea University</a> is set on 
+                        two beachfront campuses either side of Swansea's bustling city centre, offering 
+                        students the perfect combination of study and seaside living. The university provides 
+                        high-quality teaching, learning and positive outcomes for its student
+                    </p>
+                </div>
+            </div>
+
+            <div class="teamMemberContainer">
+                <div class="imageContainer right">
+                    <img class="Funding2Photo" src='../static/ComputationalFoundry.jpg'>
+                </div>
+                <div class="textContainer">
+                    <h3>Computational Foundry</h3>
+                    <p>
+                        The <a href="http://www.swansea.ac.uk/" target="_blank">Computational Foundry</a> based at 
+                        Swansea University’s Bay Campus will transform Swansea, West Wales and the Valleys and the 
+                        nation as a global destination for computational scientists. The Foundry will establish an 
+                        internationally renowned, digital ecosystem for world-class computational science research 
+                        that brings together interdisciplinary research and addresses grand challenges for the economy 
+                        and society under the three themes of Sustaining Life; Enhancing Life; and Securing Life. It 
+                        will continue to build capacity in Swansea University’s globally recognised research strengths 
+                        computational science.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="teamMemberContainer">
+                <div class="imageContainer left">
+                    <img class="Funding3Photo" src='../static/StrasbourgObservatoy.jpg'>
+                </div>
+                <div class="textContainer">
+                    <h3>Strasbourg Observatory</h3>
+                    <p>
+                        The <a href="https://astro.unistra.fr/en/observatoire/" target="_blank">Strabourg Astronomical Observatory</a> 
+                        (ObAS) is an 'Observatory for Universe Sciences' (OSU), an internal school (art. L713-9 of the Education Code) 
+                        of the University of Strasbourg (Unistra), and a Joint Research Unit (UMR 7550) between the University and the CNRS. 
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="teamMemberContainer">
+                <div class="imageContainer right">
+                    <img class="Funding4Photo" src='../static/CDS.png'>
+                </div>
+                <div class="textContainer">
+                    <h3>CDS</h3>
+                    <p>
+                        <a href="http://cdsweb.u-strasbg.fr/about" target="_blank">Strasbourg astronomical Data Center</a> (CDS) is dedicated to 
+                        the collection and worldwide distribution of astronomical data and related information. The CDS hosts the SIMBAD astronomical 
+                        database, the world reference database for the identification of astronomical objects; VizieR, the catalogue service for the 
+                        CDS reference collection of astronomical catalogues and tables published in academic journals; and the Aladin interactive 
+                        software sky atlas for access, visualization and analysis of astronomical images, surveys, catalogues, databases and related data.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+{% endblock %}

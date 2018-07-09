@@ -1,0 +1,18 @@
+.tutorial{
+    position:absolute;
+    right:25px;
+    top:20px;
+    z-index:9;
+}
+
+.tutorial a{
+    color:limegreen;
+    font-weight:bold;
+    font-size:16px;
+}
+
+@media only screen and (max-width: 1000px) {
+    .tutorial {
+        display: none;
+    }
+}

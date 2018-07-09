@@ -12,16 +12,26 @@ def create_annotation_route(url, endpoint, view=AnnotateView):
                      view_func=annotate_view, methods=['GET',])
     app.add_url_rule(url, view_func=annotate_view, methods=['POST',])
 
-create_annotation_route('/annotate','annotate')
-create_annotation_route('/annotate/','annotate/')
-create_annotation_route('/annotate/id/<g_id>','annotate_by_id')
-create_annotation_route('/annotate/name/<g_name>','annotate_by_name')
-create_annotation_route('/annotate/name/<g_survey>','annotate_by_survey')
+create_annotation_route('/Annotate','annotate')
+create_annotation_route('/Annotate/','annotate/')
+create_annotation_route('/Annotate/id/<g_id>','annotate_by_id')
+create_annotation_route('/Annotate/name/<g_name>','annotate_by_name')
+create_annotation_route('/Annotate/name/<g_survey>','annotate_by_survey')
 
 @app.route('/')
-@app.route('/index')
+@app.route('/Home')
 def index():
     user={'username':'Felix'}
-    return render_template('index.html', title='Home',user=user)
-    
-    
+    return render_template('Home.html', title='Home',user=user)
+
+@app.route('/')
+@app.route('/MeetTheTeam')
+def MeetTheTeam():
+    user={'username':'Felix'}
+    return render_template('MeetTheTeam.html', title='Team',user=user)
+
+@app.route('/')
+@app.route('/Funding')
+def Funding():
+    user={'username':'Felix'}
+    return render_template('Funding.html', title='Team',user=user)

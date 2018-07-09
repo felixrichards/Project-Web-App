@@ -1,0 +1,96 @@
+#target {
+    font-size: 16px;
+    margin: 0 auto;
+}
+
+#canv_cont {
+    margin: 0px auto;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 116px);
+    background-color: black;
+}
+
+#imageCanvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.extra {
+    width: 100%;
+    height: 100%;
+}
+
+.drawCanvas {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0
+}
+
+.UICanvas {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0
+}
+
+i {
+    color: white;
+}
+
+#bin {
+    position: absolute;
+    top: 10px;
+    left: 159px;
+    z-index: 8;
+    font-size: 25px;
+}
+
+#undo {
+    position: absolute;
+    top: 10px;
+    left: 193px;
+    z-index: 8;
+    font-size: 25px;
+}
+
+#restart {
+    position: absolute;
+    top: 10px;
+    left: 232px;
+    z-index: 8;
+    font-size: 25px;
+}
+
+#table {
+    position: absolute;
+    top: 10px;
+    left: 268px;
+    z-index: 6;
+    font-size: 25px;
+}
+
+.submitButton {
+    position: absolute;
+    bottom: 30px;
+    left: 35px;
+    z-index:8;
+    opacity:0;
+}
+
+.submitButton .button {
+    background-color: crimson;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 20px;
+}
+
+.submitButton .button:hover{
+    background-color:forestgreen;
+    cursor: default;
+}
