@@ -20,11 +20,6 @@ document.getElementById('UICanvas').onmousedown = function(){
   return false;
 };
 
-// Highlight all shapes filter when page is loaded.
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById("all").style.backgroundColor = '#818181';
-}, false);
-
 var drawerRect={
     x:0,
     y:0,
@@ -683,18 +678,19 @@ element.addEventListener("mousedown", function(e){
     tablePressed = false;
     cursorLock=true;
     updateRows();
-    
-    t_0=e.timeStamp;
-    // Check user is clicking buttons
-    for (var i=0;i<buttons.length;i++){
-        if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
-            buttons[i].click();
-            buttonPressed = true;
-            tablePressed = false;
-            // For keeping last highlighted shape when table button is clicked
-            if (i == tableButton )
-            {
-                tablePressed = true
+
+    if (!preventDrawing) {
+        t_0 = e.timeStamp;
+        // Check user is clicking buttons
+        for (var i = 0; i < buttons.length; i++) {
+            if (isInside(mP_0, buttons[i].rect) && !buttonPressed) {
+                buttons[i].click();
+                buttonPressed = true;
+                tablePressed = false;
+                // For keeping last highlighted shape when table button is clicked
+                if (i == tableButton) {
+                    tablePressed = true
+                }
             }
         }
     }

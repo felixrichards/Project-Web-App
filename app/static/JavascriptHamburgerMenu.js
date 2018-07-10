@@ -4,21 +4,18 @@ function myFunction(x) {
     if (document.getElementById("myNav").style.width === "100%")
     {
         document.getElementById("myNav").style.width = "0%"
-        document.getElementById("drawCanvas").style.display = "block";
-        document.getElementById("UICanvas").style.display = "block";
-        document.getElementById("bin").style.display = "block";
-        document.getElementById("undo").style.display = "block";
-        document.getElementById("restart").style.display = "block";
-        document.getElementById("table").style.display = "block";
+        preventDrawing = false;
     }
     else {
         document.getElementById("myNav").style.width = "100%";
-        document.getElementById("drawCanvas").style.display = "none";
-        document.getElementById("UICanvas").style.display = "none";
-        document.getElementById("bin").style.display = "none";
-        document.getElementById("undo").style.display = "none";
-        document.getElementById("restart").style.display = "none";
-        document.getElementById("table").style.display = "none";
+        document.getElementById("mySidenav").style.width = "0";
         document.getElementById("x").style.position = "relative";
+        preventDrawing = true;
     }
 }
+
+window.onresize = window.onload = function () {
+    if ($(window).width() > 1000) {
+        document.getElementById("myNav").style.width = "0%"
+    }
+};

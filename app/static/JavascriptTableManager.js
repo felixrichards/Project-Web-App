@@ -150,3 +150,8 @@ function showHideTable() {
         document.getElementById("mySidenav").style.width = "250px";
     }
 }
+
+// Highlight all shapes filter when page is loaded.
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById("all").style.backgroundColor = '#818181';
+}, false);
