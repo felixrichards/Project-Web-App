@@ -2,19 +2,19 @@
 
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingHiddenTable.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingCheatSheet.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingScrollBar.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingGalaxySearch.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingCanvas.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingTutorial.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <div class="tutorial" id="tutorial"><a>Tutorial</a></div>
     <div class="navSearch" id="navSearch"><i class="fa fa-search"></i></div>
     <div class="closeSearch" id="closeSearch"><i class="fa fa-close"></i></div>
     <div class="searchField" id="searchField">
         <input type="text" placeholder="Ids, Galaxies, Surveys" name="search"; autocomplete="off" onkeydown="search(this)">
     </div>
     <div id="mySidenav" class="sidenav">
-        <div class="extra" style="width:  100%; height: 99%;">
+        <div class="extra" style="width:  100%; height: 100%;">
             <div class="tables" id="obj_table_div" style="width: 100%;  height:100%;">
                 <div class="filterBlock">
                     <div class="square" id="all" tabindex='0'>
@@ -60,9 +60,162 @@
                     $('tbody').sortable();
                 </script>
                 <script src="{{ url_for('static', filename='JavascriptTableManager.js') }}"></script>
+                <script src="{{ url_for('static', filename='JavascriptCheatSheet.js') }}"></script>
                 <script src="{{ url_for('static', filename='JavascriptGalaxySearch.js') }}"></script>
                 <script src="{{ url_for('static', filename='JavascriptSubmission.js') }}"></script>
                 <script src="{{ url_for('static', filename='JavascriptWindowResize.js') }}"></script>
+            </div>
+        </div>
+    </div>
+    <div id="myCheatSheet" class="cheatSheet">
+        <div class="cheatSheetTable">
+            <h3>Galaxy Type</h3>
+            <div>
+                <h4>Spiral</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetSpiral.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Elliptical</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetElliptical.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Merger</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetMerger.jpg') }}">
+            </div>
+
+            <div class="spacing">
+
+            </div>
+
+            <h3>Galaxy Shape</h3>
+            <div>
+                <h4>Completely Round</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetCompletelyRound.jpg') }}">
+            </div>
+
+            <div>
+                <h4>In Between</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetInBetween.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Cigar Shaped</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetCigarShaped.jpg') }}">
+            </div>
+
+            <div class="spacing">
+
+            </div>
+
+            <h3>Bulge Shape</h3>
+            <div>
+                <h4>Rounded</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetRounded.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Boxy</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetBoxy.jpg') }}">
+            </div>
+
+            <div>
+                <h4>No Bulge</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetNoBulge.jpg') }}">
+            </div>
+
+            <div class="spacing">
+
+            </div>
+
+             <h3>Spiral Pattern</h3>
+            <div>
+                <h4>Yes</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetSpiralPattern1.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Yes</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetSpiralPattern2.jpg') }}">
+            </div>
+
+            <div>
+                <h4>No</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetNoSpiral1.jpg') }}">
+            </div>
+
+            <div>
+                <h4>No</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetNoSpiral2.jpg') }}">
+            </div>
+
+            <div class="spacing">
+
+            </div>
+
+            <h3>Number of Spirals</h3>
+            <div>
+                <h4>1</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetOneSpiral.jpg') }}">
+            </div>
+
+            <div>
+                <h4>2</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetTwoSpiral.jpg') }}">
+            </div>
+
+            <div>
+                <h4>3</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetThreeSpiral.jpg') }}">
+            </div>
+
+            <div>
+                <h4>4+</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetFourPlus.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Can't Tell</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetCantTell.jpg') }}">
+            </div>
+
+            <div class="spacing">
+
+            </div>
+
+            <h3>Rare Features</h3>
+            <div>
+                <h4>Ring</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetRing.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Lens/Arc</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetLensOrArc.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Disturbed</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetDisturbed.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Irregular</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetIrregular.jpg') }}">
+            </div>
+
+            <div>
+                <h4>Merger</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetMerger2.jpg') }}">
+            </div>
+            <div>
+                <h4>Dust Lane</h4>
+                <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetDustLane.jpg') }}">
+            </div>
+
+            <div class="spacing">
+
             </div>
         </div>
     </div>
@@ -106,6 +259,7 @@
             <i class="fa fa-undo" id="restart"></i>
             <i class="fa fa-long-arrow-left" id="undo"></i>
             <i class="fa fa-table" id="table"></i>
+            <i class="fa fa-info" id="info"></i>
 
             <div class="submitButton" id="submitButton">
                 <a href=# class="button" id="submit">Submit</a>

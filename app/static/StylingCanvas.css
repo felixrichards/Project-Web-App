@@ -73,6 +73,28 @@ i {
     font-size: 25px;
 }
 
+#info {
+    position: absolute;
+    top: 10px;
+    left: 312px;
+    z-index: 6;
+    font-size: 25px;
+}
+
+.button {
+    align-items: center;
+    background-color: #FFFFFF;
+    color: black;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    float: left;
+    font-size: 16px;
+    height: 100%;
+    width: 100%;
+}
+
 .submitButton {
     position: absolute;
     bottom: 30px;

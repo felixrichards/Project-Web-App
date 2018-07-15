@@ -58,6 +58,8 @@ buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button
     function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () { showHideTable(); }, "Table"))
+buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+    function () { showHideCheatSheet(); }, "Info"))
 
 
 // Returns an object (rectangle) with left, top, width and height attributes
@@ -611,9 +613,8 @@ function getShapeByID(id){
 
 // Deletes a given shape, default is selected shape - Work an undo here??
 function deleteShape(i = state.selectedNo) {
-    let indexs = shapes.findIndex(el => el.id === globalShapes[i].id);
-    if (indexs>-1) {
-        shapes.splice(indexs,1);
+    if (i>-1) {
+        shapes.splice(i,1);
         state.resetSelected();
         resetCanvas();
         updateTable(shapes);
@@ -700,13 +701,14 @@ element.addEventListener("mousedown", function(e){
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
-
     } else {
         state.resetSelected();
         for (var i = shapes.length - 1; i >= 0; i--) {
             if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing) {
                 state.selectShape(i);
                 shapes[i].selectedIdx = -1;
+                allShapes();
+                updateRows(i);
             }
         }
     }
@@ -751,9 +753,9 @@ element.addEventListener("mouseup", function(e){
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){        
-        shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
-        state.selectShape(shapes.length - 1);
+        shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
         allShapes();
+        state.selectShape(shapes.length - 1);
     }
     // Unfocus anything
     state.focusNo=-1
@@ -764,16 +766,6 @@ element.addEventListener("keydown", function(e){
         deleteShape();
     }
 }, false);
-
-// Remove filter when drawing a shape
-function allShapes() {
-    document.getElementById("all").style.backgroundColor = '#818181';
-    document.getElementById("rect").style.backgroundColor = '#404040';
-    document.getElementById("circle").style.backgroundColor = '#404040';
-    document.getElementById("ellipse").style.backgroundColor = '#404040';
-    document.getElementById("line").style.backgroundColor = '#404040';
-    updateTable(shapes);
-}
 
 // Returns mouse position relative to (passed) canvas
 function getMousePos(drawCanvas, evt) {
@@ -832,7 +824,7 @@ function defaultState(keep_shape=false){
             shapePressed=true;
             shapes[i].selected=true;
             updateTable(shapes);
-            updateRows(i);
+            updateRows(globalShapes.findIndex(el => el.id === shapes[i].id));
         },
         resetSelected: function(){
             if (this.selectedNo > -1 && !tablePressed) {
@@ -851,7 +843,7 @@ function defaultState(keep_shape=false){
                     shapes[this.selectedNo].selected = true; 
                     shapePressed = true;
                     updateTable(shapes);
-                    updateRows(this.selectedNo);
+                    updateRows(globalShapes.findIndex(el => el.id === shapes[this.selectedNo].id));
                 } catch (err) { }
             }
         }
@@ -859,6 +851,12 @@ function defaultState(keep_shape=false){
     if (keep_shape) outObj.shape=state.shape;
     else outObj.shape = "None";
     return outObj;
+}
+
+function getHighlightedShape(index) {
+    console.log(index)
+    let indexs = shapes.findIndex(el => el.id === index)
+    return indexs
 }
 
 // Chooses the shape to draw

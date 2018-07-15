@@ -48,21 +48,6 @@ tbody{
     color:white;
 }
 
-.button{
-    align-items: center;
-    background-color: #FFFFFF;
-    color: black;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    text-decoration: none;
-    float: left;
-    font-size: 16px;
-    height: 100%;
-    width: 100%;
-
-}
-
 .selected {
     background-color: green;
 }
@@ -82,25 +67,4 @@ th{
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 0px
-}
-
-.sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-}
-
-.sidenav a:hover {
-    color: #f1f1f1;
-}
-
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
 }

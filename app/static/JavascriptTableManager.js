@@ -105,7 +105,6 @@ function updateRows(selected_idx=-1){
     }
 
     if (selected_idx > -1) {
-
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
     }
@@ -115,9 +114,8 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     var index = $(this).index();
     z_order=getZOrder();
     index = z_order[index];
-    let indexs = globalShapes.findIndex(el => el.id === index);
-    state.selectShape(indexs);
-    shapes[indexs].selectedIdx = 0;
+    state.selectShape(getHighlightedShape(index));
+    shapes[getHighlightedShape(index)].selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
 });
@@ -148,6 +146,7 @@ function showHideTable() {
     }
     else {
         document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("myCheatSheet").style.width = "0";
     }
 }
 
@@ -155,3 +154,13 @@ function showHideTable() {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("all").style.backgroundColor = '#818181';
 }, false);
+
+// Remove filter when drawing a shape
+function allShapes() {
+    document.getElementById("all").style.backgroundColor = '#818181';
+    document.getElementById("rect").style.backgroundColor = '#404040';
+    document.getElementById("circle").style.backgroundColor = '#404040';
+    document.getElementById("ellipse").style.backgroundColor = '#404040';
+    document.getElementById("line").style.backgroundColor = '#404040';
+    updateTable(shapes);
+}

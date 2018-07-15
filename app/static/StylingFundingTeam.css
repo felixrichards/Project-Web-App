@@ -64,7 +64,7 @@ div .groupPhoto {
     border-radius: 20px;
     border: groove;
     width: 400px;
-    height: 300px;
+    height: 350px;
 }
 
 .Funding1Photo {
@@ -78,7 +78,7 @@ div .groupPhoto {
     border-radius: 20px;
     border: groove;
     width: 350px;
-    height: 300px;
+    height: 350px;
 }
 
 .Funding3Photo {
@@ -95,7 +95,6 @@ div .groupPhoto {
     height: 250px;
     background-color: white;
 }
-
 
 .imageContainer.left {
     float: left;
@@ -135,7 +134,6 @@ p {
     padding-top: 100px;
     padding-bottom:80px;
 }
-
 
 .parallaxScroll {
     overflow-y: scroll;

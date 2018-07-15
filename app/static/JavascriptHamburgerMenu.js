@@ -8,7 +8,6 @@ function myFunction(x) {
     }
     else {
         document.getElementById("myNav").style.width = "100%";
-        document.getElementById("mySidenav").style.width = "0";
         document.getElementById("x").style.position = "relative";
         preventDrawing = true;
     }

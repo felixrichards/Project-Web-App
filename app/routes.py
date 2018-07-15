@@ -35,3 +35,9 @@ def MeetTheTeam():
 def Funding():
     user={'username':'Felix'}
     return render_template('Funding.html', title='Team',user=user)
+
+@app.route('/')
+@app.route('/Tutorial')
+def Tutorial():
+    user={'username':'Felix'}
+    return render_template('Tutorial.html', title='Team',user=user)

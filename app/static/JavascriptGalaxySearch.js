@@ -17,11 +17,7 @@ $(document).on("click", ".navSearch", function (e) {
         x[i].style.MozTransition = 'opacity 0.5s';
         x[i].style.pointerEvents = "none";
     }
-    y = document.getElementById("tutorial");
-    y.style.opacity = "0";
-    y.style.WebkitTransition = 'opacity 0.5s';
-    y.style.MozTransition = 'opacity 0.5s';
-    y.style.pointerEvents = "none";
+
     z = document.getElementById("closeSearch");
     z.style.opacity = "1";
     z.style.WebkitTransition = 'opacity 5s';
@@ -44,11 +40,6 @@ $(document).on("click", ".closeSearch", function (e) {
         x[i].style.MozTransition = 'opacity 1s';
         x[i].style.pointerEvents = "auto";
     }
-    y = document.getElementById("tutorial");
-    y.style.opacity = "1";
-    y.style.WebkitTransition = 'opacity 5s';
-    y.style.MozTransition = 'opacity 5s';
-    y.style.pointerEvents = "auto";
     z = document.getElementById("closeSearch");
     z.style.opacity = "0";
     z.style.WebkitTransition = 'opacity 0.5s';
