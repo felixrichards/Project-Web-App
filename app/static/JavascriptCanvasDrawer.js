@@ -53,7 +53,7 @@ buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () { deleteShape();},"Delete"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes);}, "Undo"))
+    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); allShapes();}, "Undo"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,

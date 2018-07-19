@@ -1,0 +1,24 @@
+{% extends "Base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingScrollBar.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingNews.css')}}">
+<body>
+    <div class="parallaxScroll">
+        <div class="parallax funding">
+
+            <div class="teamMemberContainer twitter">
+                <a class="twitter-timeline" data-width=100% data-height="400" data-theme="light" data-link-color="#E81C4F" href="https://twitter.com/SwanseaUni?ref_src=twsrc%5Etfw">Tweets by SwanseaUni</a>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+
+            <script src="{{ url_for('static', filename='JavascriptLoadData.js') }}"></script>
+            <table id="myTable">
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script> var news = {{ news|tojson }}; </script>
+{% endblock %}

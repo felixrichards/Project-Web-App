@@ -1,5 +1,5 @@
 var z_order = [];
-var globalShapes = []
+var globalShapes = [];
 
 function updateZOrder(){
     z_order=getZOrder();
