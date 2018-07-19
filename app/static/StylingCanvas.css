@@ -27,14 +27,14 @@
     position: absolute;
     z-index: 1;
     left: 0;
-    top: 0
+    top: 0;
 }
 
 .UICanvas {
     position: absolute;
     z-index: 2;
     left: 0;
-    top: 0
+    top: 0;
 }
 
 i {
@@ -115,4 +115,17 @@ i {
 .submitButton .button:hover{
     background-color:forestgreen;
     cursor: default;
+}
+
+.aladin-fov {
+    display:none;
+}
+
+
+ .aladin-zoomControl{
+   
+ }
+
+.aladin-layersControl {
+    display: none;
 }

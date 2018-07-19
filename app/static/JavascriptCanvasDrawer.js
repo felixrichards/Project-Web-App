@@ -13,9 +13,9 @@ var state=defaultState();
 document.getElementById('drawCanvas').onmousedown = function(){
   return false;
 };
-document.getElementById('imageCanvas').onmousedown = function(){
-  return false;
-};
+//   document.getElementById('imageCanvas').onmousedown = function(){
+//   return false;
+//   };
 document.getElementById('UICanvas').onmousedown = function(){
   return false;
 };
@@ -640,7 +640,7 @@ function cartesianToElliptical(shape){
 
 // Makes w/h of canvas same as image
 function init(){
-    var background = document.getElementById("imageCanvas");
+    //var background = document.getElementById("imageCanvas");
     // UICanvas.width=drawerRect.w;
     drawCanvas.width = document.getElementById("canv_cont").clientWidth;
     drawCanvas.height = document.getElementById("canv_cont").clientHeight;
