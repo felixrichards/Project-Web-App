@@ -41,26 +41,72 @@ var button_x_right_shift=drawerRect.w;
 
 //Left sitting buttons
 buttons.push(createButton(button_x_shift,5,button_size,button_size,
-    function(){state.shape="Rect";},"Rect"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Circle";},"Circle"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Ellipse";},"Ellipse"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Line";},"Line"))
-    
-//Right sitting buttons
+    function () { showAnnotation();},"Switch"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { deleteShape();},"Delete"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); allShapes();}, "Undo"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { showHideTable(); }, "Table"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { showHideCheatSheet(); }, "Info"))
+    function () {  }, "Layers"))
 
+// Returns an object (rectangle) with left, top, width and height attributes
+function showAnnotation() {
+    if (buttons.length == 2)
+    {
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].clear()
+        }
+        buttons = [];
+        button_x_shift = 5;
+        $('.aladin-layersControl-container').css('display', 'none');
+        buttons.push(createButton(button_x_shift, 5, button_size, button_size,
+            function () { showAnnotation(); }, "Switch"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Rect"; }, "Rect"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Circle"; }, "Circle"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Ellipse"; }, "Ellipse"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Line"; }, "Line"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { deleteShape(); }, "Delete"))
+        document.getElementById("bin").style.display = "block";
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); allShapes(); }, "Undo"))
+        document.getElementById("undo").style.display = "block";
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state = defaultState(true); shapes = []; resetCanvas(); updateTable(shapes); }, "Reset"))
+        document.getElementById("restart").style.display = "block";
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { showHideTable(); }, "Table"))
+        document.getElementById("table").style.display = "block";
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { showHideCheatSheet(); }, "Info"))
+        document.getElementById("info").style.display = "block";
+        $('.aladin-zoomControl').css('display', 'none');
+        $('.aladin-layerBox').css('display', 'none');
+        document.getElementById("aladin-lite-div").style.pointerEvents = "none";
+        resetButtons();
+    }
+    else {
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].clear()
+        }
+        buttons = [];
+        button_x_shift = 5;
+        buttons.push(createButton(button_x_shift, 5, button_size, button_size,
+            function () { showAnnotation(); }, "Switch"))
+        $('.aladin-layersControl-container').css('display', 'block');
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { }, "Layers"))
+        document.getElementById("bin").style.display = "none";
+        document.getElementById("undo").style.display = "none";
+        document.getElementById("restart").style.display = "none";
+        document.getElementById("table").style.display = "none";
+        document.getElementById("info").style.display = "none";
+        $('.aladin-zoomControl').css('display', 'block');
+        document.getElementById("aladin-lite-div").style.pointerEvents = "unset";
+        resetButtons();
+        resetCanvas();
+    }
+}
 
 // Returns an object (rectangle) with left, top, width and height attributes
 function createRect(x, y, w, h,theta=0){

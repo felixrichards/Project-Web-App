@@ -9,6 +9,7 @@
 .teamMemberContainer.twitter{
       margin-top: 0px;
       margin-bottom: 100px;
+      width: 40%;
 }
 
 h3{
@@ -51,5 +52,10 @@ table{
     .teamMemberContainer {
         width: 70%;
         margin-top: 50px;
+    }
+
+    .teamMemberContainer.twitter{
+        width: 60%;
+        margin-bottom: 50px;
     }
 }
