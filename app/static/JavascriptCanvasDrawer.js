@@ -13,9 +13,7 @@ var state=defaultState();
 document.getElementById('drawCanvas').onmousedown = function(){
   return false;
 };
-//   document.getElementById('imageCanvas').onmousedown = function(){
-//   return false;
-//   };
+
 document.getElementById('UICanvas').onmousedown = function(){
   return false;
 };
@@ -39,14 +37,16 @@ var button_x_inc=button_x_shift+button_size;
 var button_x_right_shift=drawerRect.w;
 // button_x_right_shift=300
 
+var exploringMode = true;
 //Left sitting buttons
 buttons.push(createButton(button_x_shift,5,button_size,button_size,
-    function () { showAnnotation();},"Switch"))
+    function () { showAnnotation(); }, "Switch"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () {  }, "Layers"))
 
 // Returns an object (rectangle) with left, top, width and height attributes
 function showAnnotation() {
+    exploringMode = false;
     if (buttons.length == 2)
     {
         for (var i = 0; i < buttons.length; i++) {
@@ -57,6 +57,14 @@ function showAnnotation() {
         $('.aladin-layersControl-container').css('display', 'none');
         buttons.push(createButton(button_x_shift, 5, button_size, button_size,
             function () { showAnnotation(); }, "Switch"))
+        document.getElementById("pencil").style.display = "none";
+        document.getElementById("arrows").style.display = "block";
+        document.getElementById("bin").style.display = "block";
+        document.getElementById("undo").style.display = "block";
+        document.getElementById("restart").style.display = "block";
+        document.getElementById("table").style.display = "block";
+        document.getElementById("info").style.display = "block";
+
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Rect"; }, "Rect"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
@@ -67,25 +75,23 @@ function showAnnotation() {
             function () { state.shape = "Line"; }, "Line"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { deleteShape(); }, "Delete"))
-        document.getElementById("bin").style.display = "block";
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); allShapes(); }, "Undo"))
-        document.getElementById("undo").style.display = "block";
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state = defaultState(true); shapes = []; resetCanvas(); updateTable(shapes); }, "Reset"))
-        document.getElementById("restart").style.display = "block";
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { showHideTable(); }, "Table"))
-        document.getElementById("table").style.display = "block";
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { showHideCheatSheet(); }, "Info"))
-        document.getElementById("info").style.display = "block";
+
         $('.aladin-zoomControl').css('display', 'none');
         $('.aladin-layerBox').css('display', 'none');
         document.getElementById("aladin-lite-div").style.pointerEvents = "none";
-        resetButtons();
+
+        resetCanvas();
     }
     else {
+        exploringMode = true;
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].clear()
         }
@@ -96,14 +102,18 @@ function showAnnotation() {
         $('.aladin-layersControl-container').css('display', 'block');
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { }, "Layers"))
+        document.getElementById("pencil").style.display = "block";
+        document.getElementById("arrows").style.display = "none";
         document.getElementById("bin").style.display = "none";
         document.getElementById("undo").style.display = "none";
         document.getElementById("restart").style.display = "none";
         document.getElementById("table").style.display = "none";
         document.getElementById("info").style.display = "none";
+        document.getElementById("myCheatSheet").style.width = "0";
+        document.getElementById("mySidenav").style.width = "0";
         $('.aladin-zoomControl').css('display', 'block');
         document.getElementById("aladin-lite-div").style.pointerEvents = "unset";
-        resetButtons();
+
         resetCanvas();
     }
 }
@@ -158,14 +168,6 @@ function createButton(x, y, w, h, behaviour, img){
                 x+w,y,
                 x,y+h,
                 x+w,y+h);
-        } else if (btn.img=="Undo"){
-            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
-        } else if (btn.img=="Delete"){
-            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
-        } else if (btn.img=="Reset"){
-            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
-        } else if (btn.img == "Table") {
-            btn.ctx.fillText("", btn.rect.x + btn.rect.w / 2, btn.rect.y + btn.rect.h / 1.31);
         }
         
         if (btn.draw){
@@ -321,7 +323,7 @@ function createShape(x0,y0,x,y,shape){
         
         var amendBoxes=function(){
             var amendBox=function(loc,dir,theta=0,p={x:0,y:0},r_shift=0){
-                boxW=10;
+                boxW=15;
                 function drawAmendRect(shape,p){
                     shape.p=p;
                     if (dir==9) shape.colour="rgba(20, 200, 20, 0.5)";
@@ -716,7 +718,7 @@ var buttonPressed=false;
 var shapePressed=false;
 var cursorLock = false;
 var tablePressed;
-var tableButton = 7;
+var tableButton = 8;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     // console.log(mP_0);
@@ -725,6 +727,8 @@ element.addEventListener("mousedown", function(e){
     tablePressed = false;
     cursorLock=true;
     updateRows();
+
+    document.getElementById("UICanvas").style.pointerEvents = "none";
 
     if (!preventDrawing) {
         t_0 = e.timeStamp;
@@ -738,19 +742,21 @@ element.addEventListener("mousedown", function(e){
                 if (i == tableButton) {
                     tablePressed = true
                 }
+
+                document.getElementById("UICanvas").style.pointerEvents = "all";
             }
         }
     }
     
     // Check user is clicking shapes (reverse loop for z-order)
     var temp;
-    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing) {
+    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
     } else {
         state.resetSelected();
         for (var i = shapes.length - 1; i >= 0; i--) {
-            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing) {
+            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode) {
                 state.selectShape(i);
                 shapes[i].selectedIdx = -1;
                 allShapes();
@@ -759,7 +765,7 @@ element.addEventListener("mousedown", function(e){
         }
     }
 
-    if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing) {
+    if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
     }
 

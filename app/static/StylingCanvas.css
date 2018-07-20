@@ -41,6 +41,23 @@ i {
     color: white;
 }
 
+#pencil {
+    position: absolute;
+    top: 9px;
+    left: 11px;
+    z-index: 8;
+    font-size: 25px;
+}
+
+#arrows {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
 #bin {
     position: absolute;
     top: 10px;
