@@ -76,7 +76,7 @@ function showAnnotation() {
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { deleteShape(); }, "Delete"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); allShapes(); }, "Undo"))
+            function () { state.undo(); updateTable(shapes); allShapes(); }, "Undo"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state = defaultState(true); shapes = []; resetCanvas(); updateTable(shapes); }, "Reset"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
@@ -620,6 +620,7 @@ function createShape(x0,y0,x,y,shape){
         },
         selectedIdx:-1,
         interact: function(pos,pos_0){
+            console.log(this.selectedIdx)
             if (this.selectedIdx==-1) this.move(pos,pos_0);
             else{
                 this.amend(pos,pos_0,this.selectedIdx);
@@ -702,7 +703,6 @@ function clrCanvas(){
 }
 
 function resetCanvas(){
-    // console.log("reset")
     clrCanvas();
     init();
     for (var i=0;i<shapes.length;i++){
@@ -809,9 +809,14 @@ element.addEventListener("mouseup", function(e){
     flag=1;
     cursorLock=false;
     if (state.focusNo>-1){  // If user was interacting with a shape
+        state.undoShapeIndex=state.focusNo;
+        state.undoShape=Object.assign({}, shapes[state.focusNo]);
+        state.undoAction='amend';
         shapes[state.focusNo].changePos();
     }
-    if (shapeDrawn){        
+    if (shapeDrawn){
+        state.undoShapeIndex=shapes.length;
+        state.undoAction='delete';
         shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
         allShapes();
         state.selectShape(shapes.length - 1);
@@ -877,6 +882,21 @@ function defaultState(keep_shape=false){
         drawing: false,
         focusNo: -1,
         selectedNo: -1,
+        undoShape: null,
+        undoShapeIndex: null,
+        undoAction: null,
+        undo: function(){
+            if (this.undoAction=='amend'){
+                console.log(this.undoShape)
+                shapes[this.undoShapeIndex]=this.undoShape;
+                shapes[this.undoShapeIndex].resetPos();
+                state.selectShape(this.undoShapeIndex);
+            } else if (this.undoAction=='delete'){
+                deleteShape(this.undoShapeIndex);
+            }
+            resetCanvas();
+            return;
+        },
         selectShape: function(i){
             this.focusNo=i;
             this.selectedNo=i;
@@ -913,7 +933,6 @@ function defaultState(keep_shape=false){
 }
 
 function getHighlightedShape(index) {
-    console.log(index)
     let indexs = shapes.findIndex(el => el.id === index)
     return indexs
 }
@@ -930,13 +949,6 @@ function drawShape(x,y,w,h,shape,theta=0,p={x:x+w/2,y:y+h/2}){
 }
 
 function drawRect(shape,button=false,bounding=false,amend=false){
-    
-    // console.log("caller is " + drawRect.caller);
-    if (!button&&!bounding&&!amend&&shape.theta!=0){
-        console.log("Coord at shape drawing is");
-        console.log(shape.x+", "+shape.y);
-    }
-    
     ctx.beginPath();
     if (shape.theta==0){
         ctx.rect(shape.x,shape.y,shape.w,shape.h);
