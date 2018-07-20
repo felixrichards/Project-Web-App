@@ -88,7 +88,8 @@ function showAnnotation() {
         $('.aladin-layerBox').css('display', 'none');
         document.getElementById("aladin-lite-div").style.pointerEvents = "none";
 
-        resetCanvas();
+        state.resetSelected();
+        state = defaultState();
     }
     else {
         exploringMode = true;
@@ -114,7 +115,8 @@ function showAnnotation() {
         $('.aladin-zoomControl').css('display', 'block');
         document.getElementById("aladin-lite-div").style.pointerEvents = "unset";
 
-        resetCanvas();
+        state.resetSelected();
+        state = defaultState();
     }
 }
 
@@ -707,6 +709,11 @@ function resetCanvas(){
         shapes[i].redraw();
     }
 }
+
+var preventDrawing = false;
+$(".UICanvas").hover(function () {
+    document.getElementById("UICanvas").style.pointerEvents = "none";
+});
 
 // ---------
 // Handles mouse activity for shape drawing
