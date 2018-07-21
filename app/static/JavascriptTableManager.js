@@ -38,6 +38,8 @@ function updateTable(shapes){
                 .append($('<td>')
                     .text(globalShapes[i].id)
                 )
+                .append($('<td id=' + globalShapes[i].id + '>' + globalShapes[i].noFeature + '</td>')
+                )
         );
     }
     submitAppear(shapes);
@@ -90,6 +92,7 @@ function submitAppear(shapes) {
         document.getElementById('submitButton').style.WebkitTransition = 'opacity 1s';
         document.getElementById('submitButton').style.MozTransition = 'opacity 1s';
         document.getElementById("mySidenav").style.width = "0";
+        noshapeDrawn();
     }
     else 
     {
@@ -107,6 +110,8 @@ function updateRows(selected_idx=-1){
     if (selected_idx > -1) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
+        var noAccess = false;
+        getFeature(shapes[selected_idx])
     }
 }
 
@@ -118,6 +123,13 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     shapes[getHighlightedShape(index)].selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
+});
+
+var tempFeature;
+$(document).on("click", "#obj_table tbody tr .Feature", function (e) {
+    document.getElementById('obj_table_div').style.display = 'none';
+    document.getElementById('featureList').style.display = 'block';
+    tempFeature = e.target.id
 });
 
 //Keep table open when clicking a filter
