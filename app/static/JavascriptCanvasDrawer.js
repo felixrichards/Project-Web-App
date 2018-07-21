@@ -809,9 +809,7 @@ element.addEventListener("mouseup", function(e){
     flag=1;
     cursorLock=false;
     if (state.focusNo>-1){  // If user was interacting with a shape
-        state.undoShapeIndex=state.focusNo;
-        state.undoShape=Object.assign({}, shapes[state.focusNo]);
-        state.undoAction='amend';
+        
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
@@ -882,9 +880,22 @@ function defaultState(keep_shape=false){
         drawing: false,
         focusNo: -1,
         selectedNo: -1,
-        undoShape: null,
-        undoShapeIndex: null,
-        undoAction: null,
+        addUndo: function(idx, shape=null){
+            if (shape!=null){
+                this.undoStack.push({
+                    undoShapeIndex: idx,
+                    undoShape: Object.assign({}, shapes[idx]),
+                    undoAction: 'amend'
+                });
+            } else{
+                
+            }
+        },
+        addRedo: fucntion(){
+            
+        },
+        undoStack: [],
+        redoStack: [],
         undo: function(){
             if (this.undoAction=='amend'){
                 console.log(this.undoShape)
@@ -896,6 +907,9 @@ function defaultState(keep_shape=false){
             }
             resetCanvas();
             return;
+        },
+        redo: function(){
+            
         },
         selectShape: function(i){
             this.focusNo=i;
