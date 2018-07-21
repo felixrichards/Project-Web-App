@@ -880,30 +880,32 @@ function defaultState(keep_shape=false){
         drawing: false,
         focusNo: -1,
         selectedNo: -1,
-        addUndo: function(idx, shape=null){
-            if (shape!=null){
-                this.undoStack.push({
-                    undoShapeIndex: idx,
-                    undoShape: Object.assign({}, shapes[idx]),
-                    undoAction: 'amend'
-                });
-            } else{
-                
-            }
+        addUndo: function(idx, action='amend', clearStack=true){
+            this.undoStack.push({
+                shapeIndex: idx,
+                shape: Object.assign({}, shapes[idx]),
+                action: action
+            });
+            if (clearStack) redoStack=[];
         },
-        addRedo: function(){
-            
+        addRedo: function(obj){
+            this.redoStack.push(obj);
         },
         undoStack: [],
         redoStack: [],
         undo: function(){
-            if (this.undoAction=='amend'){
-                console.log(this.undoShape)
-                shapes[this.undoShapeIndex]=this.undoShape;
-                shapes[this.undoShapeIndex].resetPos();
-                state.selectShape(this.undoShapeIndex);
-            } else if (this.undoAction=='delete'){
+            undoObj=this.undoStack.pop();
+            this.addRedo(undoObj);
+            if (undoObj.action=='amend'){
+                console.log(undoObj.shape)
+                shapes[undoObj.shapeIndex]=undoObj.shape;
+                shapes[undoObj.shapeIndex].resetPos();
+                state.selectShape(undoObj.shapeIndex);
+            } else if (undoObj.action=='delete'){
                 deleteShape(this.undoShapeIndex);
+            } else if (undoObj.action=='create'){
+                shapes.splice(undo.shapeIndex,0,undoObj.shape);
+                state.selectShape(undo.shapeIndex);
             }
             resetCanvas();
             return;
