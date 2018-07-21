@@ -827,9 +827,7 @@ element.addEventListener("mouseup", function(e){
     flag=1;
     cursorLock=false;
     if (state.focusNo>-1){  // If user was interacting with a shape
-        state.undoShapeIndex=state.focusNo;
-        state.undoShape=Object.assign({}, shapes[state.focusNo]);
-        state.undoAction='amend';
+        
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
@@ -902,20 +900,38 @@ function defaultState(keep_shape=false){
         drawing: false,
         focusNo: -1,
         selectedNo: -1,
-        undoShape: null,
-        undoShapeIndex: null,
-        undoAction: null,
+        addUndo: function(idx, action='amend', clearStack=true){
+            this.undoStack.push({
+                shapeIndex: idx,
+                shape: Object.assign({}, shapes[idx]),
+                action: action
+            });
+            if (clearStack) redoStack=[];
+        },
+        addRedo: function(obj){
+            this.redoStack.push(obj);
+        },
+        undoStack: [],
+        redoStack: [],
         undo: function(){
-            if (this.undoAction=='amend'){
-                console.log(this.undoShape)
-                shapes[this.undoShapeIndex]=this.undoShape;
-                shapes[this.undoShapeIndex].resetPos();
-                state.selectShape(this.undoShapeIndex);
-            } else if (this.undoAction=='delete'){
+            undoObj=this.undoStack.pop();
+            this.addRedo(undoObj);
+            if (undoObj.action=='amend'){
+                console.log(undoObj.shape)
+                shapes[undoObj.shapeIndex]=undoObj.shape;
+                shapes[undoObj.shapeIndex].resetPos();
+                state.selectShape(undoObj.shapeIndex);
+            } else if (undoObj.action=='delete'){
                 deleteShape(this.undoShapeIndex);
+            } else if (undoObj.action=='create'){
+                shapes.splice(undo.shapeIndex,0,undoObj.shape);
+                state.selectShape(undo.shapeIndex);
             }
             resetCanvas();
             return;
+        },
+        redo: function(){
+            
         },
         selectShape: function(i){
             this.focusNo=i;
