@@ -891,7 +891,7 @@ function defaultState(keep_shape=false){
                 
             }
         },
-        addRedo: fucntion(){
+        addRedo: function(){
             
         },
         undoStack: [],
