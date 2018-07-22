@@ -52,6 +52,10 @@ tbody{
     background-color: green;
 }
 
+.selectedFeature {
+    background-color: crimson;
+}
+
 th{
     color:white;
 }

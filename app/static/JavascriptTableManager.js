@@ -106,22 +106,34 @@ function submitAppear(shapes) {
 }
 
 var shapeHighlighted = false;
-function updateRows(selected_idx=-1, feature){
+function updateRows(selected_idx=-1){
     if (selected_idx==-1) {
         $('#obj_table tbody tr').removeClass("selected");
+        $('#obj_table tbody tr').removeClass("selectedFeature");
     }
 
     if (selected_idx > -1) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
 
-        if (feature == "Red")
-        {
-            var cols = document.getElementsByClassName('selected');
-            for (i = 0; i < cols.length; i++) {
-                cols[i].style.backgroundColor = 'crimson';
-                }
-        }
+        showFeatureless = false;
+        noAccess = false;
+        nextShape = false;
+        shapeHighlighted = true;
+        getFeature(shapes[selected_idx])
+    }
+}
+
+function updateRowsRed(selected_idx = -1, feature) {
+    if (selected_idx == -1) {
+        $('#obj_table tbody tr').removeClass("selectedFeature");
+        $('#obj_table tbody tr').removeClass("selected");
+    }
+
+    if (selected_idx > -1) {
+        $('#obj_table tbody tr').not(':eq(2)').removeClass("selectedFeature");
+        $('#obj_table tbody tr').removeClass("selected");
+        $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selectedFeature");
 
         showFeatureless = false;
         noAccess = false;
@@ -130,20 +142,14 @@ function updateRows(selected_idx=-1, feature){
         getFeature(shapes[selected_idx])
     }
 
-    if (showFeatureless)
-    {
+    if (showFeatureless) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
 
         for (var i = 0; i < shapes.length; i++) {
             if (shapes[i].noFeature == "-") {
                 globalShapes.push(shapes[i]);
-                $('#obj_table tbody tr:eq(' + i + ')').addClass("selected");
+                $('#obj_table tbody tr:eq(' + i + ')').addClass("selectedFeature");
             }
-        }
-
-        var cols = document.getElementsByClassName('selected');
-        for (i = 0; i < cols.length; i++) {
-            cols[i].style.backgroundColor = 'crimson';
         }
     }
 }

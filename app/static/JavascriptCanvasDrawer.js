@@ -1206,7 +1206,7 @@ function addFeature(feature) {
     {
         globalShapes[getHighlightedShape(currentShape.id)].noFeature = feature;
         updateTable(shapes);
-        updateRows(getHighlightedShape(currentShape.id), "Red");
+        updateRowsRed(getHighlightedShape(currentShape.id), "Red");
     }
     else {
         document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")

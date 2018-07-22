@@ -47,6 +47,6 @@ function checkFeatures()
         document.getElementById("featureLabel").style.backgroundColor = "#ff0000"
         allShapes();
         showFeatureless = true;
-        updateRows();
+        updateRowsRed();
     }
 }
