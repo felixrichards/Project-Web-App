@@ -22,10 +22,10 @@
     width:70%;
 }
 
-h3{
-    text-align:center;
-    color:white;
-    text-decoration:underline
+h3 {
+    text-align: center;
+    font-size: 22px;
+    color: crimson;
 }
 
 h4 {

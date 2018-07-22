@@ -139,6 +139,58 @@ i {
     cursor: default;
 }
 
+.overlayEnd {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 9;
+    top: 0;
+    left:0;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0, 0.9);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+
+.endingContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.endingContainer h1{
+    font-size:4vw;
+    color:white;
+    text-align:center;
+}
+
+.endingContainer h3 {
+    font-size:4vw;
+    color:white;
+    padding-bottom:10px;
+    text-align:center;
+}
+
+.endingContainer div{
+    width:100%;
+    text-align:center;
+    padding-bottom:30px;
+}
+
+.endingContainer div a {
+    text-align: center;
+    text-decoration: none;
+    color: red;
+    width: 100%;
+    font-size: 4vw;
+}
+
+.endingContainer div  a:hover{
+     color:forestgreen;
+}
+
+
 .aladin-fov {
     display:none;
 }
@@ -187,13 +239,59 @@ li:hover ul {
     color:crimson
 }
 
+#bigger:hover {
+    cursor: default;
+}
+
 #featureItems:hover {
     color: forestgreen;
     cursor: pointer;
 }
 
-.spacing {
+.spacingFeatures {
     padding-top: 0px;
     padding-bottom: 15px;
     background-color: rgba(0,0,0,0.1);
+}
+
+
+.HideTable {
+    height: 50px;
+    width: 0;
+    position: fixed;
+    z-index: 7;
+    top: 58px;
+    right: 0;
+    overflow-x: hidden;
+    transition: 0.6s;
+    margin-top: 100px;
+    background-color: #333;
+    border: thick;
+    border-color: white;
+    border-radius: 15px;
+    padding-top:5px;
+    padding-bottom:5px;
+    cursor:pointer;
+}
+
+.HideIcon {
+    min-width: 280px;
+    width: 100%;
+}
+
+.HideIcon div {
+    display: block;
+    margin: auto;
+    width: 70%;
+}
+
+.HideText {
+    transform: rotate(270deg);
+    color:white;
+    float:left;
+    font-size:15px;
+}
+
+.HideText:hover{
+    color:forestgreen;
 }

@@ -1,0 +1,46 @@
+.FeatureTable {
+    height: calc(100% - 116px);
+    width: 0;
+    position: fixed;
+    z-index: 9;
+    top: 58px;
+    right: 0;
+    background-color: #333;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 0px
+}
+
+.FeatureList {
+    min-width: 220px;
+    width: 100%;
+}
+
+.FeatureList div {
+    display: block;
+    margin:auto;
+    width:70%;
+}
+
+.FeatureList {
+    min-width: 220px;
+    width: 100%;
+}
+
+.Features {
+    font-size: 18px;
+    color: white;
+    margin: 20px;
+    margin-top: 15px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+h5 {
+    text-align: center;
+    color: white;
+    font-size: 10px;
+    padding-bottom: 0;
+    padding-top: 0;
+}

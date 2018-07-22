@@ -54,7 +54,7 @@ function showAnnotation() {
         }
         buttons = [];
         button_x_shift = 5;
-        $('.aladin-layersControl-container').css('display', 'none');
+
         buttons.push(createButton(button_x_shift, 5, button_size, button_size,
             function () { showAnnotation(); }, "Switch"))
         document.getElementById("pencil").style.display = "none";
@@ -85,8 +85,9 @@ function showAnnotation() {
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { showHideCheatSheet(); }, "Info"))
 
-        $('.aladin-zoomControl').css('display', 'none');
-        $('.aladin-layerBox').css('display', 'none');
+        $('.aladin-zoomControl').css('right', '4000');
+        $('.aladin-layersControl-container').css('top', '4000');
+        $('.aladin-layersControl-container').css('left', '4000');
         document.getElementById("aladin-lite-div").style.pointerEvents = "none";
 
         state.resetSelected();
@@ -99,9 +100,9 @@ function showAnnotation() {
         }
         buttons = [];
         button_x_shift = 5;
+
         buttons.push(createButton(button_x_shift, 5, button_size, button_size,
             function () { showAnnotation(); }, "Switch"))
-        $('.aladin-layersControl-container').css('display', 'block');
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { }, "Layers"))
         document.getElementById("pencil").style.display = "block";
@@ -114,8 +115,11 @@ function showAnnotation() {
         document.getElementById("featureDropdownContainer").style.display = "none";
         document.getElementById("myCheatSheet").style.width = "0";
         document.getElementById("mySidenav").style.width = "0";
-        $('.aladin-zoomControl').css('display', 'block');
         document.getElementById("aladin-lite-div").style.pointerEvents = "unset";
+
+        $('.aladin-layersControl-container').css('top', '4');
+        $('.aladin-layersControl-container').css('left', '41');
+        $('.aladin-zoomControl').css('right', '8');
 
         state.resetSelected();
         state = defaultState();
@@ -714,11 +718,6 @@ function resetCanvas(){
 
 $(".UICanvas").hover(function () {
     document.getElementById("UICanvas").style.pointerEvents = "none";
-    document.getElementById("featureDropdownContainer").style.pointerEvents = "all";
-});
-
-$(".FeatureDropdown").click(function () {
-    console.log(34)
 });
 
 // ---------
@@ -771,7 +770,6 @@ element.addEventListener("mousedown", function(e){
         if (!highlightRemoval)
         {
             state.resetSelected();
-            noAccess = false;
         }
         
         for (var i = shapes.length - 1; i >= 0; i--) {
@@ -1128,6 +1126,7 @@ function getFeature(shape)
         document.getElementById("featureLabel").innerHTML = ("Feature: " + shape.noFeature + "&nbsp; <i class='fa fa-caret-down'></i>")
     }
 
+    document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
     currentShape = shape;
     nextShape = false
     nextShapeValue = "-"
@@ -1139,9 +1138,11 @@ function noshapeDrawn() {
         document.getElementById("featureLabel").innerHTML = ("What feature will you draw? " + "&nbsp; <i class='fa fa-caret-down'></i>")
         noAccess = true
     }
+    document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
 }
 
 function addFeature(feature) {
+    console.log(noAccess)
     if (!noAccess)
     {
         shapes[currentShape.id].noFeature = feature;
@@ -1150,10 +1151,10 @@ function addFeature(feature) {
     }
     else {
         document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")
-        console.log(feature)
         nextShape = true
         nextShapeValue = feature;
     }
+    document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
 }
 
 var highlightRemoval

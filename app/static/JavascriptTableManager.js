@@ -76,6 +76,14 @@ function whichShape() {
             }
         }
     }
+    else if ($("#featureLabel").css('background-color') === "rgb(255, 0, 0)") {
+        for (var i = 0; i < shapes.length; i++) {
+            if (shapes[i].noFeature == "-") {
+                globalShapes.push(shapes[i]);
+            }
+        }
+        console.log(123124123423)
+    }
     else {
         for (var i = 0; i < shapes.length; i++) {
             globalShapes.push(shapes[i]);
@@ -92,6 +100,7 @@ function submitAppear(shapes) {
         document.getElementById('submitButton').style.WebkitTransition = 'opacity 1s';
         document.getElementById('submitButton').style.MozTransition = 'opacity 1s';
         document.getElementById("mySidenav").style.width = "0";
+        nextShape = false;
         noshapeDrawn();
     }
     else 
@@ -110,7 +119,8 @@ function updateRows(selected_idx=-1){
     if (selected_idx > -1) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
-        var noAccess = false;
+        noAccess = false;
+        nextShape = false;
         getFeature(shapes[selected_idx])
     }
 }
@@ -155,16 +165,23 @@ $(".sidenav").hover(function () {
 function showHideTable() {
     if (document.getElementById("mySidenav").style.width == "250px") {
         document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("hideTableSideNav").style.width = "0";
     }
     else {
         document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("hideTableSideNav").style.width = "280px";
+        document.getElementById("hideTableFeatures").style.width = "0";
+        document.getElementById("hideTableCheatSheet").style.width = "0";
         document.getElementById("myCheatSheet").style.width = "0";
+        document.getElementById("featureTable").style.width = "0";
+        document.getElementById("moreInfo").style.color = "white";
     }
 }
 
 // Highlight all shapes filter when page is loaded.
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("all").style.backgroundColor = '#818181';
+    document.getElementById("featureTable").style.width = "0";
 }, false);
 
 // Remove filter when drawing a shape
@@ -175,4 +192,15 @@ function allShapes() {
     document.getElementById("ellipse").style.backgroundColor = '#404040';
     document.getElementById("line").style.backgroundColor = '#404040';
     updateTable(shapes);
+}
+
+function hideAll()
+{
+    document.getElementById("featureTable").style.width = "0";
+    document.getElementById("myCheatSheet").style.width = "0";
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("hideTableSideNav").style.width = "0";
+    document.getElementById("hideTableFeatures").style.width = "0";
+    document.getElementById("hideTableCheatSheet").style.width = "0";
+    document.getElementById("moreInfo").style.color = "white";
 }
