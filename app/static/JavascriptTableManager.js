@@ -109,10 +109,6 @@ var shapeHighlighted = false;
 function updateRows(selected_idx=-1, feature){
     if (selected_idx==-1) {
         $('#obj_table tbody tr').removeClass("selected");
-        var cols = document.getElementsByClassName('selected');
-        for (i = 0; i < cols.length; i++) {
-            cols[i].style.backgroundColor = 'none';
-        }
     }
 
     if (selected_idx > -1) {
