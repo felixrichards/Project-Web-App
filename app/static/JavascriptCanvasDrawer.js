@@ -781,6 +781,7 @@ element.addEventListener("mousedown", function(e){
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
+        shapeHighlighted = false;
     } else {
         if (!highlightRemoval)
         {
@@ -795,6 +796,8 @@ element.addEventListener("mousedown", function(e){
                 noAccess = false;
                 getFeature(shapes[i]);
                 updateRows(i);
+                stopDropDown = false;
+                shapeHighlighted = false;
             }
         }
     }
@@ -803,7 +806,6 @@ element.addEventListener("mousedown", function(e){
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
         noshapeDrawn();
-        console.log(8)
     }
 
     focusObject = getFocusObject(getMousePos(drawCanvas, e));
@@ -813,28 +815,44 @@ element.addEventListener("mousedown", function(e){
     
     
 }, false);
+
+var stopDropDown = false;
+
 element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
     
     //Check if object is not currently being used
-    if (!cursorLock) focusObject=getFocusObject(getMousePos(drawCanvas,e));
+    if (!cursorLock) focusObject = getFocusObject(getMousePos(drawCanvas, e));
     updateCursor(focusObject.cursor);
-    
+
+    stopDropDown = false;
+
     t=e.timeStamp;
     mP = getMousePos(drawCanvas, e);
     if (state.focusNo > -1) {
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
-            shapeAmended=true;
+            shapeAmended = true;
+            stopDropDown = true;
         }
-    } else if (flag===0){
+    } else if (flag === 0) {
         // Check user is dragging (150 was chosen from experiments)
         if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
             drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
-            shapeDrawn = true;       
+            shapeDrawn = true;   
+            stopDropDown = true;
         }
+    }
+    if (stopDropDown & !shapeHighlighted) {
+        document.getElementById("featureDropdownContainer").style.pointerEvents = "none"
+        document.getElementById("submit").style.pointerEvents = "none"
+
+    }
+    else {
+        document.getElementById("featureDropdownContainer").style.pointerEvents = "all"
+        document.getElementById("submit").style.pointerEvents = "all"
     }
     updateCursor(mP);
 }, false);
@@ -1177,17 +1195,17 @@ function noshapeDrawn() {
     if (!nextShape)
     {
         document.getElementById("featureLabel").innerHTML = ("What feature will you draw? " + "&nbsp; <i class='fa fa-caret-down'></i>")
+        document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
         noAccess = true
     }
-    document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
 }
 
 function addFeature(feature) {
     if (!noAccess)
     {
-        shapes[getHighlightedShape(currentShape.id)].noFeature = feature;
-        getFeature(currentShape)
+        globalShapes[getHighlightedShape(currentShape.id)].noFeature = feature;
         updateTable(shapes);
+        updateRows(currentShape.id, "Red");
     }
     else {
         document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")
@@ -1207,3 +1225,22 @@ function changeBack() {
     preventDrawing = false;
     highlightRemoval = false;
 }
+
+$(".HideTable").hover(function () {
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+});
+
+$(".FeatureList").hover(function () {
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+});
+
+$(".cheatSheet").hover(function () {
+    console.log(123123)
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+});

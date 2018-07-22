@@ -76,13 +76,6 @@ function whichShape() {
             }
         }
     }
-    else if ($("#featureLabel").css('background-color') === "rgb(255, 0, 0)") {
-        for (var i = 0; i < shapes.length; i++) {
-            if (shapes[i].noFeature == "-") {
-                globalShapes.push(shapes[i]);
-            }
-        }
-    }
     else {
         for (var i = 0; i < shapes.length; i++) {
             globalShapes.push(shapes[i]);
@@ -112,17 +105,50 @@ function submitAppear(shapes) {
     }
 }
 
-function updateRows(selected_idx=-1){
+var shapeHighlighted = false;
+function updateRows(selected_idx=-1, feature){
     if (selected_idx==-1) {
         $('#obj_table tbody tr').removeClass("selected");
+        var cols = document.getElementsByClassName('selected');
+        for (i = 0; i < cols.length; i++) {
+            cols[i].style.backgroundColor = 'none';
+        }
     }
 
     if (selected_idx > -1) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
+
+        if (feature == "Red")
+        {
+            var cols = document.getElementsByClassName('selected');
+            for (i = 0; i < cols.length; i++) {
+                cols[i].style.backgroundColor = 'crimson';
+                }
+        }
+
+        showFeatureless = false;
         noAccess = false;
         nextShape = false;
+        shapeHighlighted = true;
         getFeature(shapes[selected_idx])
+    }
+
+    if (showFeatureless)
+    {
+        $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
+
+        for (var i = 0; i < shapes.length; i++) {
+            if (shapes[i].noFeature == "-") {
+                globalShapes.push(shapes[i]);
+                $('#obj_table tbody tr:eq(' + i + ')').addClass("selected");
+            }
+        }
+
+        var cols = document.getElementsByClassName('selected');
+        for (i = 0; i < cols.length; i++) {
+            cols[i].style.backgroundColor = 'crimson';
+        }
     }
 }
 
@@ -134,13 +160,6 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     shapes[getHighlightedShape(index)].selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
-});
-
-var tempFeature;
-$(document).on("click", "#obj_table tbody tr .Feature", function (e) {
-    document.getElementById('obj_table_div').style.display = 'none';
-    document.getElementById('featureList').style.display = 'block';
-    tempFeature = e.target.id
 });
 
 //Keep table open when clicking a filter
@@ -158,7 +177,7 @@ $('.square').on('click', function () {
 // Prevent clicking shapes when under the table
 var preventDrawing = false;
 $(".sidenav").hover(function () {
-   preventDrawing = true
+    preventDrawing = true
 }, function () {
    preventDrawing = false;
     });

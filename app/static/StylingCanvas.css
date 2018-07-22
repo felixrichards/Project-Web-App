@@ -200,7 +200,6 @@ i {
      color:forestgreen;
 }
 
-
 .aladin-fov {
     display:none;
 }
@@ -239,7 +238,7 @@ li ul
     min-width: 250px;
 }
 
-li:hover ul {
+.FeatureHover:hover ul {
     display: block;
     position: absolute;
 }
@@ -263,7 +262,6 @@ li:hover ul {
     padding-bottom: 15px;
     background-color: rgba(0,0,0,0.1);
 }
-
 
 .HideTable {
     height: 50px;
