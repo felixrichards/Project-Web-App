@@ -53,6 +53,7 @@
                         <tr>
                             <th>Shape</th>
                             <th>ID</th>
+                            <th>Feature</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,6 +67,119 @@
                 <script src="{{ url_for('static', filename='JavascriptGalaxySearch.js') }}"></script>
                 <script src="{{ url_for('static', filename='JavascriptSubmission.js') }}"></script>
                 <script src="{{ url_for('static', filename='JavascriptWindowResize.js') }}"></script>
+            </div>
+
+            <div class="FeatureList" id="featureList">
+                <h3>Mergers</h3>
+
+                <div>
+                    <h4 class="Features" id="shells">Shells</h4>
+                    <h5>
+                        Shells are part of circles centered on the galaxy's core. There can be several concentric shells of arbitary 
+                        numbers. Shells can be very fine or thick, or even full like a halo. They can be recognised by their sharp 
+                        outer edge, while halos have fuzzy edges. 
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="plumes">Plumes</h4>
+                    <h5>
+                        Plumes are fuzzy structures getting out of the galaxy. They can be very faint, quite far from the galaxy and
+                        of any shape. They should not be confused with the cirrus.
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="titalTails">Tital Tails</h4>
+                    <h5>
+                        A thick line or curve of gas, often containing young stars and dwarf galaxies that were created by the compressino
+                        of gas in the tidal tail (shock waves). The tidal tails are created from the galaxy, when tidal forces during a merging
+                        event throws a stream of gas and stars out of the galaxy. They are still attached to the galaxy, and they eventually fall 
+                        down on it under gravity, making a twisted shape.
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="streams">Streams</h4>
+                    <h5>
+                        Streams are similar to tidal tails, but they were created out of dwarf galaxies rather than the main merging galaxy. Therefore,
+                        they contain materials and stars that are older than in a tidal tail, making them redder. They often have a S shape. The dwarf 
+                        galaxy that was disrupted into a stream is sometimes visible with both branches of the S on either side. Sometimes, they are hidden
+                        or completely destroyed, and only the stream remains.
+                    </h5>
+                </div>
+
+                <h3>Artifacts</h3>
+
+                <div>
+                    <h4 class="Features" id="ghostedHalo">Ghosted Halo</h4>
+                    <h5>
+                        Imaging artifact that is due to reflections of light inside the telescope. They are centered on all the bright objects of the image. 
+                        The ghost halos have a fix size that depends on the telescope. They are usually the same colour but they are not correctly centered
+                        on the bright object: in some parts of the image they are a bit up, in others a bit down, etc.
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="cirrus">Cirrus</h4>
+                    <h5>
+                        A cirrus is a cloud of gas that is in front of the image. They can be recognised because they usually occupy a large part of a very
+                        large image - it is therefore best to zoom out to verify a suspicion of cirrus. They have a texture with consistent orientation throughout
+                        the image.
+                    </h5>
+                </div>
+
+                <h3>Internal Structures</h3>
+
+                <div>
+                    <h4 class="Features" id="bar">Bar</h4>
+                    <h5>
+                        A bright, roughly rectangular bar, in the center of the galaxy.
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="rings">Rings</h4>
+                    <h5>
+                        The spiral arms are sites of ongoing star formation and are brighter than the surrounding disc because of the young, 
+                        hot OB stars that inhabit them.
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="spiralArms">Spiral Arms</h4>
+                    <h5>
+                        The spiral arms are sites of ongoing star formation and are brighter than the surrounding disc because of the young,
+                        hot OB stars that inhabit them.
+                    </h5>
+                </div>
+
+                <div>
+                    <h4 class="Features" id="dustLanes">Dust Lanes</h4>
+                    <h5>
+                        A dust lane is a relatively dense obscuring band of interstellar dust, observed as a dark swath against the background 
+                        of a brighter object, especially a galaxy. These dust lanes can usually be seen in spiral galaxies
+                    </h5>
+                </div>
+
+                <h3>Halo</h3>
+
+                <div>
+                    <h4 class="Features" id="halo">Halo</h4>
+                    <h5>
+                        A galactic halo is an extended, roughly spherical component of a galaxy which extends beyond the main, visible component.
+                        Several distinct components of galaxies comprise the halo.
+                    </h5>
+                </div>
+
+                <h3>Other</h3>
+
+                <div>
+                    <h4 class="Features" id="notSure">Not Sure</h4>
+                    <h5>
+                        When you are unsure that your annotation does not resemble any of the above.
+                    </h5>
+                </div>
             </div>
         </div>
     </div>
@@ -276,6 +390,34 @@
             <canvas class="drawCanvas" id="drawCanvas" ></canvas>
             <canvas class="UICanvas" id="UICanvas"></canvas>
             <script src="{{ url_for('static', filename='JavascriptCanvasDrawer.js') }}"></script>
+
+            <div class="FeatureDropdownContainer" id="featureDropdownContainer">
+                <ul class="FeatureDropdown" id="menu">
+                    <li>
+                        <a id="featureLabel"> What feature will you draw?  &nbsp; <i class="fa fa-caret-down"></i></a>
+                        <ul>
+                            <li><a id="bigger">Mergers</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Shells')" onmouseover="changeTo()" onmouseout="changeBack()">Shells</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Plumes')" onmouseover="changeTo()" onmouseout="changeBack()">Plumes</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Tital Tails')" onmouseover="changeTo()" onmouseout="changeBack()">Tital Tails</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Streams')" onmouseover="changeTo()" onmouseout="changeBack()">Streams</a></li>
+                            <li><a id="bigger">Artifacts</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Ghosted Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Ghosted Halo</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Cirrus')" onmouseover="changeTo()" onmouseout="changeBack()">Cirrus</a></li>
+                            <li><a id="bigger">Internal Structures</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Bar')" onmouseover="changeTo()" onmouseout="changeBack()">Bar</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Ring')" onmouseover="changeTo()" onmouseout="changeBack()">Ring</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Spiral Arm')" onmouseover="changeTo()" onmouseout="changeBack()">Spiral Arm</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Dust Lane')" onmouseover="changeTo()" onmouseout="changeBack()">Dust Lane</a></li>
+                            <li><a id="bigger">Halo</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
+                            <li><a id="bigger">Other</a></li>
+                            <li><a id="featureItems" onclick="addFeature('Not Sure')" onmouseover="changeTo()" onmouseout="changeBack()">Not Sure</a></li>
+                            <li><div class="spacing"></div></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
 
             <div class="iconList" id="iconList">
                 <i class="fa fa-pencil" id="pencil"></i>

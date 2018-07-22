@@ -64,6 +64,7 @@ function showAnnotation() {
         document.getElementById("restart").style.display = "block";
         document.getElementById("table").style.display = "block";
         document.getElementById("info").style.display = "block";
+        document.getElementById("featureDropdownContainer").style.display = "block";
 
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Rect"; }, "Rect"))
@@ -112,6 +113,7 @@ function showAnnotation() {
         document.getElementById("restart").style.display = "none";
         document.getElementById("table").style.display = "none";
         document.getElementById("info").style.display = "none";
+        document.getElementById("featureDropdownContainer").style.display = "none";
         document.getElementById("myCheatSheet").style.width = "0";
         document.getElementById("mySidenav").style.width = "0";
         $('.aladin-zoomControl').css('display', 'block');
@@ -539,7 +541,8 @@ function createShape(x0,y0,x,y,shape){
     }
     
     var selfObj={
-        shape:shape,
+        shape: shape,
+        noFeature: nextShapeValue,
         x:x0,
         y:y0,
         x0:x0,
@@ -718,9 +721,13 @@ function resetCanvas(){
     }
 }
 
-var preventDrawing = false;
 $(".UICanvas").hover(function () {
     document.getElementById("UICanvas").style.pointerEvents = "none";
+    document.getElementById("featureDropdownContainer").style.pointerEvents = "all";
+});
+
+$(".FeatureDropdown").click(function () {
+    console.log(34)
 });
 
 // ---------
@@ -770,21 +777,33 @@ element.addEventListener("mousedown", function(e){
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
+        console.log(5)
     } else {
-        state.resetSelected();
+        if (!highlightRemoval)
+        {
+            state.resetSelected();
+            noAccess = false;
+        }
+        
         for (var i = shapes.length - 1; i >= 0; i--) {
             if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode) {
                 state.selectShape(i);
                 shapes[i].boundingRect.selectedIdx = -1;
                 allShapes();
+                noAccess = false;
+                getFeature(shapes[i]);
                 updateRows(i);
+                console.log(6)
             }
         }
+        console.log(7)
     }
     
     
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
+        noshapeDrawn();
+        console.log(8)
     }
 
     focusObject = getFocusObject(getMousePos(drawCanvas, e));
@@ -831,6 +850,8 @@ element.addEventListener("mouseup", function(e){
         shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
         allShapes();
         state.selectShape(shapes.length - 1);
+        noAccess = false;
+        getFeature(shapes[shapes.length - 1]);
     }
     // Unfocus anything
     state.focusNo=-1
@@ -1128,4 +1149,59 @@ function rotateRect(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
         o.y_b_c=rotateYCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
     }
     return o;
+}
+
+var currentShape;
+var noAccess = true;
+var nextShape = false;
+var nextShapeValue = "-"
+
+function getFeature(shape)
+{
+    if (shape.noFeature == "-" && !noAccess)
+    {
+        document.getElementById("featureLabel").innerHTML = ("What feature is this " + shape.shape + "? " + "&nbsp; <i class='fa fa-caret-down'></i>")
+    }
+    else if (!noAccess)
+    {
+        document.getElementById("featureLabel").innerHTML = ("Feature: " + shape.noFeature + "&nbsp; <i class='fa fa-caret-down'></i>")
+    }
+
+    currentShape = shape;
+    nextShape = false
+    nextShapeValue = "-"
+}
+
+function noshapeDrawn() {
+    if (!nextShape)
+    {
+        document.getElementById("featureLabel").innerHTML = ("What feature will you draw? " + "&nbsp; <i class='fa fa-caret-down'></i>")
+        noAccess = true
+    }
+}
+
+function addFeature(feature) {
+    if (!noAccess)
+    {
+        shapes[currentShape.id].noFeature = feature;
+        getFeature(currentShape)
+        updateTable(shapes);
+    }
+    else {
+        document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")
+        console.log(feature)
+        nextShape = true
+        nextShapeValue = feature;
+    }
+}
+
+var highlightRemoval
+function changeTo() {
+    preventDrawing = true;
+    highlightRemoval = true;
+}
+
+function changeBack() {
+    preventDrawing = false;
+    highlightRemoval = false;
 }

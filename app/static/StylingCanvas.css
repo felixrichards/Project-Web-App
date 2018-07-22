@@ -142,3 +142,58 @@ i {
 .aladin-fov {
     display:none;
 }
+
+.FeatureDropdownContainer {
+    position: absolute;
+    top: 5px;
+    left: 375px;
+    z-index: 6;
+    display: none;
+    min-width: 250px;
+}
+
+.FeatureDropdown {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.FeatureDropdown ul li {
+    position: relative;
+}
+
+li ul
+{
+    display: none;
+}
+
+.FeatureDropdown li a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    padding: 8px 15px 8px 15px;
+    background-color: rgba(0,0,0,0.1);
+    min-width: 250px;
+}
+
+li:hover ul {
+    display: block;
+    position: absolute;
+}
+
+#bigger{
+    font-size:25px;
+    color:crimson
+}
+
+#featureItems:hover {
+    color: forestgreen;
+    cursor: pointer;
+}
+
+.spacing {
+    padding-top: 0px;
+    padding-bottom: 15px;
+    background-color: rgba(0,0,0,0.1);
+}
