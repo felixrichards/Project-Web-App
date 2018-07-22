@@ -684,7 +684,7 @@ function getShapeByID(id){
 // Deletes a given shape, default is selected shape - Work an undo here??
 function deleteShape(i = state.selectedNo, addToUndo=true) {
     if (i>-1) {
-        if (addToUndo) state.addUndo(i, 'create', shapes[i]);
+        if (addToUndo) state.addUndo(i, 'create', Object.assign({}, shapes[i]));
         shapes.splice(i,1);
         state.resetSelected();
         resetCanvas();
@@ -864,8 +864,8 @@ element.addEventListener("mouseup", function(e){
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
-        state.addUndo(shapes.length, 'delete', null);
         shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
+        state.addUndo(shapes.length-1, 'delete', Object.assign({}, shapes[shapes.length-1]));
         allShapes();
         state.selectShape(shapes.length - 1);
         noAccess = false;
@@ -946,16 +946,16 @@ function defaultState(keep_shape=false){
             });
         },
         addRedo: function(obj){
+            obj.shape=Object.assign({}, obj.shape);
             this.redoStack.push(Object.assign({}, obj));
         },
         undoStack: [],
         redoStack: [],
         undo: function(){
-            console.log(this.undoStack);
-            console.log(this.redoStack);
             if (this.undoStack.length<1) return;
             undoObj=this.undoStack.pop();
             i=undoObj.shapeIndex;
+            console.log("Shape that is added to redo",undoObj.shape)
             this.addRedo(undoObj);
             if (undoObj.action=='amend'){
                 shapes[i]=Object.assign({}, undoObj.shape);
@@ -964,31 +964,32 @@ function defaultState(keep_shape=false){
             } else if (undoObj.action=='delete'){
                 deleteShape(i,false);
             } else if (undoObj.action=='create'){
-                shapes.splice(i,0,undoObj.shape);
+                shapes.splice(i,0,Object.assign({}, undoObj.shape));
                 this.selectShape(i);
             }
             resetCanvas();
-            return;
+            console.log("At undo, undoStack size is",this.undoStack.length);
+            console.log("At undo, redoStack size is",this.redoStack.length);
         },
         redo: function(){
-            console.log(this.undoStack);
-            console.log(this.redoStack);
             if (this.redoStack.length<1) return;
             redoObj=this.redoStack.pop();
             i=redoObj.shapeIndex;
-            this.addUndo(redoObj.shapeIndex, redoObj.action, redoObj.shape, false);
+            this.addUndo(i, redoObj.action, redoObj.shape, false);
             if (redoObj.action=='amend'){
-                shapes[redoObj.shapeIndex]=Object.assign({}, redoObj.shape);
-                shapes[redoObj.shapeIndex].changePos();
-                this.selectShape(redoObj.shapeIndex);
+                shapes[i]=Object.assign({}, redoObj.shape);
+                shapes[i].changePos();
+                this.selectShape(i);
             } else if (redoObj.action=='delete'){   // Should recreate the shape if undo deleted
-                shapes.splice(redoObj.shapeIndex,0,redoObj.shape);
-                console.log(redoObj.shapeIndex);
-                this.selectShape(redoObj.shapeIndex);
+                shapes.splice(i,0,Object.assign({}, redoObj.shape));
+                console.log("Shape that is created at redo",redoObj.shape);
+                this.selectShape(i);
             } else if (redoObj.action=='create'){   // vice versa
-                deleteShape(redoObj.shapeIndex);
+                deleteShape(i);
             }
             resetCanvas();
+            console.log("At redo, undoStack size is",this.undoStack.length);
+            console.log("At redo, redoStack size is",this.redoStack.length);
         },
         selectShape: function(i){
             this.focusNo=i;
