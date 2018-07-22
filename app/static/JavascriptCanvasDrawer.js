@@ -64,6 +64,7 @@ function showAnnotation() {
         document.getElementById("restart").style.display = "block";
         document.getElementById("table").style.display = "block";
         document.getElementById("info").style.display = "block";
+        document.getElementById("redo").style.display = "block";
         document.getElementById("featureDropdownContainer").style.display = "block";
 
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
@@ -79,6 +80,8 @@ function showAnnotation() {
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.undo(); updateTable(shapes); allShapes(); }, "Undo"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.redo(); updateTable(shapes); allShapes(); }, "Redo"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state = defaultState(true); shapes = []; resetCanvas(); updateTable(shapes); }, "Reset"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { showHideTable(); }, "Table"))
@@ -89,6 +92,7 @@ function showAnnotation() {
         $('.aladin-layersControl-container').css('top', '4000');
         $('.aladin-layersControl-container').css('left', '4000');
         document.getElementById("aladin-lite-div").style.pointerEvents = "none";
+        $('.aladin-layerBox').css('display', 'none');
 
         state.resetSelected();
         state = defaultState();
@@ -112,6 +116,7 @@ function showAnnotation() {
         document.getElementById("restart").style.display = "none";
         document.getElementById("table").style.display = "none";
         document.getElementById("info").style.display = "none";
+        document.getElementById("redo").style.display = "none";
         document.getElementById("featureDropdownContainer").style.display = "none";
         document.getElementById("myCheatSheet").style.width = "0";
         document.getElementById("mySidenav").style.width = "0";
@@ -120,6 +125,8 @@ function showAnnotation() {
         $('.aladin-layersControl-container').css('top', '4');
         $('.aladin-layersControl-container').css('left', '41');
         $('.aladin-zoomControl').css('right', '8');
+        noshapeDrawn();
+        nextShape = false;
 
         state.resetSelected();
         state = defaultState();
@@ -422,8 +429,9 @@ function createShape(x0,y0,x,y,shape){
                 this.amendBoxes.redraw();
             },
             selectBox: function(idx){
-                setSelfSelectedIdx(idx);
+                this.selectedIdx=idx;
             },
+            selectedIdx:-1,
             isInside: function(pos){
                 // Check for amend points
                 amendIdx=this.amendBoxes.isInside(pos);
@@ -553,7 +561,7 @@ function createShape(x0,y0,x,y,shape){
         w0:x-x0,
         h0:y-y0,
         theta: 0,
-        theta_0: 0,
+        theta0: 0,
         centre:{
             x:x0+(x-x0)/2,
             y:y0+(y-y0)/2,
@@ -610,26 +618,31 @@ function createShape(x0,y0,x,y,shape){
             this.h0=this.h;
             this.x=this.x0;
             this.y=this.y0;
-            this.selectedIdx=0;
+            this.theta0=this.theta;
+            this.boundingRect.selectedIdx=0;
         },
         resetPos: function(){
+            this.centre.x=this.centre.x0;
+            this.centre.y=this.centre.y0;
             this.x=this.x0;
             this.y=this.y0;
             this.w=this.w0;
             this.h=this.h0;
-            this.selectedIdx=0;
+            this.theta=this.theta0
+            this.boundingRect.selectedIdx=0;
             // this.updateCentre();
         },
         boundingRect: 0,
         createBoundingRect: function(){
+            var i = this.boundingRect.selectedIdx;
             this.boundingRect=createBoundingRect(this);
             this.boundingRect.redraw()
+            this.boundingRect.selectedIdx=i;
         },
-        selectedIdx:-1,
         interact: function(pos,pos_0){
-            if (this.selectedIdx==-1) this.move(pos,pos_0);
+            if (this.boundingRect.selectedIdx==-1) this.move(pos,pos_0);
             else{
-                this.amend(pos,pos_0,this.selectedIdx);
+                this.amend(pos,pos_0,this.boundingRect.selectedIdx);
             }
         },
         normaliseCoords: function (){
@@ -645,9 +658,9 @@ function createShape(x0,y0,x,y,shape){
         }
     }
     function setSelfSelectedIdx(idx){
-        selfObj.selectedIdx=idx;
+        selfObj.boundingRect.selectedIdx=idx;
     }
-    if (shape=="Line") {
+    if (shape=="Line"){
         selfObj.x1=selfObj.x+selfObj.w/3;
         selfObj.y1=selfObj.y+selfObj.h/3;
         selfObj.x2=selfObj.x+2*selfObj.w/3;
@@ -669,8 +682,9 @@ function getShapeByID(id){
 }
 
 // Deletes a given shape, default is selected shape - Work an undo here??
-function deleteShape(i = state.selectedNo) {
+function deleteShape(i = state.selectedNo, addToUndo=true) {
     if (i>-1) {
+        if (addToUndo) state.addUndo(i, 'create', shapes[i]);
         shapes.splice(i,1);
         state.resetSelected();
         resetCanvas();
@@ -728,6 +742,7 @@ var flag=1;
 var focusObject=null;
 var buttonPressed=false;
 var shapePressed=false;
+var shapeAmended=false;
 var cursorLock = false;
 var tablePressed;
 var tableButton = 8;
@@ -736,6 +751,7 @@ element.addEventListener("mousedown", function(e){
     // console.log(mP_0);
     buttonPressed=false;
     shapePressed = false;
+    shapeAmended=false
     tablePressed = false;
     cursorLock=true;
     updateRows();
@@ -765,7 +781,6 @@ element.addEventListener("mousedown", function(e){
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
-        console.log(5)
     } else {
         if (!highlightRemoval)
         {
@@ -775,17 +790,16 @@ element.addEventListener("mousedown", function(e){
         for (var i = shapes.length - 1; i >= 0; i--) {
             if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode) {
                 state.selectShape(i);
-                shapes[i].selectedIdx = -1;
+                shapes[i].boundingRect.selectedIdx = -1;
                 allShapes();
                 noAccess = false;
                 getFeature(shapes[i]);
                 updateRows(i);
-                console.log(6)
             }
         }
-        console.log(7)
     }
-
+    
+    
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
         noshapeDrawn();
@@ -794,8 +808,10 @@ element.addEventListener("mousedown", function(e){
 
     focusObject = getFocusObject(getMousePos(drawCanvas, e));
     updateCursor(focusObject.cursor); 
-   
+    
     resetCanvas();
+    
+    
 }, false);
 element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
@@ -810,6 +826,7 @@ element.addEventListener("mousemove", function(e){
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
+            shapeAmended=true;
         }
     } else if (flag===0){
         // Check user is dragging (150 was chosen from experiments)
@@ -824,13 +841,12 @@ element.addEventListener("mousemove", function(e){
 element.addEventListener("mouseup", function(e){
     flag=1;
     cursorLock=false;
-    if (state.focusNo>-1){  // If user was interacting with a shape
-        
+    if (state.focusNo>-1){  // If user was interacting with a shape (amend, move)
+        if (shapeAmended) state.addUndo(state.focusNo);
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
-        state.undoShapeIndex=shapes.length;
-        state.undoAction='delete';
+        state.addUndo(shapes.length, 'delete', null);
         shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
         allShapes();
         state.selectShape(shapes.length - 1);
@@ -886,7 +902,7 @@ function getFocusObject(pos){
 
 // Check if a given position is inside a given rectangle
 function isInside(pos,rect){
-    return pos.x > rect.x && pos.x < rect.x+rect.w && pos.y < rect.y+rect.h && pos.y > rect.y
+    return pos.x >= rect.x && pos.x <= rect.x+rect.w && pos.y <= rect.y+rect.h && pos.y >= rect.y
 }
 
 function isInsideButtons(pos){
@@ -898,38 +914,63 @@ function defaultState(keep_shape=false){
         drawing: false,
         focusNo: -1,
         selectedNo: -1,
-        addUndo: function(idx, action='amend', clearStack=true){
+        addUndo: function(idx, action='amend', shape=Object.assign({}, shapes[idx]), clearStack=true){
+            // clearStack will be false if called from a redo: 
+            //      interacting with the canvas should reset the redoStack
+            if (clearStack) {
+                console.log("Hey");
+                this.redoStack=[];
+            }
             this.undoStack.push({
                 shapeIndex: idx,
-                shape: Object.assign({}, shapes[idx]),
+                shape: shape,
                 action: action
             });
-            if (clearStack) redoStack=[];
         },
         addRedo: function(obj){
-            this.redoStack.push(obj);
+            this.redoStack.push(Object.assign({}, obj));
         },
         undoStack: [],
         redoStack: [],
         undo: function(){
+            console.log(this.undoStack);
+            console.log(this.redoStack);
+            if (this.undoStack.length<1) return;
             undoObj=this.undoStack.pop();
+            i=undoObj.shapeIndex;
             this.addRedo(undoObj);
             if (undoObj.action=='amend'){
-                console.log(undoObj.shape)
-                shapes[undoObj.shapeIndex]=undoObj.shape;
-                shapes[undoObj.shapeIndex].resetPos();
-                state.selectShape(undoObj.shapeIndex);
+                shapes[i]=Object.assign({}, undoObj.shape);
+                shapes[i].resetPos();
+                this.selectShape(i);
             } else if (undoObj.action=='delete'){
-                deleteShape(this.undoShapeIndex);
+                deleteShape(i,false);
             } else if (undoObj.action=='create'){
-                shapes.splice(undo.shapeIndex,0,undoObj.shape);
-                state.selectShape(undo.shapeIndex);
+                shapes.splice(i,0,undoObj.shape);
+                this.selectShape(i);
             }
             resetCanvas();
             return;
         },
         redo: function(){
-            
+            console.log(this.undoStack);
+            console.log(this.redoStack);
+            if (this.redoStack.length<1) return;
+            redoObj=this.redoStack.pop();
+            i=redoObj.shapeIndex;
+            this.addUndo(redoObj.shapeIndex, redoObj.action, redoObj.shape, false);
+            if (redoObj.action=='amend'){
+                shapes[redoObj.shapeIndex]=Object.assign({}, redoObj.shape);
+                shapes[redoObj.shapeIndex].changePos();
+                this.selectShape(redoObj.shapeIndex);
+            } else if (redoObj.action=='delete'){   // Should recreate the shape if undo deleted
+                shapes.splice(redoObj.shapeIndex,0,redoObj.shape);
+                console.log(redoObj.shapeIndex);
+                this.selectShape(redoObj.shapeIndex);
+            } else if (redoObj.action=='create'){   // vice versa
+                deleteShape(redoObj.shapeIndex);
+            }
+            resetCanvas();
         },
         selectShape: function(i){
             this.focusNo=i;
@@ -1142,10 +1183,9 @@ function noshapeDrawn() {
 }
 
 function addFeature(feature) {
-    console.log(noAccess)
     if (!noAccess)
     {
-        shapes[currentShape.id].noFeature = feature;
+        shapes[getHighlightedShape(currentShape.id)].noFeature = feature;
         getFeature(currentShape)
         updateTable(shapes);
     }

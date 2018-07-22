@@ -46,6 +46,7 @@ function checkFeatures()
         document.getElementById("featureLabel").innerHTML = ("These Shapes Require Features &nbsp; <i class='fa fa-caret-down'></i>")
         document.getElementById("mySidenav").style.width = "250px";
         document.getElementById("featureLabel").style.backgroundColor = "#ff0000"
+        document.getElementById("all").style.backgroundColor = '#404040';
         allShapes();
     }
 }

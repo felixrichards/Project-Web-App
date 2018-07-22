@@ -82,7 +82,6 @@ function whichShape() {
                 globalShapes.push(shapes[i]);
             }
         }
-        console.log(123124123423)
     }
     else {
         for (var i = 0; i < shapes.length; i++) {
@@ -99,7 +98,8 @@ function submitAppear(shapes) {
         element.style.opacity = "0"
         document.getElementById('submitButton').style.WebkitTransition = 'opacity 1s';
         document.getElementById('submitButton').style.MozTransition = 'opacity 1s';
-        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById('submit').style.pointerEvents = 'none';
+        hideAll();
         nextShape = false;
         noshapeDrawn();
     }
@@ -108,6 +108,7 @@ function submitAppear(shapes) {
         element.style.opacity = "1"
         document.getElementById('submitButton').style.WebkitTransition = 'opacity 1s';
         document.getElementById('submitButton').style.MozTransition = 'opacity 1s';
+        document.getElementById('submit').style.pointerEvents = 'all';
     }
 }
 

@@ -76,10 +76,19 @@ i {
     display: none;
 }
 
+#redo {
+    position: absolute;
+    top: 10px;
+    left: 268px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
 #restart {
     position: absolute;
     top: 10px;
-    left: 270px;
+    left: 307px;
     z-index: 8;
     font-size: 25px;
     display: none;
@@ -88,7 +97,7 @@ i {
 #table {
     position: absolute;
     top: 10px;
-    left: 305px;
+    left: 342.5px;
     z-index: 6;
     font-size: 25px;
     display: none;
@@ -97,7 +106,7 @@ i {
 #info {
     position: absolute;
     top: 10px;
-    left: 349px;
+    left: 387px;
     z-index: 6;
     font-size: 25px;
     display: none;
@@ -132,11 +141,12 @@ i {
     cursor: pointer;
     padding: 15px;
     border-radius: 20px;
+    pointer-events:none;
 }
 
 .submitButton .button:hover{
     background-color:forestgreen;
-    cursor: default;
+    cursor: pointer;
 }
 
 .overlayEnd {
@@ -198,7 +208,7 @@ i {
 .FeatureDropdownContainer {
     position: absolute;
     top: 5px;
-    left: 375px;
+    left: 412px;
     z-index: 6;
     display: none;
     min-width: 250px;
