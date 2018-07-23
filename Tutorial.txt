@@ -1,0 +1,42 @@
+
+---------------
+Drawing tool:
+---------------
+
+Click a shape icon to select your drawing shape.
+
+Click and drag on the canvas (anywhere on the image) to begin your drawing.
+
+Click the shape you have drawn to select it. You can:
+ - move it around by dragging it
+ - change its size b dragging the surrounding small white boxes
+ - rotate it by dragging the small green box
+ - delete it by clicking the bin button or pressing the delete key on your keyboard
+Unfortunately lines can only be selected using the table tool currently.
+
+Undo your last shape using the left arrow button.
+
+Reset the canvas using the spiral arrow button.
+
+
+---------------
+Table tool:
+---------------
+
+All your drawn shapes are listed here. 
+
+Click a row to select a shape as in the drawing tool. Currently this is the only way to select a line.
+
+Use the shape icons at the top to filter the table by shape.
+
+
+--------------
+Annotating:
+--------------
+
+Draw shapes to mark important features of the image:
+ - The bulge of a galaxy can be marked with a circle. Sometimes there may be more than one!
+ - Use lines to mark a galaxy's spiral arms from the bulge to the end of the arm.
+ - Use an ellipse or circle to outline the boundary of the galaxy.
+ - If you can spot a rare out of the ordinary feature such as a ring or an irregular galaxy, use your best judgement and try to make it with a shape you think is appropriate.
+ 
