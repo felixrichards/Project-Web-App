@@ -570,22 +570,21 @@ function createShape(x0,y0,x,y,shape){
         },
         cursor: "pointer",
         id: id_count++,
-        updateCentre: function(){
+        moveCentre: function(){
             this.centre.x=this.centre.x0+this.x-this.x0;
             this.centre.y=this.centre.y0+this.y-this.y0;
         },
-        testCentre: function(){
-            if (this.centre.x!=this.x+this.w/2||this.centre.y!=this.y+this.h/2){
-                if (this.theta==0){
-                    this.centre.x=this.x+this.w/2;
-                    this.centre.y=this.y+this.h/2;
+        recalculateCentre: function(x,y,w,h,theta,centre){
+            if (centre.x!=x+w/2||centre.y!=y+h/2){
+                if (theta==0){
+                    centre.x=x+w/2;
+                    centre.y=y+h/2;
                 } else {
-                    var cx=Math.round(rotateXCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    var cy=Math.round(rotateYCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    this.centre.x=cx;
-                    this.centre.y=cy;
+                    centre.x=Math.round(rotateXCoord(x+w/2,y+h/2,theta,centre));
+                    centre.y=Math.round(rotateYCoord(x+w/2,y+h/2,theta,centre));
                 }
             }
+            return centre;
         },
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
@@ -604,12 +603,12 @@ function createShape(x0,y0,x,y,shape){
             var y_shift=pos.y-pos_0.y;
             this.x=this.x0+x_shift;
             this.y=this.y0+y_shift;
-            this.updateCentre();
+            this.moveCentre();
         },
         amend: amend,
         changePos: function(){
             if (this.shape!="Line") this.normaliseCoords();
-            this.testCentre();
+            this.centre=this.recalculateCentre(this.x,this.y,this.w,this.h,this.theta,this.centre);
             this.centre.x0=this.centre.x;
             this.centre.y0=this.centre.y;
             this.x0=this.centre.x-this.w/2;
@@ -619,16 +618,35 @@ function createShape(x0,y0,x,y,shape){
             this.x=this.x0;
             this.y=this.y0;
             this.theta0=this.theta;
+            if (this.shape=="Line") {
+                this.x10=this.x1;
+                this.y10=this.y1;
+                this.x20=this.x2;
+                this.y20=this.y2;
+                this.x30=this.x3;
+                this.y30=this.y3;
+            }
             this.boundingRect.selectedIdx=0;
         },
         resetPos: function(){
+            this.testCentre();
             this.centre.x=this.centre.x0;
             this.centre.y=this.centre.y0;
-            this.x=this.x0;
-            this.y=this.y0;
+            this.x=this.centre.x0-this.w/2;
+            this.y=this.centre.y0-this.h/2;
+            // this.x=this.x0;
+            // this.y=this.y0;
             this.w=this.w0;
             this.h=this.h0;
             this.theta=this.theta0
+            if (this.shape=="Line") {
+                this.x1=this.x10;
+                this.y1=this.y10;
+                this.x2=this.x20;
+                this.y2=this.y20;
+                this.x3=this.x30;
+                this.y3=this.y30;
+            }
             this.boundingRect.selectedIdx=0;
             // this.updateCentre();
         },
@@ -667,6 +685,12 @@ function createShape(x0,y0,x,y,shape){
         selfObj.y2=selfObj.y+2*selfObj.h/3;
         selfObj.x3=selfObj.x+selfObj.w;
         selfObj.y3=selfObj.y+selfObj.h;
+        selfObj.x10=selfObj.x1;
+        selfObj.y10=selfObj.y1;
+        selfObj.x20=selfObj.x2;
+        selfObj.y20=selfObj.y2;
+        selfObj.x30=selfObj.x3;
+        selfObj.y30=selfObj.y3;
         selfObj.w=0;
         selfObj.h=0;
     }
