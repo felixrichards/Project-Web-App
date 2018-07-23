@@ -1,0 +1,36 @@
+﻿<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingUpdates.css')}}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<div class="container">
+    <form method="POST" id="newsUpdates">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />.
+        <div class="row">
+            <div class="col-25">
+                <label for="fname">Date</label>
+            </div>
+            <div class="col-75">
+                <input type="text" id="datepicker" name="date" autocomplete="off" placeholder="Click Here">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25">
+                <label for="subject">Subject</label>
+            </div>
+            <div class="col-75">
+                <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+</div>
+
+<script>
+      $(function () {
+          $("#datepicker").datepicker();
+      });
+</script>

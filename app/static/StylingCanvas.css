@@ -1,0 +1,305 @@
+#target {
+    font-size: 16px;
+    margin: 0 auto;
+}
+
+#canv_cont {
+    margin: 0px auto;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 116px);
+    background-color: black;
+}
+
+#imageCanvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.extra {
+    width: 100%;
+    height: 100%;
+}
+
+.drawCanvas {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+}
+
+.UICanvas {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    top: 0;
+}
+
+i {
+    color: white;
+}
+
+#pencil {
+    position: absolute;
+    top: 9px;
+    left: 11px;
+    z-index: 8;
+    font-size: 25px;
+}
+
+#arrows {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
+#bin {
+    position: absolute;
+    top: 10px;
+    left: 195px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
+#undo {
+    position: absolute;
+    top: 10px;
+    left: 229.5px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
+#redo {
+    position: absolute;
+    top: 10px;
+    left: 268px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
+#restart {
+    position: absolute;
+    top: 10px;
+    left: 307px;
+    z-index: 8;
+    font-size: 25px;
+    display: none;
+}
+
+#table {
+    position: absolute;
+    top: 10px;
+    left: 342.5px;
+    z-index: 6;
+    font-size: 25px;
+    display: none;
+}
+
+#info {
+    position: absolute;
+    top: 10px;
+    left: 387px;
+    z-index: 6;
+    font-size: 25px;
+    display: none;
+}
+
+.button {
+    align-items: center;
+    background-color: #FFFFFF;
+    color: black;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    float: left;
+    font-size: 16px;
+    height: 100%;
+    width: 100%;
+}
+
+.submitButton {
+    position: absolute;
+    bottom: 30px;
+    left: 35px;
+    z-index:8;
+    opacity:0;
+}
+
+.submitButton .button {
+    background-color: crimson;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 20px;
+    pointer-events:none;
+}
+
+.submitButton .button:hover{
+    background-color:forestgreen;
+    cursor: pointer;
+}
+
+.overlayEnd {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 9;
+    top: 0;
+    left:0;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0, 0.9);
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+
+.endingContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.endingContainer h1{
+    font-size:4vw;
+    color:white;
+    text-align:center;
+}
+
+.endingContainer h3 {
+    font-size:4vw;
+    color:white;
+    padding-bottom:10px;
+    text-align:center;
+}
+
+.endingContainer div{
+    width:100%;
+    text-align:center;
+    padding-bottom:30px;
+}
+
+.endingContainer div a {
+    text-align: center;
+    text-decoration: none;
+    color: red;
+    width: 100%;
+    font-size: 4vw;
+}
+
+.endingContainer div  a:hover{
+     color:forestgreen;
+}
+
+.aladin-fov {
+    display:none;
+}
+
+.FeatureDropdownContainer {
+    position: absolute;
+    top: 5px;
+    left: 412px;
+    z-index: 6;
+    display: none;
+    min-width: 250px;
+}
+
+.FeatureDropdown {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.FeatureDropdown ul li {
+    position: relative;
+}
+
+li ul
+{
+    display: none;
+}
+
+.FeatureDropdown li a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    padding: 8px 15px 8px 15px;
+    background-color: rgba(0,0,0,0.1);
+    min-width: 250px;
+}
+
+.FeatureHover:hover ul {
+    display: block;
+    position: absolute;
+}
+
+#bigger{
+    font-size:25px;
+    color:crimson
+}
+
+#bigger:hover {
+    cursor: default;
+}
+
+#featureItems:hover {
+    color: forestgreen;
+    cursor: pointer;
+}
+
+.spacingFeatures {
+    padding-top: 0px;
+    padding-bottom: 15px;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.HideTable {
+    height: 50px;
+    width: 0;
+    position: fixed;
+    z-index: 7;
+    top: 58px;
+    right: 0;
+    overflow-x: hidden;
+    transition: 0.6s;
+    margin-top: 100px;
+    background-color: #333;
+    border: thick;
+    border-color: white;
+    border-radius: 15px;
+    padding-top:5px;
+    padding-bottom:5px;
+    cursor:pointer;
+}
+
+.HideIcon {
+    min-width: 280px;
+    width: 100%;
+}
+
+.HideIcon div {
+    display: block;
+    margin: auto;
+    width: 70%;
+}
+
+.HideText {
+    transform: rotate(270deg);
+    color:white;
+    float:left;
+    font-size:15px;
+}
+
+.HideText:hover{
+    color:forestgreen;
+}

@@ -1,0 +1,74 @@
+table{
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.filterBlock{
+    min-width:220px;
+}
+
+.tables .filterBlock{
+    width:100%;
+    text-align:center;
+}
+
+.filterBlock div{
+    display:inline-block;
+}
+
+.filter{
+    color:white;
+    font-weight:bold;
+}
+
+.square {
+    height: 30px;
+    width: 30px;
+    background-color: #404040;
+    margin: 5px;
+    outline: 0 !important;
+    cursor: pointer;
+}
+
+div svg{
+    display: block;
+    margin:auto;
+    height:30px;
+    width:30px;
+}
+
+td, th{
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}
+
+tbody{
+    color:white;
+}
+
+.selected {
+    background-color: green;
+}
+
+.selectedFeature {
+    background-color: crimson;
+}
+
+th{
+    color:white;
+}
+
+.sidenav {
+    height: calc(100% - 116px);
+    width: 0;
+    position: fixed;
+    z-index: 9;
+    top: 58px;
+    right: 0;
+    background-color: #333;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 0px
+}

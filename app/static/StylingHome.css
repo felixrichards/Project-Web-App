@@ -1,0 +1,95 @@
+.galaxyBackground {
+    width: 100%;
+    height: calc(100% - 116px);
+}
+
+.active{
+    background-color: red;
+}
+
+.dot:hover {
+    background-color: crimson;
+}
+
+p {
+    color: white;
+    font-weight: bold;
+    text-align:center;
+    font-size:25px;
+}
+
+.teamMemberContainer {
+    display: block;
+    margin: auto;
+    width: 80%;
+    margin-top: 100px;
+    min-height: 300px;
+    max-width: 1200px;
+}
+
+r {
+    color: white;
+    font-weight: bold;
+    font-size:100px;
+    display:inline-block;
+    width:100%;
+    text-align:center;
+}
+
+.buttonInvolve {
+    align-items: center;
+    background-color: crimson;
+    border-radius: 20px;
+    color: white;
+    padding: 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.buttonContainer {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.buttonInvolve:hover{
+    background-color:forestgreen;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url(/static/Galaxy.jpg);
+    /* Full height */
+    height: auto;
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-top: 100px;
+    padding-bottom: 80px;
+}
+
+.parallaxScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    height: calc(100% - 116px);
+}
+
+.parallax.home {
+    margin-top: -100px;
+}
+
+@media only screen and (max-width: 1000px) {
+    r {
+        font-size: 35px;
+    }
+
+    p {
+        font-size: 15px;
+    }
+
+    .teamMemberContainer {
+        margin-top: 50px;
+    }
+}

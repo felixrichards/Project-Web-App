@@ -1,0 +1,94 @@
+.galaxyBackground {
+    width: 100%;
+    height: calc(100% - 116px);
+}
+
+p {
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    text-align:center;
+}
+
+h2 {
+    color: forestgreen;
+    font-weight: bold;
+    font-size: 55px;
+    text-align: center;
+    margin-top: 100px;
+}
+
+r {
+    color: white;
+    font-weight: bold;
+    font-size: 100px;
+    display: inline-block;
+    width: 100%;
+    padding: 0 0 100px
+}
+
+.tutorialShapes {
+    width: 700px;
+    border-radius: 15px;
+    border: groove;
+    text-align:center
+}
+
+.imageContainer img {
+    display: block;
+    margin:auto;
+}
+
+.teamMemberContainer {
+    display: block;
+    margin: auto;
+    width: 80%;
+    margin-top: 100px;
+    min-height: 300px;
+    max-width: 1200px;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url(/static/GalaxyTutorial.jpg);
+    /* Full height */
+    height: auto;
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-top: 100px;
+    padding-bottom: 80px;
+}
+
+.parallaxScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    height: calc(100% - 116px);
+}
+
+.parallax.tutorial {
+    margin-top: -100px;
+}
+
+@media only screen and (max-width: 1000px) {
+    .teamMemberContainer {
+        width: 80%;
+        margin-top: 0px;
+    }
+
+    .tutorialShapes {
+        width: 100%;
+        height: inherit;
+    }
+
+    p{
+        font-size:15px;
+    }
+
+    h2{
+        margin-top:50px;
+    }
+}

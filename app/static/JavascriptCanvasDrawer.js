@@ -13,16 +13,10 @@ var state=defaultState();
 document.getElementById('drawCanvas').onmousedown = function(){
   return false;
 };
-document.getElementById('imageCanvas').onmousedown = function(){
-  return false;
-};
+
 document.getElementById('UICanvas').onmousedown = function(){
   return false;
 };
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById("all").style.backgroundColor = '#818181';
-}, false);
 
 var drawerRect={
     x:0,
@@ -32,14 +26,6 @@ var drawerRect={
 };
 UICanvas.width = document.getElementById("canv_cont").clientWidth;
 init()
-
-window.onresize = function (event) {
-    state = defaultState(true);
-    shapes = [];
-    updateTable(shapes);
-    resetCanvas();
-    id_count = 0;
-};
 
 // Initialise buttons and shapes arrays
 var buttons=[];
@@ -51,26 +37,101 @@ var button_x_inc=button_x_shift+button_size;
 var button_x_right_shift=drawerRect.w;
 // button_x_right_shift=300
 
+var exploringMode = true;
 //Left sitting buttons
 buttons.push(createButton(button_x_shift,5,button_size,button_size,
-    function(){state.shape="Rect";},"Rect"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Circle";},"Circle"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Ellipse";},"Ellipse"))
-buttons.push(createButton(button_x_shift+=button_x_inc,5,button_size,button_size,
-    function(){state.shape="Line";},"Line"))
-    
-//Right sitting buttons
+    function () { showAnnotation(); }, "Switch"))
 buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function(){state=defaultState(true); shapes=[]; resetCanvas(); updateTable(shapes);},"Reset"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { deleteShape(); reorderID(shapes); minusCount();},"Delete"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { state.resetSelected(); shapes.pop(); resetCanvas(); updateTable(shapes); minusCount();}, "Undo"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-    function () { showHideTable(); }, "Table"))
+    function () {  }, "Layers"))
 
+// Returns an object (rectangle) with left, top, width and height attributes
+function showAnnotation() {
+    exploringMode = false;
+    if (buttons.length == 2)
+    {
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].clear()
+        }
+        buttons = [];
+        button_x_shift = 5;
+
+        buttons.push(createButton(button_x_shift, 5, button_size, button_size,
+            function () { showAnnotation(); }, "Switch"))
+        document.getElementById("pencil").style.display = "none";
+        document.getElementById("arrows").style.display = "block";
+        document.getElementById("bin").style.display = "block";
+        document.getElementById("undo").style.display = "block";
+        document.getElementById("restart").style.display = "block";
+        document.getElementById("table").style.display = "block";
+        document.getElementById("info").style.display = "block";
+        document.getElementById("redo").style.display = "block";
+        document.getElementById("featureDropdownContainer").style.display = "block";
+
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Rect"; }, "Rect"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Circle"; }, "Circle"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Ellipse"; }, "Ellipse"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Line"; }, "Line"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { deleteShape(); }, "Delete"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.undo(); updateTable(shapes); allShapes(); }, "Undo"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.redo(); updateTable(shapes); allShapes(); }, "Redo"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state = defaultState(true); shapes = []; resetCanvas(); updateTable(shapes); }, "Reset"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { showHideTable(); }, "Table"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { showHideCheatSheet(); }, "Info"))
+
+        $('.aladin-zoomControl').css('right', '4000');
+        $('.aladin-layersControl-container').css('top', '4000');
+        $('.aladin-layersControl-container').css('left', '4000');
+        document.getElementById("aladin-lite-div").style.pointerEvents = "none";
+        $('.aladin-layerBox').css('display', 'none');
+
+        state.resetSelected();
+        state = defaultState();
+    }
+    else {
+        exploringMode = true;
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].clear()
+        }
+        buttons = [];
+        button_x_shift = 5;
+
+        buttons.push(createButton(button_x_shift, 5, button_size, button_size,
+            function () { showAnnotation(); }, "Switch"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { }, "Layers"))
+        document.getElementById("pencil").style.display = "block";
+        document.getElementById("arrows").style.display = "none";
+        document.getElementById("bin").style.display = "none";
+        document.getElementById("undo").style.display = "none";
+        document.getElementById("restart").style.display = "none";
+        document.getElementById("table").style.display = "none";
+        document.getElementById("info").style.display = "none";
+        document.getElementById("redo").style.display = "none";
+        document.getElementById("featureDropdownContainer").style.display = "none";
+        document.getElementById("myCheatSheet").style.width = "0";
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("aladin-lite-div").style.pointerEvents = "unset";
+
+        $('.aladin-layersControl-container').css('top', '4');
+        $('.aladin-layersControl-container').css('left', '41');
+        $('.aladin-zoomControl').css('right', '8');
+        noshapeDrawn();
+        nextShape = false;
+
+        state.resetSelected();
+        state = defaultState();
+    }
+}
 
 // Returns an object (rectangle) with left, top, width and height attributes
 function createRect(x, y, w, h,theta=0){
@@ -81,21 +142,6 @@ function createRect(x, y, w, h,theta=0){
         h:h,
         theta:theta
     }; 
-}
-
-function minusCount()
-{
-    if (id_count > 0)
-    {
-        id_count--;
-    }
-}
-
-function reorderID(shapes) {
-    for (var i = 0; i < shapes.length; i++) {
-        shapes[i].id = i
-    }
-    updateTable(shapes);
 }
 
 // Returns an object (button) with positional attributes and a function (behaviour) to run when pressed
@@ -137,14 +183,6 @@ function createButton(x, y, w, h, behaviour, img){
                 x+w,y,
                 x,y+h,
                 x+w,y+h);
-        } else if (btn.img=="Undo"){
-            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
-        } else if (btn.img=="Delete"){
-            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
-        } else if (btn.img=="Reset"){
-            btn.ctx.fillText("",btn.rect.x+btn.rect.w/2,btn.rect.y+btn.rect.h/1.31);
-        } else if (btn.img == "Table") {
-            btn.ctx.fillText("", btn.rect.x + btn.rect.w / 2, btn.rect.y + btn.rect.h / 1.31);
         }
         
         if (btn.draw){
@@ -300,7 +338,7 @@ function createShape(x0,y0,x,y,shape){
         
         var amendBoxes=function(){
             var amendBox=function(loc,dir,theta=0,p={x:0,y:0},r_shift=0){
-                boxW=10;
+                boxW=15;
                 function drawAmendRect(shape,p){
                     shape.p=p;
                     if (dir==9) shape.colour="rgba(20, 200, 20, 0.5)";
@@ -391,8 +429,9 @@ function createShape(x0,y0,x,y,shape){
                 this.amendBoxes.redraw();
             },
             selectBox: function(idx){
-                setSelfSelectedIdx(idx);
+                this.selectedIdx=idx;
             },
+            selectedIdx:-1,
             isInside: function(pos){
                 // Check for amend points
                 amendIdx=this.amendBoxes.isInside(pos);
@@ -511,7 +550,8 @@ function createShape(x0,y0,x,y,shape){
     }
     
     var selfObj={
-        shape:shape,
+        shape: shape,
+        noFeature: nextShapeValue,
         x:x0,
         y:y0,
         x0:x0,
@@ -521,7 +561,7 @@ function createShape(x0,y0,x,y,shape){
         w0:x-x0,
         h0:y-y0,
         theta: 0,
-        theta_0: 0,
+        theta0: 0,
         centre:{
             x:x0+(x-x0)/2,
             y:y0+(y-y0)/2,
@@ -530,22 +570,21 @@ function createShape(x0,y0,x,y,shape){
         },
         cursor: "pointer",
         id: id_count++,
-        updateCentre: function(){
+        moveCentre: function(){
             this.centre.x=this.centre.x0+this.x-this.x0;
             this.centre.y=this.centre.y0+this.y-this.y0;
         },
-        testCentre: function(){
-            if (this.centre.x!=this.x+this.w/2||this.centre.y!=this.y+this.h/2){
-                if (this.theta==0){
-                    this.centre.x=this.x+this.w/2;
-                    this.centre.y=this.y+this.h/2;
+        recalculateCentre: function(x,y,w,h,theta,centre){
+            if (centre.x!=x+w/2||centre.y!=y+h/2){
+                if (theta==0){
+                    centre.x=x+w/2;
+                    centre.y=y+h/2;
                 } else {
-                    var cx=Math.round(rotateXCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    var cy=Math.round(rotateYCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    this.centre.x=cx;
-                    this.centre.y=cy;
+                    centre.x=Math.round(rotateXCoord(x+w/2,y+h/2,theta,centre));
+                    centre.y=Math.round(rotateYCoord(x+w/2,y+h/2,theta,centre));
                 }
             }
+            return centre;
         },
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
@@ -564,12 +603,12 @@ function createShape(x0,y0,x,y,shape){
             var y_shift=pos.y-pos_0.y;
             this.x=this.x0+x_shift;
             this.y=this.y0+y_shift;
-            this.updateCentre();
+            this.moveCentre();
         },
         amend: amend,
         changePos: function(){
             if (this.shape!="Line") this.normaliseCoords();
-            this.testCentre();
+            this.centre=this.recalculateCentre(this.x,this.y,this.w,this.h,this.theta,this.centre);
             this.centre.x0=this.centre.x;
             this.centre.y0=this.centre.y;
             this.x0=this.centre.x-this.w/2;
@@ -578,26 +617,50 @@ function createShape(x0,y0,x,y,shape){
             this.h0=this.h;
             this.x=this.x0;
             this.y=this.y0;
-            this.selectedIdx=0;
+            this.theta0=this.theta;
+            if (this.shape=="Line") {
+                this.x10=this.x1;
+                this.y10=this.y1;
+                this.x20=this.x2;
+                this.y20=this.y2;
+                this.x30=this.x3;
+                this.y30=this.y3;
+            }
+            this.boundingRect.selectedIdx=0;
         },
         resetPos: function(){
-            this.x=this.x0;
-            this.y=this.y0;
+            this.testCentre();
+            this.centre.x=this.centre.x0;
+            this.centre.y=this.centre.y0;
+            this.x=this.centre.x0-this.w/2;
+            this.y=this.centre.y0-this.h/2;
+            // this.x=this.x0;
+            // this.y=this.y0;
             this.w=this.w0;
             this.h=this.h0;
-            this.selectedIdx=0;
+            this.theta=this.theta0
+            if (this.shape=="Line") {
+                this.x1=this.x10;
+                this.y1=this.y10;
+                this.x2=this.x20;
+                this.y2=this.y20;
+                this.x3=this.x30;
+                this.y3=this.y30;
+            }
+            this.boundingRect.selectedIdx=0;
             // this.updateCentre();
         },
         boundingRect: 0,
         createBoundingRect: function(){
+            var i = this.boundingRect.selectedIdx;
             this.boundingRect=createBoundingRect(this);
             this.boundingRect.redraw()
+            this.boundingRect.selectedIdx=i;
         },
-        selectedIdx:-1,
         interact: function(pos,pos_0){
-            if (this.selectedIdx==-1) this.move(pos,pos_0);
+            if (this.boundingRect.selectedIdx==-1) this.move(pos,pos_0);
             else{
-                this.amend(pos,pos_0,this.selectedIdx);
+                this.amend(pos,pos_0,this.boundingRect.selectedIdx);
             }
         },
         normaliseCoords: function (){
@@ -613,15 +676,21 @@ function createShape(x0,y0,x,y,shape){
         }
     }
     function setSelfSelectedIdx(idx){
-        selfObj.selectedIdx=idx;
+        selfObj.boundingRect.selectedIdx=idx;
     }
-    if (shape=="Line") {
+    if (shape=="Line"){
         selfObj.x1=selfObj.x+selfObj.w/3;
         selfObj.y1=selfObj.y+selfObj.h/3;
         selfObj.x2=selfObj.x+2*selfObj.w/3;
         selfObj.y2=selfObj.y+2*selfObj.h/3;
         selfObj.x3=selfObj.x+selfObj.w;
         selfObj.y3=selfObj.y+selfObj.h;
+        selfObj.x10=selfObj.x1;
+        selfObj.y10=selfObj.y1;
+        selfObj.x20=selfObj.x2;
+        selfObj.y20=selfObj.y2;
+        selfObj.x30=selfObj.x3;
+        selfObj.y30=selfObj.y3;
         selfObj.w=0;
         selfObj.h=0;
     }
@@ -629,31 +698,21 @@ function createShape(x0,y0,x,y,shape){
 }
 
 function getShapeByID(id){
-    for (var j=0;j<shapes.length;j++){
-        if (id==shapes[j].id) {
+    for (var j = 0; j < shapes.length;j++){
+        if (id == shapes[j].id) {
             return j;
         }
     }
 }
 
 // Deletes a given shape, default is selected shape - Work an undo here??
-function deleteShape(i=state.selectedNo){
+function deleteShape(i = state.selectedNo, addToUndo=true) {
     if (i>-1) {
+        if (addToUndo) state.addUndo(i, 'create', Object.assign({}, shapes[i]));
         shapes.splice(i,1);
         state.resetSelected();
         resetCanvas();
         updateTable(shapes);
-    }
-}
-
-function showHideTable()
-{
-    if (document.getElementById("mySidenav").style.width == "250px")
-    {
-        document.getElementById("mySidenav").style.width = "0";
-    }
-    else {
-        document.getElementById("mySidenav").style.width = "250px";
     }
 }
 
@@ -676,7 +735,7 @@ function cartesianToElliptical(shape){
 
 // Makes w/h of canvas same as image
 function init(){
-    var background = document.getElementById("imageCanvas");
+    //var background = document.getElementById("imageCanvas");
     // UICanvas.width=drawerRect.w;
     drawCanvas.width = document.getElementById("canv_cont").clientWidth;
     drawCanvas.height = document.getElementById("canv_cont").clientHeight;
@@ -688,13 +747,16 @@ function clrCanvas(){
 }
 
 function resetCanvas(){
-    // console.log("reset")
     clrCanvas();
     init();
     for (var i=0;i<shapes.length;i++){
         shapes[i].redraw();
     }
 }
+
+$(".UICanvas").hover(function () {
+    document.getElementById("UICanvas").style.pointerEvents = "none";
+});
 
 // ---------
 // Handles mouse activity for shape drawing
@@ -704,103 +766,134 @@ var flag=1;
 var focusObject=null;
 var buttonPressed=false;
 var shapePressed=false;
+var shapeAmended=false;
 var cursorLock = false;
 var tablePressed;
+var tableButton = 8;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
     // console.log(mP_0);
     buttonPressed=false;
     shapePressed = false;
+    shapeAmended=false
     tablePressed = false;
     cursorLock=true;
     updateRows();
-    
-    t_0=e.timeStamp;
-    // Check user is clicking buttons
-    for (var i=0;i<buttons.length;i++){
-        if (isInside(mP_0,buttons[i].rect)&&!buttonPressed){
-            buttons[i].click();
-            buttonPressed = true;
-            tablePressed = false;
-            if (i == 7 )
-            {
-                tablePressed = true
+
+    document.getElementById("UICanvas").style.pointerEvents = "none";
+
+    if (!preventDrawing) {
+        t_0 = e.timeStamp;
+        // Check user is clicking buttons
+        for (var i = 0; i < buttons.length; i++) {
+            if (isInside(mP_0, buttons[i].rect) && !buttonPressed) {
+                buttons[i].click();
+                buttonPressed = true;
+                tablePressed = false;
+                // For keeping last highlighted shape when table button is clicked
+                if (i == tableButton) {
+                    tablePressed = true
+                }
+
+                document.getElementById("UICanvas").style.pointerEvents = "all";
             }
         }
     }
     
     // Check user is clicking shapes (reverse loop for z-order)
     var temp;
-    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing) {
+    if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
- 
+        shapeHighlighted = false;
     } else {
-        console.log(2);
-        state.resetSelected();
+        if (!highlightRemoval)
+        {
+            state.resetSelected();
+        }
+        
         for (var i = shapes.length - 1; i >= 0; i--) {
-            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing) {
+            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode) {
                 state.selectShape(i);
-                shapes[i].selectedIdx = -1;
+                shapes[i].boundingRect.selectedIdx = -1;
+                allShapes();
+                noAccess = false;
+                getFeature(shapes[i]);
+                updateRows(i);
+                stopDropDown = false;
+                shapeHighlighted = false;
             }
         }
     }
-
-    if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing) {
+    
+    
+    if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
+        noshapeDrawn();
     }
+
     focusObject = getFocusObject(getMousePos(drawCanvas, e));
     updateCursor(focusObject.cursor); 
-
-    if (!buttonPressed && !preventDrawing && !(isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing)) {
-        document.getElementById("mySidenav").style.width = "0";
-    }
     
     resetCanvas();
+    
+    
 }, false);
+
+var stopDropDown = false;
+
 element.addEventListener("mousemove", function(e){
     shapeDrawn=false;
     
     //Check if object is not currently being used
-    if (!cursorLock) focusObject=getFocusObject(getMousePos(drawCanvas,e));
+    if (!cursorLock) focusObject = getFocusObject(getMousePos(drawCanvas, e));
     updateCursor(focusObject.cursor);
-    
+
+    stopDropDown = false;
+
     t=e.timeStamp;
     mP = getMousePos(drawCanvas, e);
     if (state.focusNo > -1) {
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
-            if (shapePressed)
-            {
-         
-            }
+            shapeAmended = true;
+            stopDropDown = true;
         }
-    } else if (flag===0){
+    } else if (flag === 0) {
         // Check user is dragging (150 was chosen from experiments)
         if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
             drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
-            shapeDrawn = true;       
+            shapeDrawn = true;   
+            stopDropDown = true;
         }
+    }
+    if (stopDropDown & !shapeHighlighted) {
+        document.getElementById("featureDropdownContainer").style.pointerEvents = "none"
+        document.getElementById("submit").style.pointerEvents = "none"
+
+    }
+    else {
+        document.getElementById("featureDropdownContainer").style.pointerEvents = "all"
+        document.getElementById("submit").style.pointerEvents = "all"
     }
     updateCursor(mP);
 }, false);
 element.addEventListener("mouseup", function(e){
     flag=1;
     cursorLock=false;
-    if (state.focusNo>-1){  // If user was interacting with a shape
+    if (state.focusNo>-1){  // If user was interacting with a shape (amend, move)
+        if (shapeAmended) state.addUndo(state.focusNo);
         shapes[state.focusNo].changePos();
     }
-    if (shapeDrawn){        
-        shapes.push(createShape(mP_0.x,mP_0.y,mP.x,mP.y,state.shape));
+    if (shapeDrawn){
+        shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
+        state.addUndo(shapes.length-1, 'delete', Object.assign({}, shapes[shapes.length-1]));
+        allShapes();
         state.selectShape(shapes.length - 1);
-        document.getElementById("all").style.backgroundColor = '#818181';
-        document.getElementById("rect").style.backgroundColor = '#404040';
-        document.getElementById("circle").style.backgroundColor = '#404040';
-        document.getElementById("ellipse").style.backgroundColor = '#404040';
-        document.getElementById("line").style.backgroundColor = '#404040';
-        updateTable(shapes);
+        noAccess = false;
+        getFeature(shapes[shapes.length - 1]);
     }
     // Unfocus anything
     state.focusNo=-1
@@ -851,7 +944,7 @@ function getFocusObject(pos){
 
 // Check if a given position is inside a given rectangle
 function isInside(pos,rect){
-    return pos.x > rect.x && pos.x < rect.x+rect.w && pos.y < rect.y+rect.h && pos.y > rect.y
+    return pos.x >= rect.x && pos.x <= rect.x+rect.w && pos.y <= rect.y+rect.h && pos.y >= rect.y
 }
 
 function isInsideButtons(pos){
@@ -863,13 +956,72 @@ function defaultState(keep_shape=false){
         drawing: false,
         focusNo: -1,
         selectedNo: -1,
+        addUndo: function(idx, action='amend', shape=Object.assign({}, shapes[idx]), clearStack=true){
+            // clearStack will be false if called from a redo: 
+            //      interacting with the canvas should reset the redoStack
+            if (clearStack) {
+                console.log("Hey");
+                this.redoStack=[];
+            }
+            this.undoStack.push({
+                shapeIndex: idx,
+                shape: shape,
+                action: action
+            });
+        },
+        addRedo: function(obj){
+            obj.shape=Object.assign({}, obj.shape);
+            this.redoStack.push(Object.assign({}, obj));
+        },
+        undoStack: [],
+        redoStack: [],
+        undo: function(){
+            if (this.undoStack.length<1) return;
+            undoObj=this.undoStack.pop();
+            i=undoObj.shapeIndex;
+            console.log("Shape that is added to redo",undoObj.shape)
+            this.addRedo(undoObj);
+            if (undoObj.action=='amend'){
+                shapes[i]=Object.assign({}, undoObj.shape);
+                shapes[i].resetPos();
+                this.selectShape(i);
+            } else if (undoObj.action=='delete'){
+                deleteShape(i,false);
+            } else if (undoObj.action=='create'){
+                shapes.splice(i,0,Object.assign({}, undoObj.shape));
+                this.selectShape(i);
+            }
+            resetCanvas();
+            console.log("At undo, undoStack size is",this.undoStack.length);
+            console.log("At undo, redoStack size is",this.redoStack.length);
+        },
+        redo: function(){
+            if (this.redoStack.length<1) return;
+            redoObj=this.redoStack.pop();
+            i=redoObj.shapeIndex;
+            this.addUndo(i, redoObj.action, redoObj.shape, false);
+            if (redoObj.action=='amend'){
+                shapes[i]=Object.assign({}, redoObj.shape);
+                shapes[i].changePos();
+                this.selectShape(i);
+            } else if (redoObj.action=='delete'){   // Should recreate the shape if undo deleted
+                shapes.splice(i,0,Object.assign({}, redoObj.shape));
+                console.log("Shape that is created at redo",redoObj.shape);
+                this.selectShape(i);
+            } else if (redoObj.action=='create'){   // vice versa
+                deleteShape(i);
+            }
+            resetCanvas();
+            console.log("At redo, undoStack size is",this.undoStack.length);
+            console.log("At redo, redoStack size is",this.redoStack.length);
+        },
         selectShape: function(i){
             this.focusNo=i;
             this.selectedNo=i;
             shapePressed=true;
             shapes[i].selected=true;
             updateTable(shapes);
-            updateRows(i);
+            updateRows(globalShapes.findIndex(el => el.id === shapes[i].id));
         },
         resetSelected: function(){
             if (this.selectedNo > -1 && !tablePressed) {
@@ -880,21 +1032,27 @@ function defaultState(keep_shape=false){
                 this.focusNo = -1;
                 this.selectedNo = -1;
             }
+
+            // If table button is pressed last highlighted shape is preserved
             if (tablePressed)
             {
                 try {
                     shapes[this.selectedNo].selected = true; 
                     shapePressed = true;
                     updateTable(shapes);
-                    updateRows(this.selectedNo);
+                    updateRows(globalShapes.findIndex(el => el.id === shapes[this.selectedNo].id));
                 } catch (err) { }
             }
         }
     }
     if (keep_shape) outObj.shape=state.shape;
     else outObj.shape = "None";
-    id_count = 0;
     return outObj;
+}
+
+function getHighlightedShape(index) {
+    let indexs = shapes.findIndex(el => el.id === index)
+    return indexs
 }
 
 // Chooses the shape to draw
@@ -909,13 +1067,6 @@ function drawShape(x,y,w,h,shape,theta=0,p={x:x+w/2,y:y+h/2}){
 }
 
 function drawRect(shape,button=false,bounding=false,amend=false){
-    
-    // console.log("caller is " + drawRect.caller);
-    if (!button&&!bounding&&!amend&&shape.theta!=0){
-        console.log("Coord at shape drawing is");
-        console.log(shape.x+", "+shape.y);
-    }
-    
     ctx.beginPath();
     if (shape.theta==0){
         ctx.rect(shape.x,shape.y,shape.w,shape.h);
@@ -1042,3 +1193,79 @@ function rotateRect(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
     }
     return o;
 }
+
+var currentShape;
+var noAccess = true;
+var nextShape = false;
+var nextShapeValue = "-"
+
+function getFeature(shape)
+{
+    if (shape.noFeature == "-" && !noAccess)
+    {
+        document.getElementById("featureLabel").innerHTML = ("What feature is this " + shape.shape + "? " + "&nbsp; <i class='fa fa-caret-down'></i>")
+    }
+    else if (!noAccess)
+    {
+        document.getElementById("featureLabel").innerHTML = ("Feature: " + shape.noFeature + "&nbsp; <i class='fa fa-caret-down'></i>")
+    }
+
+    document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
+    currentShape = shape;
+    nextShape = false
+    nextShapeValue = "-"
+}
+
+function noshapeDrawn() {
+    if (!nextShape)
+    {
+        document.getElementById("featureLabel").innerHTML = ("What feature will you draw? " + "&nbsp; <i class='fa fa-caret-down'></i>")
+        document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
+        noAccess = true
+    }
+}
+
+function addFeature(feature) {
+    if (!noAccess)
+    {
+        globalShapes[getHighlightedShape(currentShape.id)].noFeature = feature;
+        updateTable(shapes);
+        updateRowsRed(getHighlightedShape(currentShape.id), "Red");
+    }
+    else {
+        document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")
+        nextShape = true
+        nextShapeValue = feature;
+    }
+    document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
+}
+
+var highlightRemoval
+function changeTo() {
+    preventDrawing = true;
+    highlightRemoval = true;
+}
+
+function changeBack() {
+    preventDrawing = false;
+    highlightRemoval = false;
+}
+
+$(".HideTable").hover(function () {
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+});
+
+$(".FeatureList").hover(function () {
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+});
+
+$(".cheatSheet").hover(function () {
+    console.log(123123)
+    preventDrawing = true
+}, function () {
+    preventDrawing = false;
+});

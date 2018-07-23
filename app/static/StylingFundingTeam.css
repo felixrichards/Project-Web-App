@@ -1,0 +1,186 @@
+.groupPhoto {
+    width: 800px;
+    border-radius: 20px;
+    border: groove;
+}
+
+div .groupPhoto {
+    display: block;
+    margin: auto;
+}
+
+.teamMemberContainer {
+    display: block;
+    margin: auto;
+    width: 80%;
+    margin-top: 100px;
+    min-height:300px;
+    max-width:1200px;
+}
+
+.TeamMember1Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 400px;
+    height: 300px;
+}
+
+.TeamMember2Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 250px;
+    height: 300px;
+}
+
+.TeamMember3Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 200px;
+    height: 300px;
+}
+
+.TeamMember4Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 250px;
+    height: 300px;
+}
+
+.TeamMember5Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 300px;
+    height: 300px;
+}
+
+.TeamMember6Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 400px;
+    height: 300px;
+}
+
+.TeamMember7Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 400px;
+    height: 350px;
+}
+
+.Funding1Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 400px;
+    height: 300px;
+}
+
+.Funding2Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 350px;
+    height: 350px;
+}
+
+.Funding3Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 350px;
+    height: 300px;
+}
+
+.Funding4Photo {
+    border-radius: 20px;
+    border: groove;
+    width: 300px;
+    height: 250px;
+    background-color: white;
+}
+
+.imageContainer.left {
+    float: left;
+    padding-right:70px;
+}
+
+.imageContainer.right {
+    float: right;
+    padding-left: 70px;
+}
+
+.imageContainer img {
+    display: block
+}
+
+h3{
+    font-size:40px;
+    font-weight:bold;
+    color:white;
+}
+
+p {
+    color: white;
+    font-weight: bold;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url(/static/GalaxyTeam.jpg);
+    /* Full height */
+    height: auto;
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-top: 100px;
+    padding-bottom:80px;
+}
+
+.parallaxScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    height: calc(100% - 116px);
+}
+
+.parallax.funding{
+     margin-top: -100px;
+}
+
+p a:link {
+    color: red;
+}
+
+p a:visited {
+    color: green;
+}
+
+@media only screen and (max-width: 1000px) {
+    .groupPhoto {
+        width: 90%;
+    }
+
+    .imageContainer.left {
+        float: none;
+        padding-right: 0px;
+    }
+
+    .imageContainer.right {
+        float: none;
+        padding-left: 0px;
+    }
+
+    .teamMemberContainer {
+        width: 70%;
+        margin-top: 50px;
+    }
+
+    .TeamMember1Photo, .TeamMember2Photo, .TeamMember3Photo, .TeamMember4Photo, .TeamMember5Photo, .TeamMember6Photo, .TeamMember7Photo {
+        width: 100%;
+        height: auto;
+    }
+
+    .Funding1Photo, .Funding2Photo, .Funding3Photo, .Funding4Photo {
+        width: 100%;
+        height: auto;
+    }
+}

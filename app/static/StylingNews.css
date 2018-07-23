@@ -1,0 +1,61 @@
+.teamMemberContainer {
+    display: block;
+    margin: auto;
+    width: 80%;
+    min-height:300px;
+    max-width:1200px;
+}
+
+.teamMemberContainer.twitter{
+      margin-top: 0px;
+      margin-bottom: 100px;
+      width: 40%;
+}
+
+h3{
+    font-size:40px;
+    font-weight:bold;
+    color:white;
+}
+
+p {
+    color: white;
+    font-weight: bold;
+}
+
+table{
+    width:100%;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url(/static/GalaxyTeam.jpg);
+    /* Full height */
+    height: auto;
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-top: 100px;
+    padding-bottom:80px;
+}
+
+.parallaxScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    height: calc(100% - 116px);
+}
+
+@media only screen and (max-width: 1000px) {
+    .teamMemberContainer {
+        width: 70%;
+        margin-top: 50px;
+    }
+
+    .teamMemberContainer.twitter{
+        width: 60%;
+        margin-bottom: 50px;
+    }
+}
