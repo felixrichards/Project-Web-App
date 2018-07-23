@@ -570,22 +570,24 @@ function createShape(x0,y0,x,y,shape){
         },
         cursor: "pointer",
         id: id_count++,
-        updateCentre: function(){
+        moveCentre: function(){
             this.centre.x=this.centre.x0+this.x-this.x0;
             this.centre.y=this.centre.y0+this.y-this.y0;
         },
-        testCentre: function(){
-            if (this.centre.x!=this.x+this.w/2||this.centre.y!=this.y+this.h/2){
-                if (this.theta==0){
-                    this.centre.x=this.x+this.w/2;
-                    this.centre.y=this.y+this.h/2;
+        recalculateCentre: function(x,y,w,h,theta,centre){
+            // Calculates centre after amendment of rotated shape
+            if (centre.x!=x+w/2||centre.y!=y+h/2){
+                if (theta==0){
+                    centre.x=x+w/2;
+                    centre.y=y+h/2;
                 } else {
-                    var cx=Math.round(rotateXCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    var cy=Math.round(rotateYCoord(this.x+this.w/2,this.y+this.h/2,this.theta,this.centre));
-                    this.centre.x=cx;
-                    this.centre.y=cy;
+                    var cx=rotateXCoord(x+w/2,y+h/2,theta,centre);
+                    var cy=rotateYCoord(x+w/2,y+h/2,theta,centre);
+                    centre.x=cx;
+                    centre.y=cy;
                 }
             }
+            return centre;
         },
         redraw: function(){
             if (this.shape=="Line") drawLine(this.x,this.y
@@ -604,12 +606,14 @@ function createShape(x0,y0,x,y,shape){
             var y_shift=pos.y-pos_0.y;
             this.x=this.x0+x_shift;
             this.y=this.y0+y_shift;
-            this.updateCentre();
+            this.moveCentre();
+            console.log(this.centre.x0);
         },
         amend: amend,
         changePos: function(){
             if (this.shape!="Line") this.normaliseCoords();
-            this.testCentre();
+            console.log("Before change pos",{x:this.x,y:this.y,x0:this.x0,y0:this.y0,cx:this.centre.x,cy:this.centre.y});
+            this.centre=this.recalculateCentre(this.x,this.y,this.w,this.h,this.theta,this.centre);
             this.centre.x0=this.centre.x;
             this.centre.y0=this.centre.y;
             this.x0=this.centre.x-this.w/2;
@@ -618,17 +622,39 @@ function createShape(x0,y0,x,y,shape){
             this.h0=this.h;
             this.x=this.x0;
             this.y=this.y0;
+            console.log("After change pos",{x:this.x,y:this.y,x0:this.x0,y0:this.y0,cx:this.centre.x,cy:this.centre.y});
             this.theta0=this.theta;
+            if (this.shape=="Line") {
+                this.x10=this.x1;
+                this.y10=this.y1;
+                this.x20=this.x2;
+                this.y20=this.y2;
+                this.x30=this.x3;
+                this.y30=this.y3;
+            }
             this.boundingRect.selectedIdx=0;
         },
         resetPos: function(){
+            // var temp_centre=this.recalculateCentre(this.x0,this.y0,this.w0,this.h0,this.theta0,{x: this.centre.x0, y: this.centre.y0});
+            console.log("Before reset pos",{x:this.x,y:this.y,x0:this.x0,y0:this.y0,cx0:this.centre.x0,cy0:this.centre.y0});
             this.centre.x=this.centre.x0;
             this.centre.y=this.centre.y0;
+            // this.x=this.centre.x0-this.w/2;
+            // this.y=this.centre.y0-this.h/2;
             this.x=this.x0;
             this.y=this.y0;
             this.w=this.w0;
             this.h=this.h0;
             this.theta=this.theta0
+            console.log("After reset pos",{x:this.x,y:this.y,x0:this.x0,y0:this.y0,cx0:this.centre.x0,cy0:this.centre.y0});
+            if (this.shape=="Line") {
+                this.x1=this.x10;
+                this.y1=this.y10;
+                this.x2=this.x20;
+                this.y2=this.y20;
+                this.x3=this.x30;
+                this.y3=this.y30;
+            }
             this.boundingRect.selectedIdx=0;
             // this.updateCentre();
         },
@@ -667,6 +693,12 @@ function createShape(x0,y0,x,y,shape){
         selfObj.y2=selfObj.y+2*selfObj.h/3;
         selfObj.x3=selfObj.x+selfObj.w;
         selfObj.y3=selfObj.y+selfObj.h;
+        selfObj.x10=selfObj.x1;
+        selfObj.y10=selfObj.y1;
+        selfObj.x20=selfObj.x2;
+        selfObj.y20=selfObj.y2;
+        selfObj.x30=selfObj.x3;
+        selfObj.y30=selfObj.y3;
         selfObj.w=0;
         selfObj.h=0;
     }
@@ -935,10 +967,9 @@ function defaultState(keep_shape=false){
         addUndo: function(idx, action='amend', shape=Object.assign({}, shapes[idx]), clearStack=true){
             // clearStack will be false if called from a redo: 
             //      interacting with the canvas should reset the redoStack
-            if (clearStack) {
-                console.log("Hey");
-                this.redoStack=[];
-            }
+            shape.centre=Object.assign({},shape.centre);
+            console.log("At addUndo()", {x:shape.x,y:shape.y,x0:shape.x0,y0:shape.y0,cx0:shape.centre.x0,cy0:shape.centre.y0})
+            if (clearStack) this.redoStack=[];
             this.undoStack.push({
                 shapeIndex: idx,
                 shape: shape,
@@ -946,8 +977,10 @@ function defaultState(keep_shape=false){
             });
         },
         addRedo: function(obj){
+            obj=Object.assign({}, obj)
             obj.shape=Object.assign({}, obj.shape);
-            this.redoStack.push(Object.assign({}, obj));
+            obj.shape.centre=Object.assign({}, obj.shape.centre);
+            this.redoStack.push(obj);
         },
         undoStack: [],
         redoStack: [],
@@ -955,9 +988,10 @@ function defaultState(keep_shape=false){
             if (this.undoStack.length<1) return;
             undoObj=this.undoStack.pop();
             i=undoObj.shapeIndex;
-            console.log("Shape that is added to redo",undoObj.shape)
+            // console.log("Shape that is added to redo",undoObj.shape)
             this.addRedo(undoObj);
             if (undoObj.action=='amend'){
+                console.log("At undo()", {x:undoObj.shape.x,y:undoObj.shape.y,x0:undoObj.shape.x0,y0:undoObj.shape.y0,cx0:undoObj.shape.centre.x0,cy0:undoObj.shape.centre.y0})
                 shapes[i]=Object.assign({}, undoObj.shape);
                 shapes[i].resetPos();
                 this.selectShape(i);
@@ -968,14 +1002,12 @@ function defaultState(keep_shape=false){
                 this.selectShape(i);
             }
             resetCanvas();
-            console.log("At undo, undoStack size is",this.undoStack.length);
-            console.log("At undo, redoStack size is",this.redoStack.length);
         },
         redo: function(){
             if (this.redoStack.length<1) return;
             redoObj=this.redoStack.pop();
             i=redoObj.shapeIndex;
-            this.addUndo(i, redoObj.action, redoObj.shape, false);
+            this.addUndo(i, redoObj.action, Object.assign({}, redoObj.shape), false);
             if (redoObj.action=='amend'){
                 shapes[i]=Object.assign({}, redoObj.shape);
                 shapes[i].changePos();
@@ -988,8 +1020,6 @@ function defaultState(keep_shape=false){
                 deleteShape(i);
             }
             resetCanvas();
-            console.log("At redo, undoStack size is",this.undoStack.length);
-            console.log("At redo, redoStack size is",this.redoStack.length);
         },
         selectShape: function(i){
             this.focusNo=i;
@@ -1240,7 +1270,6 @@ $(".FeatureList").hover(function () {
 });
 
 $(".cheatSheet").hover(function () {
-    console.log(123123)
     preventDrawing = true
 }, function () {
     preventDrawing = false;
