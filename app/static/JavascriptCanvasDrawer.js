@@ -78,9 +78,9 @@ function showAnnotation() {
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { deleteShape(); }, "Delete"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.undo(); updateTable(shapes); allShapes(); }, "Undo"))
+            function () { undo();}, "Undo"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.redo(); updateTable(shapes); allShapes(); }, "Redo"))
+            function () { redo();}, "Redo"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state = defaultState(true); shapes = []; resetCanvas(); updateTable(shapes); }, "Reset"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
@@ -131,6 +131,18 @@ function showAnnotation() {
         state.resetSelected();
         state = defaultState();
     }
+}
+
+function undo(){
+    state.undo();
+    updateTable(shapes);
+    allShapes(); 
+}
+
+function redo(){
+    state.redo();
+    updateTable(shapes);
+    allShapes();  
 }
 
 // Returns an object (rectangle) with left, top, width and height attributes
@@ -808,7 +820,8 @@ element.addEventListener("mousedown", function(e){
         }
     }
     
-    // Check user is clicking shapes (reverse loop for z-order)
+    // Check user is clicking shapes 
+    // First check if user is clicking selected shape (if one is selected)
     var temp;
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
@@ -817,9 +830,11 @@ element.addEventListener("mousedown", function(e){
     } else {
         if (!highlightRemoval)
         {
+            console.log("hey");
             state.resetSelected();
         }
         
+        // Check collision for all shapes (reverse loop for z-order)
         for (var i = shapes.length - 1; i >= 0; i--) {
             if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode) {
                 state.selectShape(i);
@@ -829,7 +844,7 @@ element.addEventListener("mousedown", function(e){
                 getFeature(shapes[i]);
                 updateRows(i);
                 stopDropDown = false;
-                shapeHighlighted = false;
+                // shapeHighlighted = false;
             }
         }
     }
