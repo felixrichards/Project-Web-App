@@ -171,7 +171,7 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     z_order=getZOrder();
     index = z_order[index];
     state.selectShape(getHighlightedShape(index));
-    shapes[getHighlightedShape(index)].selectedIdx = 0;
+    shapes[getHighlightedShape(index)].boundingRect.selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
 });
