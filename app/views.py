@@ -24,11 +24,12 @@ class AnnotateView(MethodView):
         if g_survey is not None:
             # find galaxy by survey
             galaxy=get_random_galaxy(survey=g_survey)
-            
-        if galaxy is None:
-            # incorrect id or name
-            galaxy=get_random_galaxy()
-            
+
+        if g.user:
+            session['advanced']="True"
+	    else:
+		    session['advanced']="false"
+
         session['g_id']=galaxy.g_id
         
         print("In get request")

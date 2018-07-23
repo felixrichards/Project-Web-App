@@ -13,8 +13,10 @@
 <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
 <div class="navSearch" id="navSearch"><i class="fa fa-search"></i></div>
 <div class="closeSearch" id="closeSearch"><i class="fa fa-close"></i></div>
-<div class="searchField" id="searchField">
-    <input type="text" placeholder="Ids, Galaxies, Surveys" name="search" ; autocomplete="off" onkeydown="search(this)">
+<div id="AdvancedSearchBar">
+    <div class="searchField" id="searchField">
+        <input type="text" placeholder="Ids, Galaxies, Surveys" name="search" ; autocomplete="off" onkeydown="search(this)">
+    </div>
 </div>
 <div id="mySidenav" class="sidenav">
     <div class="extra" style="width:  100%; height: 100%;">
@@ -67,6 +69,7 @@
             <script src="{{ url_for('static', filename='JavascriptGalaxySearch.js') }}"></script>
             <script src="{{ url_for('static', filename='JavascriptSubmission.js') }}"></script>
             <script src="{{ url_for('static', filename='JavascriptFeatureInfo.js') }}"></script>
+            <script src="{{ url_for('static', filename='JavascriptAdvancedMode.js') }}"></script>
         </div>
     </div>
 </div>
@@ -422,7 +425,7 @@
             <ul class="FeatureDropdown" id="menu">
                 <li class="FeatureHover" id="featureHover">
                     <a id="featureLabel"> What feature will you draw?  &nbsp; <i class="fa fa-caret-down"></i></a>
-                    <ul>
+                    <ul onmouseover="changeTo()" onmouseout="changeBack()">
                         <li>
                             <a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">
                                 Mergers

@@ -55,6 +55,25 @@ def Tutorial():
     user={'username':'Felix'}
     return render_template('Tutorial.html', title='Team',user=user)
 
+@app.route('/AdvancedLogin', methods=['GET', 'POST'])
+def AdvancedAccess():
+    if request.method == 'POST':
+        session.pop('user', None)
+
+        if request.form['password'] == 'NGC-5457':
+            session['user'] = 'Andromeda'
+            return redirect(url_for('Advanced'))
+
+    return render_template('AdvancedLogin.html')
+
+@app.route('/')
+@app.route('/Annotate')
+def Advanced():
+	if g.user:
+		return render_template('Annotate.html', title='Team',user=user)
+			
+	return redirect(url_for('index'))
+
 @app.route('/NGC-1300', methods=['GET', 'POST'])
 def Login():
     if request.method == 'POST':
