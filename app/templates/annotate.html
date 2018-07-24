@@ -1,19 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingHiddenTable.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingCheatSheet.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingScrollBar.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingGalaxySearch.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingCanvas.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingTutorial.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='StylingFeatureInfo.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingHiddenTable.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingCheatSheet.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingScrollBar.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingGalaxySearch.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingCanvas.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingTutorial.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingFeatureInfo.css')}}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="//aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.css" />
 <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
-<div class="navSearch" id="navSearch"><i class="fa fa-search"></i></div>
-<div class="closeSearch" id="closeSearch"><i class="fa fa-close"></i></div>
-<div id="AdvancedSearchBar">
+<div class="Advanced">
+    <div class="navSearch" id="navSearch"><i class="fa fa-search"></i></div>
+</div>
+<div class="Advanced">
+    <div class="closeSearch" id="closeSearch"><i class="fa fa-close"></i></div>
+</div>
+<div class="Advanced">
     <div class="searchField" id="searchField">
         <input type="text" placeholder="Ids, Galaxies, Surveys" name="search" ; autocomplete="off" onkeydown="search(this)">
     </div>
@@ -64,12 +68,12 @@
             <script>
                 $('tbody').sortable();
             </script>
-            <script src="{{ url_for('static', filename='JavascriptTableManager.js') }}"></script>
-            <script src="{{ url_for('static', filename='JavascriptCheatSheet.js') }}"></script>
-            <script src="{{ url_for('static', filename='JavascriptGalaxySearch.js') }}"></script>
-            <script src="{{ url_for('static', filename='JavascriptSubmission.js') }}"></script>
-            <script src="{{ url_for('static', filename='JavascriptFeatureInfo.js') }}"></script>
-            <script src="{{ url_for('static', filename='JavascriptAdvancedMode.js') }}"></script>
+            <script src="{{ url_for('static', filename='Scripts/JavascriptTableManager.js') }}"></script>
+            <script src="{{ url_for('static', filename='Scripts/JavascriptCheatSheet.js') }}"></script>
+            <script src="{{ url_for('static', filename='Scripts/JavascriptGalaxySearch.js') }}"></script>
+            <script src="{{ url_for('static', filename='Scripts/JavascriptSubmission.js') }}"></script>
+            <script src="{{ url_for('static', filename='Scripts/JavascriptFeatureInfo.js') }}"></script>
+            <script src="{{ url_for('static', filename='Scripts/JavascriptAdvancedMode.js') }}"></script>
         </div>
     </div>
 </div>
@@ -211,17 +215,17 @@
         <h3>Galaxy Type</h3>
         <div>
             <h4>Spiral</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetSpiral.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetSpiral.jpg') }}">
         </div>
 
         <div>
             <h4>Elliptical</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetElliptical.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetElliptical.jpg') }}">
         </div>
 
         <div>
             <h4>Merger</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetMerger.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetMerger.jpg') }}">
         </div>
 
         <div class="spacing">
@@ -231,17 +235,17 @@
         <h3>Galaxy Shape</h3>
         <div>
             <h4>Completely Round</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetCompletelyRound.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetCompletelyRound.jpg') }}">
         </div>
 
         <div>
             <h4>In Between</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetInBetween.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetInBetween.jpg') }}">
         </div>
 
         <div>
             <h4>Cigar Shaped</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetCigarShaped.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetCigarShaped.jpg') }}">
         </div>
 
         <div class="spacing">
@@ -251,17 +255,17 @@
         <h3>Bulge Shape</h3>
         <div>
             <h4>Rounded</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetRounded.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetRounded.jpg') }}">
         </div>
 
         <div>
             <h4>Boxy</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetBoxy.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetBoxy.jpg') }}">
         </div>
 
         <div>
             <h4>No Bulge</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetNoBulge.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetNoBulge.jpg') }}">
         </div>
 
         <div class="spacing">
@@ -271,22 +275,22 @@
         <h3>Spiral Pattern</h3>
         <div>
             <h4>Yes</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetSpiralPattern1.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetSpiralPattern1.jpg') }}">
         </div>
 
         <div>
             <h4>Yes</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetSpiralPattern2.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetSpiralPattern2.jpg') }}">
         </div>
 
         <div>
             <h4>No</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetNoSpiral1.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetNoSpiral1.jpg') }}">
         </div>
 
         <div>
             <h4>No</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetNoSpiral2.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetNoSpiral2.jpg') }}">
         </div>
 
         <div class="spacing">
@@ -296,27 +300,27 @@
         <h3>Number of Spirals</h3>
         <div>
             <h4>1</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetOneSpiral.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetOneSpiral.jpg') }}">
         </div>
 
         <div>
             <h4>2</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetTwoSpiral.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetTwoSpiral.jpg') }}">
         </div>
 
         <div>
             <h4>3</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetThreeSpiral.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetThreeSpiral.jpg') }}">
         </div>
 
         <div>
             <h4>4+</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetFourPlus.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetFourPlus.jpg') }}">
         </div>
 
         <div>
             <h4>Can't Tell</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetCantTell.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetCantTell.jpg') }}">
         </div>
 
         <div class="spacing">
@@ -326,31 +330,31 @@
         <h3>Rare Features</h3>
         <div>
             <h4>Ring</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetRing.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetRing.jpg') }}">
         </div>
 
         <div>
             <h4>Lens/Arc</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetLensOrArc.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetLensOrArc.jpg') }}">
         </div>
 
         <div>
             <h4>Disturbed</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetDisturbed.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetDisturbed.jpg') }}">
         </div>
 
         <div>
             <h4>Irregular</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetIrregular.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetIrregular.jpg') }}">
         </div>
 
         <div>
             <h4>Merger</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetMerger2.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetMerger2.jpg') }}">
         </div>
         <div>
             <h4>Dust Lane</h4>
-            <img class="cheatSheetImage" src="{{ url_for('static', filename='CheatSheetDustLane.jpg') }}">
+            <img class="cheatSheetImage" src="{{ url_for('static', filename='Images/CheatSheet/CheatSheetDustLane.jpg') }}">
         </div>
 
         <div class="spacing">
@@ -419,7 +423,7 @@
         </script>
         <canvas class="drawCanvas" id="drawCanvas"></canvas>
         <canvas class="UICanvas" id="UICanvas"></canvas>
-        <script src="{{ url_for('static', filename='JavascriptCanvasDrawer.js') }}"></script>
+        <script src="{{ url_for('static', filename='Scripts/JavascriptCanvasDrawer.js') }}"></script>
 
         <div class="FeatureDropdownContainer" id="featureDropdownContainer">
             <ul class="FeatureDropdown" id="menu">
@@ -457,7 +461,7 @@
         <div class="iconList" id="iconList">
             <i class="fa fa-pencil" id="pencil"></i>
             <i class="fa fa-arrows" id="arrows"></i>
-            <i class="fa fa-trash-o" id="bin"></i>
+            <i class="fa fa-trash-o" id="bin" title="Del"></i>
             <i class="fa fa-undo" id="restart"></i>
             <i class="fa fa-long-arrow-left" id="undo"></i>
             <i class="fa fa-long-arrow-right" id="redo"></i>
@@ -484,4 +488,5 @@
         </div>
     </div>
 </div>
+<script> var advanced = {{ session['advanced']|tojson }}; </script>
 {% endblock %}

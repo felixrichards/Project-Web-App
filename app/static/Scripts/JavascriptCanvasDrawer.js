@@ -865,10 +865,11 @@ element.addEventListener("mousedown", function(e){
     if (state.selectedNo > -1 && (idx = shapes[state.selectedNo].boundingRect.isInside(mP_0)) && !preventDrawing && !exploringMode) {
         shapes[state.selectedNo].boundingRect.selectBox(idx);
         state.selectShape(state.selectedNo);
+        // Ensures drop down cant be used
         shapeHighlighted = false;
     } else {
         console.log(disableSelectReset);
-        if (!highlightRemoval&&!disableSelectReset)
+        if (highlightRemoval&&!disableSelectReset)
         {
             state.resetSelected();
         }
@@ -879,11 +880,15 @@ element.addEventListener("mousedown", function(e){
                 state.selectShape(i);
                 shapes[i].boundingRect.selectedIdx = -1;
                 allShapes();
+                // Allow a prompt
                 noAccess = false;
+                // Give a feature to a selected shape
                 getFeature(shapes[i]);
                 updateRows(i);
+                 // Ensures drop down cant be used
                 stopDropDown = false;
-                // shapeHighlighted = false;
+                // Ensures drop down cant be used
+                shapeHighlighted = false;
             }
         }
     }
@@ -891,6 +896,7 @@ element.addEventListener("mousedown", function(e){
     
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
+        // Relevant prompt
         noshapeDrawn();
     }
 
@@ -931,6 +937,8 @@ element.addEventListener("mousemove", function(e){
             stopDropDown = true;
         }
     }
+
+    // Make dropdown unclickable when dragging a shape or amending it.
     if (stopDropDown & !shapeHighlighted) {
         document.getElementById("featureDropdownContainer").style.pointerEvents = "none"
         document.getElementById("submit").style.pointerEvents = "none"
@@ -1266,6 +1274,7 @@ var noAccess = true;
 var nextShape = false;
 var nextShapeValue = "-"
 
+// Two prompts for no features and current features. 
 function getFeature(shape)
 {
     if (shape.noFeature == "-" && !noAccess)
@@ -1277,22 +1286,31 @@ function getFeature(shape)
         document.getElementById("featureLabel").innerHTML = ("Feature: " + shape.noFeature + "&nbsp; <i class='fa fa-caret-down'></i>")
     }
 
+    // If on submit a user clicks a shape then the colour of the dropdown goes from red to grey
     document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
+    // Stores the highlighted shape until it is used in addFeatures();
     currentShape = shape;
+    // Breaks out of "Next Feature"
     nextShape = false
+    // Gives next shape no feature
     nextShapeValue = "-"
 }
 
+// When clicking any part of the canvas except a shape or a button, prompts user to pick a feature
 function noshapeDrawn() {
     if (!nextShape)
     {
         document.getElementById("featureLabel").innerHTML = ("What feature will you draw? " + "&nbsp; <i class='fa fa-caret-down'></i>")
         document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
+        // No access to other prompts above in getFeature()
         noAccess = true
     }
 }
 
+// Give a shape a feature
 function addFeature(feature) {
+    // If no access is true then an image is not highlighted hence "Next Feature"
+    // If !noAccess then a shape is highlighted hence given a feature
     if (!noAccess)
     {
         globalShapes[getHighlightedShape(currentShape.id)].noFeature = feature;
@@ -1301,23 +1319,29 @@ function addFeature(feature) {
     }
     else {
         document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")
+        // If this is true then it prevents asking what feature to draw when clicking the canvas and allows a future shape to be given a feature
         nextShape = true
         nextShapeValue = feature;
     }
+     // IF on submit a user clicks a shape then the colour of the dropdown goes from red to grey
     document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"
 }
 
+// Prevents drawing or clicking shapes when on drop down
+// Keeps shape highlighted when clicking drop down feature
 var highlightRemoval
 function changeTo() {
     preventDrawing = true;
-    highlightRemoval = true;
-}
-
-function changeBack() {
-    preventDrawing = false;
     highlightRemoval = false;
 }
 
+// Opposite of above
+function changeBack() {
+    preventDrawing = false;
+    highlightRemoval = true;
+}
+
+// Prevent Drawing or clicking shapes when on a table
 $(".HideTable").hover(function () {
     preventDrawing = true
 }, function () {

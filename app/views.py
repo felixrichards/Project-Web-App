@@ -25,11 +25,11 @@ class AnnotateView(MethodView):
             # find galaxy by survey
             galaxy=get_random_galaxy(survey=g_survey)
 
-        # if g.user:
-            # session['advanced']="True"
-	    # else:
-		    # session['advanced']="false"
-
+        if 'user' in session:
+            session['advanced']="True"
+        else:	
+            session['advanced']="false"
+		
         session['g_id']=galaxy.g_id
         
         print("In get request")

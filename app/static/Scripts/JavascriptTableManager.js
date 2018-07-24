@@ -116,14 +116,20 @@ function updateRows(selected_idx=-1){
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
 
+        // Remove all highlighted from submit when clicking on a shape
         showFeatureless = false;
+        // Allows a prompt for a highlighted shape
         noAccess = false;
+        // Break out of given a future shape a feature
         nextShape = false;
+        // Ensures drop down menu hove attributes work when selecting a shape from the table
         shapeHighlighted = true;
+        // Prompt for shape
         getFeature(shapes[selected_idx])
     }
 }
 
+// Red version of updateRows
 function updateRowsRed(selected_idx = -1, feature) {
     if (selected_idx == -1) {
         $('#obj_table tbody tr').removeClass("selectedFeature");
@@ -135,13 +141,19 @@ function updateRowsRed(selected_idx = -1, feature) {
         $('#obj_table tbody tr').removeClass("selected");
         $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selectedFeature");
 
+        // Remove all highlighted from submit when clicking on a shape
         showFeatureless = false;
+            // Allows a prompt for a highlighted shape
         noAccess = false;
+            // Break out of given a future shape a feature
         nextShape = false;
+        // Ensures drop down menu hove attributes work when selecting a shape from the table
         shapeHighlighted = true;
+        // Prompt for shape
         getFeature(shapes[selected_idx])
     }
 
+    // On submit highlight all none featured shapes
     if (showFeatureless) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
 

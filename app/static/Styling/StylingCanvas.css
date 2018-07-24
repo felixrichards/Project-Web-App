@@ -3,6 +3,10 @@
     margin: 0 auto;
 }
 
+.Advanced{
+    display:none;
+}
+
 #canv_cont {
     margin: 0px auto;
     position: relative;

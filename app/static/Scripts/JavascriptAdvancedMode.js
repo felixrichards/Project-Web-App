@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    if (session['advanced'] == 'True')
+    if (advanced == 'True')
     {
-        console.log(4534534534)
+        $('.Advanced').css('display', 'block');
     }
 }, false);
