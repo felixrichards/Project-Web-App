@@ -714,6 +714,42 @@ function createShape(x0,y0,x,y,shape){
         selfObj.y30=selfObj.y3;
         selfObj.w=0;
         selfObj.h=0;
+        selfObj.getCoord = function(t){
+            return {
+                x: Math.pow(1-t,3)*this.x+3*t*Math.pow(1-t,2)*this.x1+3*(1-t)*Math.pow(t,2)*this.x2+Math.pow(t,3)*this.x3,
+                y: Math.pow(1-t,3)*this.y+3*t*Math.pow(1-t,2)*this.y1+3*(1-t)*Math.pow(t,2)*this.y2+Math.pow(t,3)*this.y3
+            }
+        }
+        selfObj.getDiff = function(t){
+            return {
+                x: 3*Math.pow(1-t,2)*(this.x1-this.x0)+6*(1-t)*t*(this.x2-this.x1)+3*Math.pow(t,2)*(this.x3-this.x2),
+                y: 3*Math.pow(1-t,2)*(this.y1-this.y0)+6*(1-t)*t*(this.y2-this.y1)+3*Math.pow(t,2)*(this.y3-this.y2)
+            }
+        }
+        selfObj.getSecDiff = function(t){
+            return {
+                x: 6*(1-t)*(this.x2-2*this.x1+this.x0)+6*t*(this.x3-2*this.x2+this.x1),
+                y: 6*(1-t)*(this.y2-2*this.y1+this.y0)+6*t*(this.y3-2*this.y2+this.y1)
+            }
+        }
+        // Creates lots of rectangles for object detection
+        selfObj.createBoxes = function(){
+            var boxes=[];
+            var t=0; var t_n=0;
+            var p; var p_n;
+            var d;
+            var lambda=0.5;
+            // uses second derivative to calculate how long to make the box
+            // i.e. how long can the box accurately approximate the curve
+            while (t<=1){
+                p=this.getCoord(t);
+                d=this.getSecDiff(t);
+                t_n=t+lambda/d;
+                p_n=this.getCoord(t_n);
+                
+                
+            }
+        }
     }
     return selfObj;
 }
