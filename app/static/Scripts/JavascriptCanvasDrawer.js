@@ -733,18 +733,32 @@ function createShape(x0,y0,x,y,shape){
             var t=0; var t_n=0;
             var p=this.getCoord(t); var p_n;
             var d;
-            var lambda=0.5;
-            var h=8;
-            // uses second derivative to calculate how long to make the box
-            // i.e. how long can the box accurately approximate the curve
+            var lambda;
+            var h=12;
+            // var phi0=Math.sqrt(Math.pow(this.x-this.x1,2)+Math.pow(this.y-this.y1,2))/250;
+            // var phi1=Math.sqrt(Math.pow(this.x2-this.x3,2)+Math.pow(this.y2-this.y3,2))/250;
+            // console.log(phi0,phi1);
+            p.y=p.y-15;
+            p.x=p.x-9;
             while (t<=1){
                 d=this.getSecDiff(t);
-                // t_n=t+lambda/Math.sqrt(Math.pow(d.x,2)+Math.pow(d.y,2));
                 t_n=t+0.01
                 p_n=this.getCoord(t_n);
+                // p_n.x=p_n.x;
+                p_n.y=p_n.y-h/2;
+                if (t<0.3){
+                    lambda=-Math.pow(10*(-t+0.3),2);
+                    p_n.x=p_n.x+lambda;
+                    p_n.y=p_n.y+lambda;
+                    // h=12-lambda*6;
+                }
+                if (t>0.7){
+                    lambda=Math.pow(10*(t-0.7),2);
+                    p_n.x=p_n.x-lambda;
+                    p_n.y=p_n.y+lambda;
+                }
+                
                 theta=calcAngle(p,p_n);
-                p_n.x=p_n.x;
-                console.log(t,Math.sin(2*theta+Math.PI/4));
                 w=Math.sqrt(Math.pow(p_n.x-p.x,2)+Math.pow(p_n.y-p.y,2));
                 this.detectionBoxes.push(createDetectionBox(p,w,theta,h));
                 
@@ -760,7 +774,7 @@ function createShape(x0,y0,x,y,shape){
             // boundingRect.h=Math.max(this.y,this.y1,this.y2,this.y3)-boundingRect.y;
             
             function calcAngle(p,p_n){
-                if (Math.abs(p.x)<0.5) theta=Math.PI/2*Math.sign(p.y);
+                if (Math.abs(p.x)<0.5) theta=-Math.PI/2*Math.sign(p.y);
                 else theta=Math.atan((p_n.y-p.y)/(p_n.x-p.x));
                 return -theta;
             }
@@ -771,10 +785,10 @@ function createShape(x0,y0,x,y,shape){
                     y: p.y,
                     w: w,
                     h: h,
-                    // centre: {
-                        // x: p.x,
-                        // y: p.y
-                    // },
+                    centre: {
+                        x: p.x+w/2,
+                        y: p.y+h/2
+                    },
                     theta: theta,
                     isInside: function(pos){
                         pos=rotateCoords(pos.x,pos.y,-obj.theta,obj.c);
