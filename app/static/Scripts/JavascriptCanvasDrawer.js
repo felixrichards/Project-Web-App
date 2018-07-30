@@ -297,15 +297,9 @@ function createShape(x0,y0,x,y,shape){
     function isInsideRect(pos,obj=this){
         if (obj.theta!=0) {
             if (typeof obj.p==="undefined"){    // Check if object needs to be rotated its pivot, if not, use centre
-                var pos_r={
-                    x:rotateXCoord(pos.x,pos.y,-obj.theta,obj.centre),
-                    y:rotateYCoord(pos.x,pos.y,-obj.theta,obj.centre)
-                }
+                var pos_r=rotateCoords(pos.x,pos.y,-obj.theta,obj.centre);
             }else{
-                var pos_r={
-                    x:rotateXCoord(pos.x,pos.y,-obj.theta,obj.p),
-                    y:rotateYCoord(pos.x,pos.y,-obj.theta,obj.p)
-                }
+                var pos_r=rotateCoords(pos.x,pos.y,-obj.theta,obj.p);
             }
             pos=pos_r;
         }
@@ -321,10 +315,7 @@ function createShape(x0,y0,x,y,shape){
     function isInsideEllipse(pos,obj=this){
         ellipse=cartesianToElliptical(this);
         if (obj.theta!=0){
-            var pos_r={
-                x:rotateXCoord(pos.x,pos.y,-obj.theta,obj.centre),
-                y:rotateYCoord(pos.x,pos.y,-obj.theta,obj.centre)
-            }
+            var pos_r=rotateCoords(pos.x,pos.y,-obj.theta,obj.centre);
             pos=pos_r;
         }
         if (Math.pow((pos.x-ellipse.x)/ellipse.w,2)+Math.pow((pos.y-ellipse.y)/ellipse.h,2)<=1){
@@ -603,10 +594,9 @@ function createShape(x0,y0,x,y,shape){
                     centre.x=x+w/2;
                     centre.y=y+h/2;
                 } else {
-                    var cx=rotateXCoord(x+w/2,y+h/2,theta,centre);
-                    var cy=rotateYCoord(x+w/2,y+h/2,theta,centre);
-                    centre.x=cx;
-                    centre.y=cy;
+                    var c=rotateCoords(x+w/2,y+h/2,theta,centre);
+                    centre.x=c.x;
+                    centre.y=c.y;
                 }
             }
             return centre;
@@ -733,23 +723,72 @@ function createShape(x0,y0,x,y,shape){
             }
         }
         // Creates lots of rectangles for object detection
+        selfObj.detectionBoxes=[];
+        selfObj.drawBoxes = function(){
+            for (var i=0; i<this.detectionBoxes.length; i++){
+                this.detectionBoxes[i].draw()
+            }
+        }
         selfObj.createBoxes = function(){
-            var boxes=[];
             var t=0; var t_n=0;
-            var p; var p_n;
+            var p=this.getCoord(t); var p_n;
             var d;
             var lambda=0.5;
+            var h=8;
             // uses second derivative to calculate how long to make the box
             // i.e. how long can the box accurately approximate the curve
             while (t<=1){
-                p=this.getCoord(t);
                 d=this.getSecDiff(t);
-                t_n=t+lambda/d;
+                // t_n=t+lambda/Math.sqrt(Math.pow(d.x,2)+Math.pow(d.y,2));
+                t_n=t+0.01
                 p_n=this.getCoord(t_n);
+                theta=calcAngle(p,p_n);
+                p_n.x=p_n.x;
+                console.log(t,Math.sin(2*theta+Math.PI/4));
+                w=Math.sqrt(Math.pow(p_n.x-p.x,2)+Math.pow(p_n.y-p.y,2));
+                this.detectionBoxes.push(createDetectionBox(p,w,theta,h));
                 
-                
+                // Update parameters for next iteration
+                t=t_n;
+                p=p_n;
+            }
+            
+            
+            // boundingRect.x=Math.min(this.x,this.x1,this.x2,this.x3);
+            // boundingRect.y=Math.min(this.y,this.y1,this.y2,this.y3);
+            // boundingRect.w=Math.max(this.x,this.x1,this.x2,this.x3)-boundingRect.x;
+            // boundingRect.h=Math.max(this.y,this.y1,this.y2,this.y3)-boundingRect.y;
+            
+            function calcAngle(p,p_n){
+                if (Math.abs(p.x)<0.5) theta=Math.PI/2*Math.sign(p.y);
+                else theta=Math.atan((p_n.y-p.y)/(p_n.x-p.x));
+                return -theta;
+            }
+            
+            function createDetectionBox(p,w,theta,h=5){
+                var obj={
+                    x: p.x,
+                    y: p.y,
+                    w: w,
+                    h: h,
+                    // centre: {
+                        // x: p.x,
+                        // y: p.y
+                    // },
+                    theta: theta,
+                    isInside: function(pos){
+                        pos=rotateCoords(pos.x,pos.y,-obj.theta,obj.c);
+                        return isInside(pos,this);
+                    },
+                    draw: function(){
+                        drawRect(this,false,true);
+                    }
+                }
+                obj.draw();
+                return obj;
             }
         }
+        selfObj.createBoxes();
     }
     return selfObj;
 }
@@ -869,7 +908,7 @@ element.addEventListener("mousedown", function(e){
         shapeHighlighted = false;
     } else {
         console.log(disableSelectReset);
-        if (highlightRemoval&&!disableSelectReset)
+        if (!highlightRemoval&&!disableSelectReset)
         {
             state.resetSelected();
         }
@@ -1235,6 +1274,13 @@ function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(
     ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
     ctx.stroke();
     ctx.closePath();
+}
+
+function rotateCoords(x,y,theta,p={x:0,y:0}){
+    return {
+        x:rotateXCoord(x,y,theta,p),
+        y:rotateYCoord(x,y,theta,p)
+    };
 }
 
 function rotateXCoord(x,y,theta,p={x:0,y:0}){
