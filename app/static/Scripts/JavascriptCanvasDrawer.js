@@ -324,7 +324,12 @@ function createShape(x0,y0,x,y,shape){
         return false;
     }
     function isInsideLine(pos){
-        
+        if (isInside(pos,this.boundingRect)){
+            for (var i=0; i<this.detectionBoxes.length; i++){
+                var pos_r=rotateCoords(pos.x,pos.y,-this.theta,this.centre);
+                if (isInside(pos_r,this.detectionBoxes[i])) return true;
+            }
+        }
     }
     var fn=eval("isInside"+shape);
     
@@ -336,15 +341,21 @@ function createShape(x0,y0,x,y,shape){
             boundingRect.y=circle.y-circle.r;
             boundingRect.w=circle.r*2;
             boundingRect.h=circle.r*2;
+        } else if (shape.shape=="Line"){
+            boundingRect=Object.assign({},shape);
+            boundingRect.x=Math.min(shape.x,shape.x1,shape.x2,shape.x3);
+            boundingRect.y=Math.min(shape.y,shape.y1,shape.y2,shape.y3);
+            boundingRect.w=Math.max(shape.x,shape.x1,shape.x2,shape.x3)-boundingRect.x;
+            boundingRect.h=Math.max(shape.y,shape.y1,shape.y2,shape.y3)-boundingRect.y;
         } else {
             boundingRect=shape;
         }
         
         function drawBoundingRect(shape){
             if (shape.shape=="Line"){
-                
+                drawRect(shape,false,true);
             } else {
-                drawRect(shape,false,true)
+                drawRect(shape,false,true);
                 
             }
         }
@@ -376,17 +387,17 @@ function createShape(x0,y0,x,y,shape){
             var j=1;
             var amendBoxes=createAmendBoxes(shape);
             function createAmendBoxes(shape){
-                var x_n=boundingRect.x;
-                var y_n=boundingRect.y;
+                var x_n=shape.x;
+                var y_n=shape.y;
                 
                 var amendBoxes=[];
                 if (shape.shape=="Line"){
-                    var x1_n=boundingRect.x1;
-                    var y1_n=boundingRect.y1;
-                    var x2_n=boundingRect.x2;
-                    var y2_n=boundingRect.y2;
-                    var x3_n=boundingRect.x3;
-                    var y3_n=boundingRect.y3;
+                    var x1_n=shape.x1;
+                    var y1_n=shape.y1;
+                    var x2_n=shape.x2;
+                    var y2_n=shape.y2;
+                    var x3_n=shape.x3;
+                    var y3_n=shape.y3;
                     amendBoxes.push(amendBox({x:x_n,y:y_n},j++));     //Up
                     amendBoxes.push(amendBox({x:x1_n,y:y1_n},j++));       //UpRight
                     amendBoxes.push(amendBox({x:x2_n,y:y2_n},j++));     //Up
@@ -618,6 +629,14 @@ function createShape(x0,y0,x,y,shape){
             var y_shift=pos.y-pos_0.y;
             this.x=this.x0+x_shift;
             this.y=this.y0+y_shift;
+            if (this.shape=="Line"){
+                this.x1=this.x10+x_shift;
+                this.y1=this.y10+y_shift;
+                this.x2=this.x20+x_shift;
+                this.y2=this.y20+y_shift;
+                this.x3=this.x30+x_shift;
+                this.y3=this.y30+y_shift;
+            }
             this.moveCentre();
         },
         amend: amend,
@@ -640,6 +659,7 @@ function createShape(x0,y0,x,y,shape){
                 this.y20=this.y2;
                 this.x30=this.x3;
                 this.y30=this.y3;
+                this.createBoxes()
             }
             this.boundingRect.selectedIdx=0;
         },
@@ -738,8 +758,8 @@ function createShape(x0,y0,x,y,shape){
             // var phi0=Math.sqrt(Math.pow(this.x-this.x1,2)+Math.pow(this.y-this.y1,2))/250;
             // var phi1=Math.sqrt(Math.pow(this.x2-this.x3,2)+Math.pow(this.y2-this.y3,2))/250;
             // console.log(phi0,phi1);
-            p.y=p.y-15;
-            p.x=p.x-9;
+            p.y=p.y-h/2-2.25;
+            p.x=p.x-2.25;
             while (t<=1){
                 d=this.getSecDiff(t);
                 t_n=t+0.01
@@ -747,13 +767,13 @@ function createShape(x0,y0,x,y,shape){
                 // p_n.x=p_n.x;
                 p_n.y=p_n.y-h/2;
                 if (t<0.3){
-                    lambda=-Math.pow(10*(-t+0.3),2);
+                    lambda=-Math.pow(5*(-t+0.3),2);
                     p_n.x=p_n.x+lambda;
                     p_n.y=p_n.y+lambda;
                     // h=12-lambda*6;
                 }
                 if (t>0.7){
-                    lambda=Math.pow(10*(t-0.7),2);
+                    lambda=Math.pow(5*(t-0.7),2);
                     p_n.x=p_n.x-lambda;
                     p_n.y=p_n.y+lambda;
                 }
@@ -767,12 +787,6 @@ function createShape(x0,y0,x,y,shape){
                 p=p_n;
             }
             
-            
-            // boundingRect.x=Math.min(this.x,this.x1,this.x2,this.x3);
-            // boundingRect.y=Math.min(this.y,this.y1,this.y2,this.y3);
-            // boundingRect.w=Math.max(this.x,this.x1,this.x2,this.x3)-boundingRect.x;
-            // boundingRect.h=Math.max(this.y,this.y1,this.y2,this.y3)-boundingRect.y;
-            
             function calcAngle(p,p_n){
                 if (Math.abs(p.x)<0.5) theta=-Math.PI/2*Math.sign(p.y);
                 else theta=Math.atan((p_n.y-p.y)/(p_n.x-p.x));
@@ -783,7 +797,7 @@ function createShape(x0,y0,x,y,shape){
                 var obj={
                     x: p.x,
                     y: p.y,
-                    w: w,
+                    w: w+1,
                     h: h,
                     centre: {
                         x: p.x+w/2,
@@ -798,7 +812,6 @@ function createShape(x0,y0,x,y,shape){
                         drawRect(this,false,true);
                     }
                 }
-                obj.draw();
                 return obj;
             }
         }
