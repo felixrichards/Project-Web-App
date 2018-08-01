@@ -327,7 +327,10 @@ function createShape(x0,y0,x,y,shape){
         if (isInside(pos,this.boundingRect)){
             for (var i=0; i<this.detectionBoxes.length; i++){
                 var pos_r=rotateCoords(pos.x,pos.y,-this.theta,this.centre);
-                if (isInside(pos_r,this.detectionBoxes[i])) return true;
+                if (this.detectionBoxes[i].isInside(pos_r)) {
+                    console.log(i);
+                    return true;
+                }
             }
         }
     }
@@ -750,6 +753,7 @@ function createShape(x0,y0,x,y,shape){
             }
         }
         selfObj.createBoxes = function(){
+            selfObj.detectionBoxes=[];
             var t=0; var t_n=0;
             var p=this.getCoord(t); var p_n;
             var d;
@@ -795,9 +799,9 @@ function createShape(x0,y0,x,y,shape){
             
             function createDetectionBox(p,w,theta,h=5){
                 var obj={
-                    x: p.x,
+                    x: p.x-1,
                     y: p.y,
-                    w: w+1,
+                    w: w+5,
                     h: h,
                     centre: {
                         x: p.x+w/2,
@@ -805,7 +809,9 @@ function createShape(x0,y0,x,y,shape){
                     },
                     theta: theta,
                     isInside: function(pos){
-                        pos=rotateCoords(pos.x,pos.y,-obj.theta,obj.c);
+                        // pos=rotateCoords(pos.x,pos.y,-obj.theta,obj.c);
+                        console.log(pos);
+                        console.log(this);
                         return isInside(pos,this);
                     },
                     draw: function(){
