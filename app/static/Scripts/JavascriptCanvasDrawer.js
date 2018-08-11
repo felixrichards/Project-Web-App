@@ -1213,6 +1213,9 @@ function drawShape(x,y,w,h,shape,theta=0,p={x:x+w/2,y:y+h/2}){
     }
 }
 
+// Draws a rectangle with the given parameters
+// Joins up the four corners and then fills: this allows the corners to be rotated
+// Boolean parameters describe the type of box for styling purposes
 function drawRect(shape,button=false,bounding=false,amend=false){
     ctx.beginPath();
     if (shape.theta==0){
