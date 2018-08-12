@@ -15,64 +15,47 @@ def create_annotation_route(url, endpoint, view=AnnotateView):
                      view_func=annotate_view, methods=['GET',])
     app.add_url_rule(url, view_func=annotate_view, methods=['POST',])
 
-create_annotation_route('/Annotate','annotate')
-create_annotation_route('/Annotate/','annotate/')
-create_annotation_route('/Annotate/id/<g_id>','annotate_by_id')
-create_annotation_route('/Annotate/name/<g_name>','annotate_by_name')
-create_annotation_route('/Annotate/name/<g_survey>','annotate_by_survey')
+create_annotation_route('/annotate','annotate')
+create_annotation_route('/annotate/','annotate/')
+create_annotation_route('/annotate/id/<g_id>','annotate_by_id')
+create_annotation_route('/annotate/name/<g_name>','annotate_by_name')
+create_annotation_route('/annotate/name/<g_survey>','annotate_by_survey')
 
 @app.route('/')
-@app.route('/Home')
+@app.route('/home')
 def index():
-    user={'username':'Felix'}
-    return render_template('Home.html', title='Home',user=user)
+    return render_template('home.html', title='Home')
 
-@app.route('/')
-@app.route('/MeetTheTeam')
-def MeetTheTeam():
-    user={'username':'Felix'}
-    return render_template('MeetTheTeam.html', title='Team',user=user)
+@app.route('/team')
+def team():
+    return render_template('team.html', title='Team')
 
-@app.route('/')
-@app.route('/Funding')
-def Funding():
-    user={'username':'Felix'}
-    return render_template('Funding.html', title='Team',user=user)
+@app.route('/funding')
+def funding():
+    return render_template('funding.html', title='Funding')
 
-@app.route('/')
-@app.route('/News')
-def News():
-	with open("News.txt", "r") as ins:
-		news = []
-		for line in ins:
-			news.append(line)
-		
-		return render_template('News.html', title='Team', news=news)
+@app.route('/news')
+def news():
+    with open("News.txt", "r") as ins:
+        news = []
+        for line in ins:
+            news.append(line)
+        
+        return render_template('news.html', title='News', news=news)
 
-@app.route('/')
-@app.route('/Tutorial')
+@app.route('/tutorial')
 def Tutorial():
-    user={'username':'Felix'}
-    return render_template('Tutorial.html', title='Team',user=user)
+    return render_template('tutorial.html', title='Tutorial')
 
 @app.route('/AdvancedLogin', methods=['GET', 'POST'])
 def AdvancedAccess():
     if request.method == 'POST':
-        session.pop('user', None)
-
+        session['advanced']=0
         if request.form['password'] == 'NGC-5457':
-            session['user'] = 'Andromeda'
-            return redirect(url_for('Advanced'))
+            session['advanced']=1
+            return redirect(url_for('annotate'))
 
     return render_template('AdvancedLogin.html')
-
-@app.route('/')
-@app.route('/Annotate')
-def Advanced():
-	if g.user:
-		return render_template('Annotate.html', title='Team',user=user)
-			
-	return redirect(url_for('index'))
 
 @app.route('/NGC-1300', methods=['GET', 'POST'])
 def Login():
@@ -87,18 +70,18 @@ def Login():
 
 @app.route('/AccessGranted', methods=['GET', 'POST'])
 def protected():
-	if request.method == 'POST':
-		subject = request.form['subject']
-		date = request.form['date']
-		with open("News.txt", "a") as myfile:
-			myfile.write(date + "\n")
-			myfile.write(subject + "\n")
-		return redirect(url_for('News'))
+    if request.method == 'POST':
+        subject = request.form['subject']
+        date = request.form['date']
+        with open("News.txt", "a") as myfile:
+            myfile.write(date + "\n")
+            myfile.write(subject + "\n")
+        return redirect(url_for('News'))
 
-	if g.user:
-		return render_template('Updates.html')
-			
-	return redirect(url_for('index'))
+    if g.user:
+        return render_template('updates.html')
+            
+    return redirect(url_for('index'))
 
 @app.before_request
 def before_request():

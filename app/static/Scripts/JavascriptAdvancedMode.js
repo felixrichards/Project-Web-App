@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    if (advanced == 'True')
+    if (advanced)
     {
         $('.Advanced').css('display', 'block');
     }

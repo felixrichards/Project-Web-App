@@ -381,12 +381,13 @@
                 // See here: http://aladin.unistra.fr/AladinLite/doc/API/
                 var aladin = A.aladin('#aladin-lite-div', {
                     survey: "P/DSS2/color", fov: 0.2,
-
                     showGotoControl: false,
                     showLayersControl: true,
                     showFrame: false,
                     showFullscreenControl: false,
                 });
+                
+                aladin.setImageSurvey(aladin.createImageSurvey('', '', src="{{ url_for('static', filename='testhips') }}", 'equatorial', 15, {imgFormat: 'png'}));
 
                 $('.aladin-location').css('display', 'none');
                 $('.aladin-logo-container').css('display', 'none');
@@ -396,14 +397,14 @@
 
                 // Call methods on aladin to interact with it
                 // See API for list of methods
-                aladin.setFovRange(0.1, 1);
+                //aladin.setFovRange(0.1, 1);
 
                 // Creates a marker at a given RA, Dec
                 // This will be used to navigate automatically to a given galaxy
                 // May be used to calculate shape parameters in world coordinates
                 // May be used to keep shapes in correct location when user pans
-                var ra = 100.0;
-                var dec = 45.0;
+                var ra = 0.0;
+                var dec = 0.0;
                 var cat = A.catalog({ name: 'Some markers', sourceSize: 18 });
                 aladin.addCatalog(cat);
                 cat.addSources([A.marker(ra, dec)]);
@@ -488,5 +489,5 @@
         </div>
     </div>
 </div>
-<script> var advanced = {{ session['advanced']|tojson }}; </script>
+<script> var advanced = {{ session['advanced'] }}; </script>
 {% endblock %}

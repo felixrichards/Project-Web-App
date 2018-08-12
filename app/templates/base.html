@@ -13,9 +13,9 @@
 <html>
     <head>
         {% if title %}
-        <title>{{ title }} - Galaxy stuff</title>
+        <title>{{ title }} - DeepSpace</title>
         {% else %}
-        <title>Welcome.</title>
+        <title>Welcome</title>
         {% endif %}
     </head>
     <body>
@@ -29,23 +29,23 @@
                 </div>
             </li>
             <li><a href="/">Home</a></li>
-            <li><a href="/News">News</a></li>
+            <li><a href="/news">News</a></li>
             <li class="dropdown" id="dropdown">
                 <a  class="dropbtn">Acknowledgement</a>
                 <div class="dropdown-content Acknowledgement">
-                    <a href="/MeetTheTeam">Our Team</a>
-                    <a href="/Funding">Funders</a>
+                    <a href="/team">Our Team</a>
+                    <a href="/funding">Funders</a>
                 </div>
             </li>
             <li class="dropdown" id="dropdown">
-                <a class="dropbtn" href="/Tutorial">Tutorial</a>
+                <a class="dropbtn" href="/tutorial">Tutorial</a>
                 <div class="dropdown-content tutorial">
-                    <a href="/Tutorial#drawingPart">Drawing</a>
-                    <a href="/Tutorial#tablePart">Table</a>
-                    <a href="/Tutorial#annotationPart">Annotation</a>
+                    <a href="/tutorial#drawingPart">Drawing</a>
+                    <a href="/tutorial#tablePart">Table</a>
+                    <a href="/tutorial#annotationPart">Annotation</a>
                 </div>
             </li>
-            <li><a href="/Annotate" class="getInvolved">Get Involved</a></li>
+            <li><a href="/annotate" class="getInvolved">Get Involved</a></li>
         </ul>
         <div class="footer">
             <a href="#news1">About</a>
@@ -56,11 +56,11 @@
         <div id="myNav" class="overlay">
             <div class="overlay-content">
                 <a href="/">Home</a>
-                <a href="/News">News</a>
-                <a href="/MeetTheTeam">Our Team</a>
-                <a href="/Funding">Funders</a>
-                <a href="/Tutorial">Tutorial</a>
-                <a href="/Annotate" class="getInvolved">Get Involved</a>
+                <a href="/news">News</a>
+                <a href="/team">Our Team</a>
+                <a href="/funding">Funders</a>
+                <a href="/tutorial">Tutorial</a>
+                <a href="/annotate" class="getInvolved">Get Involved</a>
             </div>
         </div>
         {% block content %}{% endblock %}
