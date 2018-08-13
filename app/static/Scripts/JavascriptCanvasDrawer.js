@@ -406,6 +406,8 @@ function createShape(x0,y0,x,y,shape){
                     amendBoxes.push(amendBox({x:x2_n,y:y2_n},j++));     //Up
                     amendBoxes.push(amendBox({x:x3_n,y:y3_n},j++));       //UpRight
                 } else {
+                    x_n=boundingRect.x;
+                    y_n=boundingRect.y;
                     var w_n=boundingRect.w;
                     var h_n=boundingRect.h;
                     var t=boundingRect.theta;
@@ -712,6 +714,9 @@ function createShape(x0,y0,x,y,shape){
     function setSelfSelectedIdx(idx){
         selfObj.boundingRect.selectedIdx=idx;
     }
+    
+    // Line specific object functionality
+    // Hacky way to implement inheritance...
     if (shape=="Line"){
         selfObj.x1=selfObj.x+selfObj.w/3;
         selfObj.y1=selfObj.y+selfObj.h/3;
@@ -822,6 +827,29 @@ function createShape(x0,y0,x,y,shape){
             }
         }
         selfObj.createBoxes();
+    }
+    if (shape=="Snake"){
+        // Default thickness
+        var l = 10;
+        
+        // Make start and end of line
+        selfObj.points=[{x: x0, y: y0, l: l}, {x: x, y: y, l: l}];
+        selfObj.create = function(pos){
+            // Change last point to mouse position
+            var n = this.points.length-1;
+            pos.l = l;
+            this.points[n]=pos;
+            
+            // If mouse position is more than 30 px from previous point, add a new point
+            var dist = Math.pow(pos.x-this.points[n-1].x,2)+Math.pow(pos.y-this.points[n-1].y,2);
+            if (dist>900) selfObj.points.append(pos);
+        }
+        selfObj.complete = function(){
+            //
+        }
+        selfObj.redraw = function(){
+            drawSnake(this);
+        }
     }
     return selfObj;
 }
@@ -1310,6 +1338,18 @@ function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(
     ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
     ctx.stroke();
     ctx.closePath();
+}
+
+function drawSnake(shape){
+    for (var i=0; i<shape.points.length-1; i++){
+        // Draw two quadratic bezier curves for snake boundaries
+        ctx.beginPath();
+        ctx.moveTo(shape.points[i].x,shape.points[i].y);,
+        ctx.quadraticCurveTo(
+            // figure out what this should be
+            shape.points[i+1].x,shape.points[i+1].y
+        )
+    }
 }
 
 function rotateCoords(x,y,theta,p={x:0,y:0}){
