@@ -387,7 +387,7 @@
                     showFullscreenControl: false,
                 });
                 
-                aladin.setImageSurvey(aladin.createImageSurvey('', '', src="{{ url_for('static', filename='testhips') }}", 'equatorial', 15, {imgFormat: 'png'}));
+                aladin.setImageSurvey(aladin.createImageSurvey('', '', src="{{ url_for('static', filename='testhips') }}", 'equatorial', 11, {imgFormat: 'png'}));
 
                 $('.aladin-location').css('display', 'none');
                 $('.aladin-logo-container').css('display', 'none');
@@ -405,13 +405,13 @@
                 // May be used to keep shapes in correct location when user pans
                 var ra = 0.0;
                 var dec = 0.0;
-                var cat = A.catalog({ name: 'Some markers', sourceSize: 18 });
-                aladin.addCatalog(cat);
-                cat.addSources([A.marker(ra, dec)]);
+                //var cat = A.catalog({ name: 'Some markers', sourceSize: 18 });
+                //aladin.addCatalog(cat);
+                //cat.addSources([A.marker(ra, dec)]);
 
                 // Navigates to given RA, Dec
                 aladin.gotoRaDec(ra, dec);
-                aladin.setFoV(1);
+                aladin.setFoV(0.1);
 
                 // These are listeners for panning and scrolling
                 aladin.on('positionChanged', function (newPosition) {
