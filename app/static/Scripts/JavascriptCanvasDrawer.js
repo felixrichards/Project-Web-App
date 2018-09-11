@@ -68,7 +68,7 @@ function showAnnotation() {
         document.getElementById("featureDropdownContainer").style.display = "block";
 
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Rect"; }, "Rect"))
+            function () { state.shape = "Snake"; }, "Rect"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Circle"; }, "Circle"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
@@ -334,6 +334,9 @@ function createShape(x0,y0,x,y,shape){
             }
         }
     }
+    function isInsideSnake(pos){
+        
+    }
     var fn=eval("isInside"+shape);
     
     var createBoundingRect=function(shape){
@@ -364,11 +367,12 @@ function createShape(x0,y0,x,y,shape){
         }
         
         var amendBoxes=function(){
-            var amendBox=function(loc,dir,theta=0,p={x:0,y:0},r_shift=0){
+            var amendBox=function(loc,dir,theta=0,p={x:0,y:0},type=""){
                 boxW=15;
                 function drawAmendRect(shape,p){
                     shape.p=p;
-                    if (dir==9) shape.colour="rgba(20, 200, 20, 0.5)";
+                    if (shape.type=="rotate") shape.colour="rgba(20, 200, 20, 0.5)";
+                    if (shape.type=="length") shape.colour="rgba(220, 220, 20, 0.5)";
                     drawRect(shape,false,false,true);
                 }
                 
@@ -382,6 +386,7 @@ function createShape(x0,y0,x,y,shape){
                         return isInsideRect(pos,this.rect);
                     },
                     redraw: function(){
+                        this.rect.type=type;
                         drawAmendRect(this.rect,this.p);
                     }
                 }
@@ -405,6 +410,14 @@ function createShape(x0,y0,x,y,shape){
                     amendBoxes.push(amendBox({x:x1_n,y:y1_n},j++));       //UpRight
                     amendBoxes.push(amendBox({x:x2_n,y:y2_n},j++));     //Up
                     amendBoxes.push(amendBox({x:x3_n,y:y3_n},j++));       //UpRight
+                } else if (shape.shape=="Snake"){
+                    for (var i=0; i<shape.points.length; i++){
+                        amendBoxes.push(amendBox({x:shape.points[i].x_t, y:shape.points[i].y_t}, j++,0,0,"length"));
+                        amendBoxes.push(amendBox({x:shape.points[i].x_b, y:shape.points[i].y_b}, j++,0,0,"length"));
+                    }
+                    for (var i=0; i<shape.points.length; i++){
+                        amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
+                    }
                 } else {
                     x_n=boundingRect.x;
                     y_n=boundingRect.y;
@@ -422,7 +435,7 @@ function createShape(x0,y0,x,y,shape){
                     amendBoxes.push(amendBox({x:x_n,y:y_n+h_n/2},j++,t,p));     //Left
                     amendBoxes.push(amendBox({x:x_n,y:y_n},j++,t,p));           //UpLeft
                     if (shape.shape!="Circle") 
-                        amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n-r_shift},j++,t,p,r_shift));           //Rotation
+                        amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n-r_shift},j++,t,p,"rotate"));           //Rotation
                 }
                 return amendBoxes;
             }
@@ -494,6 +507,20 @@ function createShape(x0,y0,x,y,shape){
                 this.x3=pos.x;
                 this.y3=pos.y;
             }
+        } else if (this.shape=="Snake") {
+            var idx;
+            // A bit of maths to properly calculate which point is to be amended and how
+            // thickness boxes have dir 0 to points.length*2-1, loc boxes have dir points.length*2 to points.length*3-1
+            if (dir<this.points.length*2){
+                idx=Math.floor((dir-1)/2);
+                this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
+            } else {
+                idx=dir-this.points.length*2-1;
+                this.points[idx].x=pos.x;
+                this.points[idx].y=pos.y;
+            }
+            console.log(idx);
+            this.updatePoint(idx);
         } else if (this.shape=="Circle") {
             var x_shift=(pos.x-pos_0.x)/shape_factor;
             var y_shift=(pos.y-pos_0.y)/shape_factor;
@@ -578,6 +605,46 @@ function createShape(x0,y0,x,y,shape){
         }
     }
     
+    function worldToPix(){
+        if (this.shape=="Line"){
+            [this.x,this.y]=aladin.world2pix(this.xy_ra,this.xy_dec);
+            [this.x1,this.y1]=aladin.world2pix(this.xy1_ra,this.xy1_dec);
+            [this.x2,this.y2]=aladin.world2pix(this.xy2_ra,this.xy2_dec);
+            [this.x3,this.y3]=aladin.world2pix(this.xy3_ra,this.xy3_dec);
+        } else if (this.shape=="Snake"){
+            for (var i=0; i<this.points.length; i++){
+                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].xy_ra,this.points[i].xy_dec);
+                [this.points[i].x_t,this.points[i].y_t]=aladin.world2pix(this.points[i].xy_t_ra,this.points[i].xy_t_dec);
+                [this.points[i].x_b,this.points[i].y_b]=aladin.world2pix(this.points[i].xy_b_ra,this.points[i].xy_b_dec);
+                this.points[i].l=Math.sqrt(Math.pow(this.points[i].x_t-this.points[i].x,2)+Math.pow(this.points[i].y_t-this.points[i].y,2));
+            }
+        } else {
+            [this.x,this.y]=aladin.world2pix(this.xy_ra,this.xy_dec);
+            [this.xw,this.yh]=aladin.world2pix(this.wh_ra,this.wh_dec);
+            [this.w,this.h]=[this.xw-this.x,this.yh-this.y];
+        }
+        this.changePos(false);
+        this.redraw()
+    }
+    
+    function pixToWorld(){
+        if (this.shape=="Line"){
+            [this.xy_ra,this.xy_dec]=aladin.pix2world(this.x,this.y);
+            [this.xy1_ra,this.xy1_dec]=aladin.pix2world(this.x1,this.y1);
+            [this.xy2_ra,this.xy2_dec]=aladin.pix2world(this.x2,this.y2);
+            [this.xy3_ra,this.xy3_dec]=aladin.pix2world(this.x3,this.y3);
+        } else if (this.shape=="Snake"){
+            for (var i=0; i<this.points.length; i++){
+                [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
+                [this.points[i].xy_t_ra,this.points[i].xy_t_dec]=aladin.pix2world(this.points[i].x_t,this.points[i].y_t);
+                [this.points[i].xy_b_ra,this.points[i].xy_b_dec]=aladin.pix2world(this.points[i].x_b,this.points[i].y_b);
+            }
+        } else {
+            [this.xy_ra,this.xy_dec]=aladin.pix2world(this.x, this.y);
+            [this.wh_ra,this.wh_dec]=aladin.pix2world(this.x+this.w, this.y+this.h);
+        }
+    }
+    
     var selfObj={
         shape: shape,
         noFeature: nextShapeValue,
@@ -622,6 +689,7 @@ function createShape(x0,y0,x,y,shape){
                                             ,this.x3,this.y3
                                             ,this.x1,this.y1
                                             ,this.x2,this.y2);
+            else if (this.shape=="Snake") drawSnake(this);
             else drawShape(this.x,this.y,this.w,this.h,shape,this.theta,this.centre); 
             if (this.selected) {
                 this.createBoundingRect();
@@ -645,7 +713,7 @@ function createShape(x0,y0,x,y,shape){
             this.moveCentre();
         },
         amend: amend,
-        changePos: function(){
+        changePos: function(update_world_coordinates=true){
             if (this.shape!="Line") this.normaliseCoords();
             this.centre=this.recalculateCentre(this.x,this.y,this.w,this.h,this.theta,this.centre);
             this.centre.x0=this.centre.x;
@@ -664,8 +732,21 @@ function createShape(x0,y0,x,y,shape){
                 this.y20=this.y2;
                 this.x30=this.x3;
                 this.y30=this.y3;
-                this.createBoxes()
+                this.createBoxes();
+                this.createBoundingRect();
+            } else if (this.shape=="Snake") {
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x0=this.points[i].x;
+                    this.points[i].y0=this.points[i].y;
+                    this.points[i].x0_t=this.points[i].x_t;
+                    this.points[i].y0_t=this.points[i].y_t;
+                    this.points[i].x0_b=this.points[i].x_b;
+                    this.points[i].y0_b=this.points[i].y_b;
+                    this.points[i].l0=this.points[i].l;
+                    this.points[i].d0=this.points[i].d;
+                }
             }
+            if (update_world_coordinates) this.pixToWorld();
             this.boundingRect.selectedIdx=0;
         },
         resetPos: function(){
@@ -683,7 +764,19 @@ function createShape(x0,y0,x,y,shape){
                 this.y2=this.y20;
                 this.x3=this.x30;
                 this.y3=this.y30;
+            } else if (this.shape=="Snake") {
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x=this.points[i].x0;
+                    this.points[i].y=this.points[i].y0;
+                    this.points[i].x_t=this.points[i].x0_t;
+                    this.points[i].y_t=this.points[i].y0_t;
+                    this.points[i].x_b=this.points[i].x0_b;
+                    this.points[i].y_b=this.points[i].y0_b;
+                    this.points[i].l=this.points[i].l0;
+                    this.points[i].d=this.points[i].d0;
+                }
             }
+            this.pixToWorld();
             this.boundingRect.selectedIdx=0;
         },
         boundingRect: 0,
@@ -694,6 +787,7 @@ function createShape(x0,y0,x,y,shape){
             this.boundingRect.selectedIdx=i;
         },
         interact: function(pos,pos_0){
+            console.log(this.interact.caller);
             if (this.boundingRect.selectedIdx==-1) this.move(pos,pos_0);
             else{
                 this.amend(pos,pos_0,this.boundingRect.selectedIdx);
@@ -709,7 +803,10 @@ function createShape(x0,y0,x,y,shape){
                 this.h=-this.h;
             }
             this.createBoundingRect();
-        }
+        },
+        pixToWorld: pixToWorld,
+        worldToPix: worldToPix
+        
     }
     function setSelfSelectedIdx(idx){
         selfObj.boundingRect.selectedIdx=idx;
@@ -814,9 +911,6 @@ function createShape(x0,y0,x,y,shape){
                     },
                     theta: theta,
                     isInside: function(pos){
-                        // pos=rotateCoords(pos.x,pos.y,-obj.theta,obj.c);
-                        console.log(pos);
-                        console.log(this);
                         return isInside(pos,this);
                     },
                     draw: function(){
@@ -830,27 +924,90 @@ function createShape(x0,y0,x,y,shape){
     }
     if (shape=="Snake"){
         // Default thickness
-        var l = 10;
-        
+        var l = 30;
+        var t_0;
+        var theta
+        var d=1;
+        var segment_length=2500;
         // Make start and end of line
-        selfObj.points=[{x: x0, y: y0, l: l}, {x: x, y: y, l: l}];
+        selfObj.points=[{x: x0, y: y0, l: l, d: 1}, {x: x, y: y, l: l}];
+        
+        function calcAngle(i){
+            // Calculate angle between i'th and i+1'th line segment
+            var x_diff_0=selfObj.points[i].x-selfObj.points[i-1].x;
+            var y_diff_0=selfObj.points[i].y-selfObj.points[i-1].y;
+            
+            // Save old angle to check for cycling
+            t_0=theta;
+            selfObj.points[i].t_0=selfObj.points[i].theta;
+            
+            // Calculate new angle
+            theta=-Math.atan(y_diff_0/x_diff_0);
+            
+            // Only use angle if new position isn't close. stops artifacting
+            if (Math.pow(x_diff_0,2)+Math.pow(y_diff_0,2)<100) theta=selfObj.points[i-1].theta
+            selfObj.points[i].theta=theta;
+            return theta;
+        }
+        function calcBuffer(theta,l){
+            // Use angle to calculate offset for top and bottom of snake
+            var buffer=rotateCoords(0,l,theta);
+            return buffer;
+        }
+        function addToPoint(i,buffer){
+            // Add and subtract offset to get top and bottom
+            selfObj.points[i].x_t=selfObj.points[i].x+buffer.x;
+            selfObj.points[i].y_t=selfObj.points[i].y+buffer.y;
+            selfObj.points[i].x_b=selfObj.points[i].x-buffer.x;
+            selfObj.points[i].y_b=selfObj.points[i].y-buffer.y;
+        }
+        var calcTopBot = function calcTopBot(i,update=false){
+            var theta;
+            if (i>1) theta=calcAngle(i);
+            else theta=calcAngle(1);
+            
+            if (update){
+                t_0=selfObj.points[i].t_0;
+                d = selfObj.points[i].d;
+                console.log(d);
+            }
+            // Check if angle has cycled to negative
+            if (i>1&&theta*t_0<-0.75){
+                console.log(theta,t_0);
+                console.log("Switch at", i);
+                d=d*-1;
+                console.log("d is",d);
+                selfObj.points[i].d=d;
+            }
+            addToPoint(i,calcBuffer(theta,d*selfObj.points[i].l));
+        }
+        selfObj.updatePoint = function(i) {
+            calcTopBot(i,true);
+        }
+        
         selfObj.create = function(pos){
             // Change last point to mouse position
             var n = this.points.length-1;
             pos.l = l;
+            pos.d = d;
             this.points[n]=pos;
+            calcTopBot(n);
+            if (n<2) {
+                this.points[0].theta=this.points[1].theta;
+                this.points[1].t_0=this.points[1].theta;
+                addToPoint(0,calcBuffer(this.points[0].theta,this.points[0].l));
+            }
             
             // If mouse position is more than 30 px from previous point, add a new point
             var dist = Math.pow(pos.x-this.points[n-1].x,2)+Math.pow(pos.y-this.points[n-1].y,2);
-            if (dist>900) selfObj.points.append(pos);
+            if (dist>segment_length) this.points.push(this.points[n]);
+            this.redraw();
         }
         selfObj.complete = function(){
-            //
-        }
-        selfObj.redraw = function(){
-            drawSnake(this);
+            this.pixToWorld();
         }
     }
+    selfObj.pixToWorld();
     return selfObj;
 }
 
@@ -996,6 +1153,9 @@ element.addEventListener("mousedown", function(e){
     
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
+        if (state.shape=="Snake") {
+            tempSnake=createShape(mP_0.x, mP_0.y, mP_0.x, mP_0.y, state.shape);
+        }
         // Relevant prompt
         noshapeDrawn();
     }
@@ -1021,18 +1181,23 @@ element.addEventListener("mousemove", function(e){
 
     t=e.timeStamp;
     mP = getMousePos(drawCanvas, e);
+    
+    // If user is clicking a shape
     if (state.focusNo > -1) {
+        console.log(state.focusNo);
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
             shapeAmended = true;
             stopDropDown = true;
         }
+        
+    // If user is trying to draw
     } else if (flag === 0) {
-        // Check user is dragging (150 was chosen from experiments)
         if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
-            drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
+            if (state.shape=="Snake") tempSnake.create(mP);
+            else drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
             shapeDrawn = true;   
             stopDropDown = true;
         }
@@ -1058,7 +1223,11 @@ element.addEventListener("mouseup", function(e){
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
-        shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
+        if (state.shape=="Snake") {
+            tempSnake.complete();
+            shapes.push(tempSnake);
+        }
+        else shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
         state.addUndo(shapes.length-1, 'delete', Object.assign({}, shapes[shapes.length-1]));
         allShapes();
         state.selectShape(shapes.length - 1);
@@ -1130,7 +1299,12 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             // clearStack will be false if called from a redo: 
             //      interacting with the canvas should reset the redoStack
             // Have to copy centre object also since js has no deep copy
-            if (action!='clear') shape.centre=Object.assign({},shape.centre);
+            if (action!='clear') {
+                shape.centre=Object.assign({},shape.centre);
+                if (shape.shape=="Snake")
+                    for (var i=0; i<shape.points.length; i++) 
+                        shape.points[i]=Object.assign({},shape.points[i]);
+            }
             if (clearStack) this.redoStack=[];
             this.undoStack.push({
                 shapeIndex: idx,
@@ -1143,6 +1317,9 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             if (obj.action!='clear'){
                 obj.shape=Object.assign({}, obj.shape);
                 obj.shape.centre=Object.assign({}, obj.shape.centre);
+                if (obj.shape.shape=="Snake")
+                    for (var i=0; i<obj.shape.points.length; i++)
+                        obj.shape.points[i]=Object.assign({},obj.shape.points[i]);
             }
             this.redoStack.push(obj);
         },
@@ -1341,15 +1518,171 @@ function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(
 }
 
 function drawSnake(shape){
-    for (var i=0; i<shape.points.length-1; i++){
-        // Draw two quadratic bezier curves for snake boundaries
-        ctx.beginPath();
-        ctx.moveTo(shape.points[i].x,shape.points[i].y);,
-        ctx.quadraticCurveTo(
-            // figure out what this should be
-            shape.points[i+1].x,shape.points[i+1].y
-        )
+    ctx.beginPath();
+    var N=shape.points.length;
+    
+    // Draw top part of snake until end
+    ctx.moveTo(shape.points[0].x_t,shape.points[0].y_t);
+    for (var i=1; i<N; i++){
+        ctx.lineTo(shape.points[i].x_t,shape.points[i].y_t);
     }
+    
+    // Draw bottom part of snake back to start and fill
+    for (var i=N-1; i>-1; i--){
+        ctx.lineTo(shape.points[i].x_b,shape.points[i].y_b);
+    }
+    ctx.lineTo(shape.points[0].x_t,shape.points[0].y_t);
+    
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+    ctx.fill()
+    ctx.closePath();
+}
+
+function drawSnake2(shape){
+    var x_diff_0=shape.points[1].x-shape.points[0].x;
+    var y_diff_0=shape.points[1].y-shape.points[0].y;
+    var theta_0=-Math.atan(y_diff_0/x_diff_0);
+    var x_diff_1;
+    var y_diff_1;
+    var theta_1;
+    var d=1;
+    var buffer=[];
+    var buffer_0;
+    var buffer_1;
+    var topCoord_0;
+    var botCoord_0;
+    var N=shape.points.length-1;
+    
+    ctx.beginPath();
+    
+    
+    buffer.push(rotateCoords(0,10,theta_0));
+    topCoord_0={x: shape.points[0].x+d*buffer[0].x, y: shape.points[0].y+d*buffer[0].y};
+    ctx.moveTo(topCoord_0.x,topCoord_0.y);
+    
+    for (var i=0; i<N; i++){
+        if (i>0) theta_0=theta_1;
+        
+        if (i<shape.points.length-2){
+            x_diff_1=shape.points[i+1].x-shape.points[i].x;
+            y_diff_1=shape.points[i+1].y-shape.points[i].y;
+            theta_1=-Math.atan(y_diff_1/x_diff_1);
+        }
+        
+        buffer.push(rotateCoords(0,10,theta_1));
+        topCoord_1={x: shape.points[i+1].x+d*buffer[i+1].x, y: shape.points[i+1].y+d*buffer[i+1].y};
+        
+        ctx.lineTo(topCoord_1.x,topCoord_1.y);
+    }
+    
+    botCoord_1={x: shape.points[N].x-d*buffer[N].x, y: shape.points[N].y-d*buffer[N].y};
+    ctx.lineTo(botCoord_1.x,botCoord_1.y);
+    
+    for (var i=N-1; i>-1; i--){
+        botCoord_1={x: shape.points[i].x-d*buffer[i].x, y: shape.points[i].y-d*buffer[i].y};
+        ctx.lineTo(botCoord_1.x,botCoord_1.y);
+        console.log(i);
+    }
+    ctx.lineTo(topCoord_0.x,topCoord_0.y);
+    
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+    ctx.fill()
+    ctx.closePath();
+}
+
+function drawSomething(shape){
+    var x_diff_0=shape.points[1].x-shape.points[0].x;
+    var y_diff_0=shape.points[1].y-shape.points[0].y;
+    var theta_0=-Math.atan(y_diff_0/x_diff_0);
+    var x_diff_1;
+    var y_diff_1;
+    var theta_1;
+    var d=1;
+    var buffer=[];
+    var buffer_0;
+    var buffer_1;
+    var topCoord_0;
+    var botCoord_0;
+    
+    ctx.beginPath();
+    
+    
+    buffer.push(rotateCoords(0,10,theta_0));
+    topCoord_0={x: shape.points[0].x+d*buffer[0].x, y: shape.points[0].y+d*buffer[0].y};
+    ctx.moveTo(topCoord_0.x,topCoord_0.y);
+    
+    for (var i=0; i<shape.points.length-1; i++){
+        if (i>0) theta_0=theta_1;
+        
+        if (i<shape.points.length-2){
+            x_diff_1=shape.points[i+1].x-shape.points[i].x;
+            y_diff_1=shape.points[i+1].y-shape.points[i].y;
+            theta_1=-Math.atan(y_diff_1/x_diff_1);
+        }
+        
+        buffer.push(rotateCoords(0,10,theta_1));
+        topCoord_1={x: shape.points[i+1].x+d*buffer[i+1].x, y: shape.points[i+1].y+d*buffer[i+1].y};
+        
+        ctx.lineTo(topCoord_1.x,topCoord_1.y);
+    }
+    
+    // botCoord_0={x: shape.points[i].x-d*buffer[i].x, y: shape.points[i].y-d*buffer[i+1].y};
+    
+    
+    // for (var i=0; i<shape.points.length-1; i++){
+        // if (i>0) theta_0=theta_1;
+        
+        // if (i<shape.points.length-2){
+            // x_diff_1=shape.points[i+1].x-shape.points[i].x;
+            // y_diff_1=shape.points[i+1].y-shape.points[i].y;
+            // theta_1=-Math.atan(y_diff_1/x_diff_1);
+        // }
+        
+        // var buffer_0=rotateCoords(0,10,theta_0);
+        // var buffer_1=rotateCoords(0,10,theta_1);
+        // var topCoord_0={x: shape.points[i].x+d*buffer_0.x, y: shape.points[i].y+d*buffer_0.y};
+        // var botCoord_0={x: shape.points[i].x-d*buffer_0.x, y: shape.points[i].y-d*buffer_0.y};
+        
+        // if (i==0) {
+            // ctx.moveTo(topCoord_0.x,topCoord_0.y);
+            // ctx.lineTo(botCoord_0.x,botCoord_0.y);
+        // }
+        
+        // if (Math.abs(theta_1-theta_0)>2) {
+            // console.log("Switch");
+            // d*=-1
+        // }
+        
+        // var topCoord_1={x: shape.points[i+1].x+d*buffer_1.x, y: shape.points[i+1].y+d*buffer_1.y};
+        // var botCoord_1={x: shape.points[i+1].x-d*buffer_1.x, y: shape.points[i+1].y-d*buffer_1.y};
+        
+        // ctx.moveTo(topCoord_0.x,topCoord_0.y);
+        // ctx.lineTo(topCoord_1.x,topCoord_1.y);
+        
+        // ctx.moveTo(botCoord_0.x,botCoord_0.y);
+        // ctx.lineTo(botCoord_1.x,botCoord_1.y);
+        
+        
+    // }
+    
+    ctx.moveTo(topCoord_0.x,topCoord_0.y);
+    // ctx.lineTo(botCoord_0.x,botCoord_0.y);
+    
+    ctx.moveTo(topCoord_1.x,topCoord_1.y);
+    // ctx.lineTo(botCoord_1.x,botCoord_1.y);
+    
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+    ctx.fill()
+    ctx.closePath();
 }
 
 function rotateCoords(x,y,theta,p={x:0,y:0}){
@@ -1481,3 +1814,10 @@ $(".cheatSheet").hover(function () {
 }, function () {
     preventDrawing = false;
 });
+
+function allWorldToPix(){
+    for (var i=0; i<shapes.length; i++){
+        shapes[i].worldToPix();
+    }
+    resetCanvas();
+}
