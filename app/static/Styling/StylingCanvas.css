@@ -65,7 +65,7 @@ i {
 #bin {
     position: absolute;
     top: 10px;
-    left: 195px;
+    left: 306px;
     z-index: 8;
     font-size: 25px;
     display: none;
@@ -74,7 +74,7 @@ i {
 #undo {
     position: absolute;
     top: 10px;
-    left: 229.5px;
+    left: 340.5px;
     z-index: 8;
     font-size: 25px;
     display: none;
@@ -83,7 +83,7 @@ i {
 #redo {
     position: absolute;
     top: 10px;
-    left: 268px;
+    left: 379px;
     z-index: 8;
     font-size: 25px;
     display: none;
@@ -92,7 +92,7 @@ i {
 #restart {
     position: absolute;
     top: 10px;
-    left: 307px;
+    left: 418px;
     z-index: 8;
     font-size: 25px;
     display: none;
@@ -101,7 +101,7 @@ i {
 #table {
     position: absolute;
     top: 10px;
-    left: 342.5px;
+    left: 453.5px;
     z-index: 6;
     font-size: 25px;
     display: none;
@@ -110,7 +110,7 @@ i {
 #info {
     position: absolute;
     top: 10px;
-    left: 387px;
+    left: 498px;
     z-index: 6;
     font-size: 25px;
     display: none;
@@ -211,7 +211,7 @@ i {
 .FeatureDropdownContainer {
     position: absolute;
     top: 5px;
-    left: 412px;
+    left: 523px;
     z-index: 6;
     display: none;
     min-width: 250px;

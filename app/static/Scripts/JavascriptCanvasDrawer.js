@@ -68,13 +68,19 @@ function showAnnotation() {
         document.getElementById("featureDropdownContainer").style.display = "block";
 
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Snake"; }, "Rect"))
+            function () { state.shape = "Rect"; }, "Rect"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Circle"; }, "Circle"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Ellipse"; }, "Ellipse"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Line"; }, "Line"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Snake"; }, "Snake"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Region"; }, "Region"))
+        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Region"; }, "Region"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { deleteShape(); }, "Delete"))
         buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
