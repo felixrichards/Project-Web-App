@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="//aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.css" />
 <script type="text/javascript" src="//code.jquery.com/jquery-1.12.1.min.js" charset="utf-8"></script>
+<!-- <script src="{{ url_for('static', filename='Scripts/require.js')}}"></script> -->
+<script src="{{ url_for('static', filename='Scripts/hull.js')}}"></script>
 <div class="Advanced">
     <div class="navSearch" id="navSearch"><i class="fa fa-search"></i></div>
 </div>
@@ -438,16 +440,24 @@
                         <li><a id="featureItems" onclick="addFeature('Plumes')" onmouseover="changeTo()" onmouseout="changeBack()">Plumes</a></li>
                         <li><a id="featureItems" onclick="addFeature('Tital Tails')" onmouseover="changeTo()" onmouseout="changeBack()">Tital Tails</a></li>
                         <li><a id="featureItems" onclick="addFeature('Streams')" onmouseover="changeTo()" onmouseout="changeBack()">Streams</a></li>
+                        
                         <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Artifacts</a></li>
                         <li><a id="featureItems" onclick="addFeature('Ghosted Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Ghosted Halo</a></li>
                         <li><a id="featureItems" onclick="addFeature('Cirrus')" onmouseover="changeTo()" onmouseout="changeBack()">Cirrus</a></li>
+                        
                         <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Internal Structures</a></li>
                         <li><a id="featureItems" onclick="addFeature('Bar')" onmouseover="changeTo()" onmouseout="changeBack()">Bar</a></li>
                         <li><a id="featureItems" onclick="addFeature('Ring')" onmouseover="changeTo()" onmouseout="changeBack()">Ring</a></li>
                         <li><a id="featureItems" onclick="addFeature('Spiral Arm')" onmouseover="changeTo()" onmouseout="changeBack()">Spiral Arm</a></li>
                         <li><a id="featureItems" onclick="addFeature('Dust Lane')" onmouseover="changeTo()" onmouseout="changeBack()">Dust Lane</a></li>
-                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
+                        
+                        <li>
+                            <a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">
+                                Halo
+                            </a>
+                        </li>
                         <li><a id="featureItems" onclick="addFeature('Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
+                        
                         <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Other</a></li>
                         <li><a id="featureItems" onclick="addFeature('Not Sure')" onmouseover="changeTo()" onmouseout="changeBack()">Not Sure</a></li>
                         <li><div class="spacingFeatures"></div></li>
@@ -460,9 +470,9 @@
             <i class="fa fa-pencil" id="pencil"></i>
             <i class="fa fa-arrows" id="arrows"></i>
             <i class="fa fa-trash-o" id="bin" title="Del"></i>
+            <i class="fa fa-long-arrow-left" id="undo" title="Ctrl+Z"></i>
+            <i class="fa fa-long-arrow-right" id="redo" title="Ctrl+Y"></i>
             <i class="fa fa-undo" id="restart"></i>
-            <i class="fa fa-long-arrow-left" id="undo"></i>
-            <i class="fa fa-long-arrow-right" id="redo"></i>
             <i class="fa fa-table" id="table"></i>
             <i class="fa fa-info" id="info"></i>
         </div>

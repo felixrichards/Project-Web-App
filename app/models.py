@@ -27,7 +27,7 @@ class Annotation(db.Model):
         print(self)
         for shape in shapes:
             s = Shape(a_id=self.a_id,shape=shape['shape'],x0=shape['x0'],
-                 y0=shape['y0'],sigma=shape['sigma'])
+                        y0=shape['y0'],sigma=shape['sigma'])
             if shape['shape']=='Rect':
                 s.w=shape['w']
                 s.h=shape['h']

@@ -39,13 +39,19 @@ var button_x_right_shift=drawerRect.w;
 
 var exploringMode = true;
 //Left sitting buttons
-buttons.push(createButton(button_x_shift,5,button_size,button_size,
+buttons.push(Button(button_x_shift,5,button_size,button_size,
     function () { showAnnotation(); }, "Switch"))
-buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () {  }, "Layers"))
 
-// Returns an object (rectangle) with left, top, width and height attributes
+
+/**
+ * Toggles between drawing tool and AladinLite
+ * 
+ * @returns {undefined}
+ */
 function showAnnotation() {
+    console.log(exploringMode)
     exploringMode = false;
     if (buttons.length == 2)
     {
@@ -55,7 +61,7 @@ function showAnnotation() {
         buttons = [];
         button_x_shift = 5;
 
-        buttons.push(createButton(button_x_shift, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift, 5, button_size, button_size,
             function () { showAnnotation(); }, "Switch"))
         document.getElementById("pencil").style.display = "none";
         document.getElementById("arrows").style.display = "block";
@@ -67,31 +73,31 @@ function showAnnotation() {
         document.getElementById("redo").style.display = "block";
         document.getElementById("featureDropdownContainer").style.display = "block";
 
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Rect"; }, "Rect"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Circle"; }, "Circle"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Ellipse"; }, "Ellipse"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Line"; }, "Line"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Snake"; }, "Snake"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { state.shape = "Region"; }, "Region"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Region"; }, "Region"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
+            function () { state.shape = "Freehand"; }, "Freehand"))
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { deleteShape(); }, "Delete"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { undo();}, "Undo"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { redo();}, "Redo"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { clear(); }, "Reset"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { showHideTable(); }, "Table"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { showHideCheatSheet(); }, "Info"))
 
         $('.aladin-zoomControl').css('right', '4000');
@@ -101,7 +107,7 @@ function showAnnotation() {
         $('.aladin-layerBox').css('display', 'none');
 
         state.resetSelected();
-        state = defaultState();
+        state = defaultState(false,true);
     }
     else {
         exploringMode = true;
@@ -111,9 +117,9 @@ function showAnnotation() {
         buttons = [];
         button_x_shift = 5;
 
-        buttons.push(createButton(button_x_shift, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift, 5, button_size, button_size,
             function () { showAnnotation(); }, "Switch"))
-        buttons.push(createButton(button_x_shift += button_x_inc, 5, button_size, button_size,
+        buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { }, "Layers"))
         document.getElementById("pencil").style.display = "block";
         document.getElementById("arrows").style.display = "none";
@@ -135,10 +141,15 @@ function showAnnotation() {
         nextShape = false;
 
         state.resetSelected();
-        state = defaultState();
+        state = defaultState(false,true);
     }
 }
 
+/**
+ * Performs an undo, removing the most recent action from the undo stack
+ * 
+ * @returns {number}
+ */
 function undo(){
     state.undo();
     updateTable(shapes);
@@ -146,6 +157,11 @@ function undo(){
     disableSelectReset=true;
 }
 
+/**
+ * Performs a redo, adding the most recent action from the redo stack
+ * 
+ * @returns {number}
+ */
 function redo(){
     state.redo();
     updateTable(shapes);
@@ -153,6 +169,11 @@ function redo(){
     disableSelectReset=true;
 }
 
+/**
+ * Deletes all shapes. Resets drawing tool to not chosen.
+ * 
+ * @returns {number}
+ */
 function clear(){
     state = defaultState(true, true);
     state.addUndo(-1, 'clear', shapes.slice());
@@ -161,8 +182,26 @@ function clear(){
     updateTable(shapes);
 }
 
-// Returns an object (rectangle) with left, top, width and height attributes
-function createRect(x, y, w, h,theta=0){
+/** 
+ *  @typedef Rect
+ *  @type {Object}
+ *  @property {number} x The X-coordinate of top left.
+ *  @property {number} y The Y-coordinate of top left.
+ *  @property {number} w The width.
+ *  @property {number} h The height.
+ *  @property {number} theta The angle of rotation.
+ */
+
+/** 
+ *  Creates a Rect
+ *  @param {number} x The X-coordinate of top left.
+ *  @param {number} y The Y-coordinate of top left.
+ *  @param {number} w The width.
+ *  @param {number} h The height.
+ *  @param {number} [theta=0] The angle of rotation.
+ *  @returns {Rect}
+ */
+function Rect(x, y, w, h,theta=0){
     return {
         x:x,
         y:y,
@@ -172,8 +211,56 @@ function createRect(x, y, w, h,theta=0){
     }; 
 }
 
-// Returns an object (button) with positional attributes and a function (behaviour) to run when pressed
-function createButton(x, y, w, h, behaviour, img){
+/** 
+ *  @typedef Point
+ *  @type {Object}
+ *  @property {number} x The X-coordinate.
+ *  @property {number} y The Y-coordinate.
+ *  @returns {Point}
+ */
+
+/** 
+ *  Creates a Point
+ *  @param {number} x The X-coordinate.
+ *  @param {number} y The Y-coordinate.
+ *  @returns {Point}
+ */
+function Point(x, y){
+    return {
+        x:x,
+        y:y
+    }; 
+}
+
+/** 
+ *  @typedef Button
+ *  @type {Object}
+ *  @property {Rect} rect The positional attributes of button
+ *  @property {string} img The icon to use. Possible options are 'Rect','Circle','Ellipse','Line'
+ *  @property {boolean} toggle Whether the button acts as a toggle
+ *  @property {CanvasRenderingContext2D} ctx The canvas context to draw on
+ *  @property {function} behaviour The behaviour to execute when clicked.
+ *  @property {function} redraw Redraws the button
+ *  @property {string} cursor The cursor type that should appear when hovering
+ *  @property {boolean} clicked Whether the button is toggled
+ *  @property {function} click Executes behaviour, untoggles other buttons if button is a toggle
+ *  @property {function} unclick Redraws the button as an untoggled button
+ *  @property {function} clear Clears the canvas in over the button's space
+ */
+
+/** 
+ * Returns an object (button) with positional attributes and a function (behaviour) to run when pressed.
+ * 
+ *  @param {number} x The X-coordinate of top left.
+ *  @param {number} y The Y-coordinate of top left.
+ *  @param {number} w The width.
+ *  @param {number} h The height.
+ *  @param {function} behaviour The behaviour to execute when clicked.
+ *  @param {string} img The icon to use. Possible options are 'Rect','Circle','Ellipse','Line'
+ *  @param {boolean} toggle Whether the button should act as a toggle
+ *  @returns {Button}
+ */
+function Button(x, y, w, h, behaviour, img, toggle=false){
     drawButton=function(btn){
         btn.ctx.beginPath();
         btn.ctx.rect(btn.rect.x,btn.rect.y,btn.rect.w,btn.rect.h);
@@ -183,7 +270,7 @@ function createButton(x, y, w, h, behaviour, img){
         btn.ctx.font = "24px Arial";
         btn.ctx.textAlign = "center";
         
-        if (btn.draw) btn.ctx.beginPath()
+        if (btn.toggle) btn.ctx.beginPath()
         if (btn.img=="Rect"){
             btn.ctx.rect(btn.rect.x+5,btn.rect.y+8,btn.rect.w-10,btn.rect.h-16);
         } else if (btn.img=="Circle"){
@@ -213,7 +300,7 @@ function createButton(x, y, w, h, behaviour, img){
                 x+w,y+h);
         }
         
-        if (btn.draw){
+        if (btn.toggle){
             if (btn.img!="Line"){
                 btn.ctx.fillStyle="rgba(255, 0, 0, 0.4)";
                 btn.ctx.fill();
@@ -226,9 +313,9 @@ function createButton(x, y, w, h, behaviour, img){
         }
     }
     o={
-        rect: createRect(x, y, w, h),
+        rect: Rect(x, y, w, h),
         img: img,
-        draw:false,
+        toggle:false,
         ctx: ui_ctx,
         behaviour: behaviour,
         redraw: function redraw(){
@@ -238,12 +325,12 @@ function createButton(x, y, w, h, behaviour, img){
         clicked: false,
         click: function(){
             if (!this.clicked) {
-                if (this.draw) resetButtons();
+                if (this.toggle) resetButtons();
                 this.clicked=true;
                 this.redraw();
                 this.behaviour();
                 var temp_this=this;
-                if (!this.draw){
+                if (!this.toggle){
                     setTimeout(function(){
                         temp_this.unclick();
                     }, 50);
@@ -261,23 +348,60 @@ function createButton(x, y, w, h, behaviour, img){
             this.ctx.clearRect(this.rect.x,this.rect.y,this.rect.w,this.rect.h);
         }
     }
-    if (o.img=="Rect"||o.img=="Circle"||o.img=="Ellipse"||o.img=="Line") o.draw=true;
+    if (o.img=="Rect"||o.img=="Circle"||o.img=="Ellipse"||o.img=="Line"||o.img=="Snake"||o.img=="Region"||o.img=="Freehand"||toggle)
+        o.toggle=true;
     o.redraw();
     
     
     return o;
 }
 
+/**
+ * Resets all buttons from a clicked state
+ * @returns {undefined}
+ */
 function resetButtons(){
     for (var i=0;i<buttons.length;i++){
         buttons[i].unclick();
     }
 }
 
-// Creates a shape with given coordinates. Shape contains type, redraw function, isInside function and selected
-function createShape(x0,y0,x,y,shape){
+/** 
+ *  @typedef Shape
+ *  @type {Object}
+ *  @property {Rect} rect The positional attributes of button
+ *  @property {string} img The icon to use. Possible options are 'Rect','Circle','Ellipse','Line'
+ *  @property {boolean} toggle Whether the button acts as a toggle
+ *  @property {HTMLElement} ctx The canvas context to draw on
+ *  @property {function} behaviour The behaviour to execute when clicked.
+ *  @property {function} redraw Redraws the button
+ *  @property {string} cursor The cursor type that should appear when hovering
+ *  @property {boolean} clicked Whether the button is toggled
+ *  @property {function} click Executes behaviour, untoggles other buttons if button is a toggle
+ *  @property {function} unclick Redraws the button as an untoggled button
+ *  @property {function} clear Clears the canvas in over the button's space
+ */
+
+/**
+ *  Returns an object (shape) with positional attributes and a function (behaviour) to run when pressed.
+ * 
+ *  @param {number} x The X-coordinate of top left.
+ *  @param {number} y The Y-coordinate of top left.
+ *  @param {number} x The X-coordinate of bottom right.
+ *  @param {number} y The Y-coordinate of bottom right.
+ *  @param {string} shape The type of shape. Possible options are ('Rect','Circle','Ellipse','Line','Snake','Region','Freehand')
+ *  @returns {Shape}
+ */
+function Shape(x0,y0,x,y,shape){
     var shape_factor=1;
     if (shape!="Line") normaliseCoords();
+
+    /**
+     * Swaps (x,y) and (x0,y0) if they are bottom right, top left order.
+     * Changes circle coords to be at 7pi/4 and 3pi/4 on circumference.
+     * 
+     * @returns {number}
+     */
     function normaliseCoords(){
         var temp;
         if (x0>x){
@@ -300,6 +424,14 @@ function createShape(x0,y0,x,y,shape){
             shape_factor=1/root_two;
         }
     }
+
+    /**
+     * Checks if the given coordinate is inside rectangle shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @param {Object} [obj=this] The rectangle shape object to check (used for bounding box and amend box)
+     * @returns {boolean}
+     */
     function isInsideRect(pos,obj=this){
         if (obj.theta!=0) {
             if (typeof obj.p==="undefined"){    // Check if object needs to be rotated its pivot, if not, use centre
@@ -311,6 +443,12 @@ function createShape(x0,y0,x,y,shape){
         }
         return isInside(pos,obj);
     }
+    /**
+     * Checks if the given coordinate is inside circle shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @returns {boolean}
+     */
     function isInsideCircle(pos){
         circle=cartesianToPolar(this);
         if (Math.pow(pos.x-circle.x,2)+Math.pow(pos.y-circle.y,2)<Math.pow(circle.r,2)){
@@ -318,10 +456,16 @@ function createShape(x0,y0,x,y,shape){
         }
         return false;
     }
-    function isInsideEllipse(pos,obj=this){
+    /**
+     * Checks if the given coordinate is inside ellipse shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @returns {boolean}
+     */
+    function isInsideEllipse(pos){
         ellipse=cartesianToElliptical(this);
-        if (obj.theta!=0){
-            var pos_r=rotateCoords(pos.x,pos.y,-obj.theta,obj.centre);
+        if (this.theta!=0){
+            var pos_r=rotateCoords(pos.x,pos.y,-this.theta,this.centre);
             pos=pos_r;
         }
         if (Math.pow((pos.x-ellipse.x)/ellipse.w,2)+Math.pow((pos.y-ellipse.y)/ellipse.h,2)<=1){
@@ -329,22 +473,78 @@ function createShape(x0,y0,x,y,shape){
         }
         return false;
     }
+    /**
+     * Checks if the given coordinate is inside line shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @returns {boolean}
+     */
     function isInsideLine(pos){
         if (isInside(pos,this.boundingRect)){
             for (var i=0; i<this.detectionBoxes.length; i++){
                 var pos_r=rotateCoords(pos.x,pos.y,-this.theta,this.centre);
                 if (this.detectionBoxes[i].isInside(pos_r)) {
-                    console.log(i);
                     return true;
                 }
             }
         }
     }
+    /**
+     * Checks if the given coordinate is inside snake shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @returns {boolean}
+     */
     function isInsideSnake(pos){
-        
+        if (isInside(pos,this.boundingRect)){
+            return this.pointInPolygon(this.points, pos);
+        }
     }
+    /**
+     * Checks if the given coordinate is inside region shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @returns {boolean}
+     */
+    function isInsideRegion(pos){
+        if (isInside(pos,this.boundingRect)){
+            return this.pointInPolygon(this.points, pos);
+        }
+    }
+    /**
+     * Checks if the given coordinate is inside freehand shape
+     * 
+     * @param {Point} pos The coordinate to be checked
+     * @returns {boolean}
+     */
+    function isInsideFreehand(pos){
+        if (isInside(pos,this.boundingRect)){
+            return this.pointInPolygon(this.points, pos);
+        }
+    }
+    // A probably incorrect way to dynamically call the correct function depending on shape type
     var fn=eval("isInside"+shape);
     
+    /** 
+     *  @class BoundingRect
+     *  @type {Object}
+     *  @param {Shape} shape - The shape to create a bounding rectangle around
+     *  @param {string} shape.shape - The type of shape
+     * 
+     *  @property {number} x The X-coordinate of top left.
+     *  @property {number} y The Y-coordinate of top left.
+     *  @property {number} w The width.
+     *  @property {number} h The height.
+     *  @property {number} theta The angle of rotation.
+     *  @property {Point} centre The centre of the box.
+     *  @property {array} amendBoxes An array containing each amendBox object.
+     *  @property {function} redraw Redraws the bounding box and its amendBoxes
+     *  @property {function} selectBox Selects the amendBox with given index. If zero, the box itself is selected.
+     *  @property {number} selectedIdx The index of the selected object. If none, -1
+     *  @property {function} isInside Checks if a given position is inside the BoundingRect or the amendBoxes
+     *  @property {function} getObj Returns amendBox object with given index. If -1, return this
+     *  @property {string} cursor The cursor type that should appear when hovering 
+     */
     var createBoundingRect=function(shape){
         boundingRect={};
         if (shape.shape=="Circle"){
@@ -359,10 +559,58 @@ function createShape(x0,y0,x,y,shape){
             boundingRect.y=Math.min(shape.y,shape.y1,shape.y2,shape.y3);
             boundingRect.w=Math.max(shape.x,shape.x1,shape.x2,shape.x3)-boundingRect.x;
             boundingRect.h=Math.max(shape.y,shape.y1,shape.y2,shape.y3)-boundingRect.y;
+        } else if (shape.shape=="Snake"){
+            boundingRect=Object.assign({},shape);
+            var min_x=99999, min_y=99999, max_x=0, max_y=0;
+            var x_n,y_n;
+            for (var i=0; i<shape.points.length; i++){
+                if ((x_n=Math.min(shape.points[i].x_t,shape.points[i].x_b))<min_x) min_x=x_n;
+                if ((y_n=Math.min(shape.points[i].y_t,shape.points[i].y_b))<min_y) min_y=y_n;
+                if ((x_n=Math.max(shape.points[i].x_t,shape.points[i].x_b))>max_x) max_x=x_n;
+                if ((y_n=Math.max(shape.points[i].y_t,shape.points[i].y_b))>max_y) max_y=y_n;
+            }
+            boundingRect.x=min_x;
+            boundingRect.y=min_y;
+            boundingRect.w=max_x-min_x;
+            boundingRect.h=max_y-min_y;
+        } else if (shape.shape=="Region"){
+            boundingRect=Object.assign({},shape);
+            var min_x=99999, min_y=99999, max_x=0, max_y=0;
+            var x_n,y_n;
+            for (var i=0; i<shape.points.length; i++){
+                if ((x_n=shape.points[i].x)<min_x) min_x=x_n;
+                if ((y_n=shape.points[i].y)<min_y) min_y=y_n;
+                if (x_n>max_x) max_x=x_n;
+                if (y_n>max_y) max_y=y_n;
+            }
+            boundingRect.x=min_x;
+            boundingRect.y=min_y;
+            boundingRect.w=max_x-min_x;
+            boundingRect.h=max_y-min_y;
+        } else if (shape.shape=="Freehand"){
+            boundingRect=Object.assign({},shape);
+            var min_x=99999, min_y=99999, max_x=0, max_y=0;
+            var x_n,y_n;
+            for (var i=0; i<shape.points.length; i++){
+                if ((x_n=shape.points[i].x)<min_x) min_x=x_n;
+                if ((y_n=shape.points[i].y)<min_y) min_y=y_n;
+                if (x_n>max_x) max_x=x_n;
+                if (y_n>max_y) max_y=y_n;
+            }
+            boundingRect.x=min_x;
+            boundingRect.y=min_y;
+            boundingRect.w=max_x-min_x;
+            boundingRect.h=max_y-min_y;
         } else {
             boundingRect=shape;
         }
         
+        /**
+         * Draws the bounding rectangle
+         * 
+         * @param {Shape} shape The boundingRect object to draw
+         * @returns {undefined}
+         */
         function drawBoundingRect(shape){
             if (shape.shape=="Line"){
                 drawRect(shape,false,true);
@@ -373,7 +621,7 @@ function createShape(x0,y0,x,y,shape){
         }
         
         var amendBoxes=function(){
-            var amendBox=function(loc,dir,theta=0,p={x:0,y:0},type=""){
+            var amendBox=function(loc,dir,theta=0,p=Point(0,0),type=""){
                 boxW=15;
                 function drawAmendRect(shape,p){
                     shape.p=p;
@@ -383,7 +631,7 @@ function createShape(x0,y0,x,y,shape){
                 }
                 
                 return {
-                    rect: createRect(loc.x-boxW/2,loc.y-boxW/2,boxW,boxW,theta),
+                    rect: Rect(loc.x-boxW/2,loc.y-boxW/2,boxW,boxW,theta),
                     p:p,
                     dir: dir,
                     cursor: "pointer",
@@ -421,6 +669,18 @@ function createShape(x0,y0,x,y,shape){
                         amendBoxes.push(amendBox({x:shape.points[i].x_t, y:shape.points[i].y_t}, j++,0,0,"length"));
                         amendBoxes.push(amendBox({x:shape.points[i].x_b, y:shape.points[i].y_b}, j++,0,0,"length"));
                     }
+                    for (var i=0; i<shape.points.length; i++){
+                        amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
+                    }
+                } else if (shape.shape=="Region"){
+                    // for (var i=0; i<shape.points.length; i++){
+                        // amendBoxes.push(amendBox({x:shape.points[i].x_t, y:shape.points[i].y_t}, j++,0,0,"length"));
+                        // amendBoxes.push(amendBox({x:shape.points[i].x_b, y:shape.points[i].y_b}, j++,0,0,"length"));
+                    // }
+                    for (var i=0; i<shape.points.length; i++){
+                        amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
+                    }
+                } else if (shape.shape=="Freehand"){
                     for (var i=0; i<shape.points.length; i++){
                         amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
                     }
@@ -517,16 +777,24 @@ function createShape(x0,y0,x,y,shape){
             var idx;
             // A bit of maths to properly calculate which point is to be amended and how
             // thickness boxes have dir 0 to points.length*2-1, loc boxes have dir points.length*2 to points.length*3-1
-            if (dir<this.points.length*2){
+            if (dir<this.points.length*2+1){
                 idx=Math.floor((dir-1)/2);
                 this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
             } else {
                 idx=dir-this.points.length*2-1;
+                console.log(idx);
                 this.points[idx].x=pos.x;
                 this.points[idx].y=pos.y;
             }
-            console.log(idx);
             this.updatePoint(idx);
+        } else if (this.shape=="Region") {
+            var idx=dir-1;
+            this.points[idx].x=pos.x;
+            this.points[idx].y=pos.y;
+        } else if (this.shape=="Freehand") {
+            var idx=dir-1;
+            this.points[idx].x=pos.x;
+            this.points[idx].y=pos.y;
         } else if (this.shape=="Circle") {
             var x_shift=(pos.x-pos_0.x)/shape_factor;
             var y_shift=(pos.y-pos_0.y)/shape_factor;
@@ -624,6 +892,14 @@ function createShape(x0,y0,x,y,shape){
                 [this.points[i].x_b,this.points[i].y_b]=aladin.world2pix(this.points[i].xy_b_ra,this.points[i].xy_b_dec);
                 this.points[i].l=Math.sqrt(Math.pow(this.points[i].x_t-this.points[i].x,2)+Math.pow(this.points[i].y_t-this.points[i].y,2));
             }
+        } else if (this.shape=="Region"){
+            for (var i=0; i<this.points.length; i++){
+                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].xy_ra,this.points[i].xy_dec);
+            }
+        } else if (this.shape=="Freehand"){
+            for (var i=0; i<this.points.length; i++){
+                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].xy_ra,this.points[i].xy_dec);
+            }
         } else {
             [this.x,this.y]=aladin.world2pix(this.xy_ra,this.xy_dec);
             [this.xw,this.yh]=aladin.world2pix(this.wh_ra,this.wh_dec);
@@ -644,6 +920,14 @@ function createShape(x0,y0,x,y,shape){
                 [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
                 [this.points[i].xy_t_ra,this.points[i].xy_t_dec]=aladin.pix2world(this.points[i].x_t,this.points[i].y_t);
                 [this.points[i].xy_b_ra,this.points[i].xy_b_dec]=aladin.pix2world(this.points[i].x_b,this.points[i].y_b);
+            }
+        } else if (this.shape=="Region"){
+            for (var i=0; i<this.points.length; i++){
+                [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
+            }
+        } else if (this.shape=="Freehand"){
+            for (var i=0; i<this.points.length; i++){
+                [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
             }
         } else {
             [this.xy_ra,this.xy_dec]=aladin.pix2world(this.x, this.y);
@@ -696,6 +980,8 @@ function createShape(x0,y0,x,y,shape){
                                             ,this.x1,this.y1
                                             ,this.x2,this.y2);
             else if (this.shape=="Snake") drawSnake(this);
+            else if (this.shape=="Region") drawRegion(this);
+            else if (this.shape=="Freehand") drawFreehand(this);
             else drawShape(this.x,this.y,this.w,this.h,shape,this.theta,this.centre); 
             if (this.selected) {
                 this.createBoundingRect();
@@ -715,6 +1001,21 @@ function createShape(x0,y0,x,y,shape){
                 this.y2=this.y20+y_shift;
                 this.x3=this.x30+x_shift;
                 this.y3=this.y30+y_shift;
+            } else if (this.shape=="Snake"||this.shape=="Region"){
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x=this.points[i].x0+x_shift;
+                    this.points[i].y=this.points[i].y0+y_shift;
+                    this.points[i].x_t=this.points[i].x0_t+x_shift;
+                    this.points[i].y_t=this.points[i].y0_t+y_shift;
+                    this.points[i].x_b=this.points[i].x0_b+x_shift;
+                    this.points[i].y_b=this.points[i].y0_b+y_shift;
+                }
+            } else if (this.shape=="Freehand") {
+                // CODE HERE FOR MOVE
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x=this.points[i].x0+x_shift;
+                    this.points[i].y=this.points[i].y0+y_shift;
+                }
             }
             this.moveCentre();
         },
@@ -751,6 +1052,17 @@ function createShape(x0,y0,x,y,shape){
                     this.points[i].l0=this.points[i].l;
                     this.points[i].d0=this.points[i].d;
                 }
+            } else if (this.shape=="Region") {
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x0=this.points[i].x;
+                    this.points[i].y0=this.points[i].y;
+                }
+            } else if (this.shape=="Freehand") {
+                // CODE HERE FOR CHANGEPOS
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x0=this.points[i].x;
+                    this.points[i].y0=this.points[i].y;
+                }
             }
             if (update_world_coordinates) this.pixToWorld();
             this.boundingRect.selectedIdx=0;
@@ -781,6 +1093,17 @@ function createShape(x0,y0,x,y,shape){
                     this.points[i].l=this.points[i].l0;
                     this.points[i].d=this.points[i].d0;
                 }
+            } else if (this.shape=="Region") {
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x=this.points[i].x0;
+                    this.points[i].y=this.points[i].y0;
+                }
+            } else if (this.shape=="Freehand") {
+                // CODE HERE FOR RESETPOS
+                for (var i=0; i<this.points.length; i++){
+                    this.points[i].x=this.points[i].x0;
+                    this.points[i].y=this.points[i].y0;
+                }
             }
             this.pixToWorld();
             this.boundingRect.selectedIdx=0;
@@ -793,7 +1116,6 @@ function createShape(x0,y0,x,y,shape){
             this.boundingRect.selectedIdx=i;
         },
         interact: function(pos,pos_0){
-            console.log(this.interact.caller);
             if (this.boundingRect.selectedIdx==-1) this.move(pos,pos_0);
             else{
                 this.amend(pos,pos_0,this.boundingRect.selectedIdx);
@@ -867,9 +1189,6 @@ function createShape(x0,y0,x,y,shape){
             var d;
             var lambda;
             var h=12;
-            // var phi0=Math.sqrt(Math.pow(this.x-this.x1,2)+Math.pow(this.y-this.y1,2))/250;
-            // var phi1=Math.sqrt(Math.pow(this.x2-this.x3,2)+Math.pow(this.y2-this.y3,2))/250;
-            // console.log(phi0,phi1);
             p.y=p.y-h/2-2.25;
             p.x=p.x-2.25;
             while (t<=1){
@@ -928,16 +1247,23 @@ function createShape(x0,y0,x,y,shape){
         }
         selfObj.createBoxes();
     }
-    if (shape=="Snake"){
+    if (shape=="Snake"||shape=="Region"||shape=="Freehand"){
         // Default thickness
         var l = 30;
         var t_0;
         var theta
-        var d=1;
-        var segment_length=2500;
-        // Make start and end of line
-        selfObj.points=[{x: x0, y: y0, l: l, d: 1}, {x: x, y: y, l: l}];
         
+        var segment_length=2500;
+        if (shape=="Freehand") {
+            segment_length=25;
+            l=10;
+            selfObj.points=[];
+        }
+        // Make start and end of line
+        var d=Math.sign(x-x0);
+        selfObj.points=[{x: x0, y: y0, l: l, d: d}, {x: x, y: y, l: l}];
+        
+
         function calcAngle(i){
             // Calculate angle between i'th and i+1'th line segment
             var x_diff_0=selfObj.points[i].x-selfObj.points[i-1].x;
@@ -951,7 +1277,7 @@ function createShape(x0,y0,x,y,shape){
             theta=-Math.atan(y_diff_0/x_diff_0);
             
             // Only use angle if new position isn't close. stops artifacting
-            if (Math.pow(x_diff_0,2)+Math.pow(y_diff_0,2)<100) theta=selfObj.points[i-1].theta
+            if (Math.pow(x_diff_0,2)+Math.pow(y_diff_0,2)<Math.pow(Math.sqrt(segment_length)/5,2)) theta=selfObj.points[i-1].theta
             selfObj.points[i].theta=theta;
             return theta;
         }
@@ -967,6 +1293,10 @@ function createShape(x0,y0,x,y,shape){
             selfObj.points[i].x_b=selfObj.points[i].x-buffer.x;
             selfObj.points[i].y_b=selfObj.points[i].y-buffer.y;
         }
+        
+        function normsq(p1,p2){
+            return Math.pow(p1.x-p2.x,2)+Math.pow(p1.y-p2.y,2)
+        }
         var calcTopBot = function calcTopBot(i,update=false){
             var theta;
             if (i>1) theta=calcAngle(i);
@@ -975,16 +1305,17 @@ function createShape(x0,y0,x,y,shape){
             if (update){
                 t_0=selfObj.points[i].t_0;
                 d = selfObj.points[i].d;
-                console.log(d);
             }
             // Check if angle has cycled to negative
-            if (i>1&&theta*t_0<-0.75){
-                console.log(theta,t_0);
-                console.log("Switch at", i);
-                d=d*-1;
-                console.log("d is",d);
-                selfObj.points[i].d=d;
-            }
+            // if (i>1&&theta*t_0<-0.75){
+            //     d=d*-1;
+            //     selfObj.points[i].d=d;
+            // }
+
+            // Think this is a better solution than above
+            d=Math.sign(selfObj.points[i].x-selfObj.points[i-1].x)
+            selfObj.points[i].d=d;
+
             addToPoint(i,calcBuffer(theta,d*selfObj.points[i].l));
         }
         selfObj.updatePoint = function(i) {
@@ -1001,16 +1332,160 @@ function createShape(x0,y0,x,y,shape){
             if (n<2) {
                 this.points[0].theta=this.points[1].theta;
                 this.points[1].t_0=this.points[1].theta;
-                addToPoint(0,calcBuffer(this.points[0].theta,this.points[0].l));
+                addToPoint(0,calcBuffer(this.points[0].theta,d*this.points[0].l));
             }
             
             // If mouse position is more than 30 px from previous point, add a new point
-            var dist = Math.pow(pos.x-this.points[n-1].x,2)+Math.pow(pos.y-this.points[n-1].y,2);
+            var dist = normsq(pos,this.points[n-1]);
             if (dist>segment_length) this.points.push(this.points[n]);
             this.redraw();
         }
         selfObj.complete = function(){
-            this.pixToWorld();
+            if (selfObj.shape=="Freehand"){
+                var N = selfObj.points.length;
+                var points=[];
+                var new_seg_length=5;
+                
+                // Check to see if synthetic points need to be added
+                for (var i=0; i<N-1; i++){
+                    var dist = normsq(selfObj.points[i],selfObj.points[i+1]);
+                    if (dist>25) {
+                        dist = Math.sqrt(dist);
+                        var iter = Math.floor(dist/new_seg_length);
+                        var d=Math.sign(selfObj.points[i+1].x-selfObj.points[i].x)
+                        var x,y,x_t,y_t,x_b,y_b;
+                        var increase;
+                        for (var j=0; j<iter; j++){
+                            increase = rotateCoords(j*new_seg_length,0,selfObj.points[i].theta);
+                            x=selfObj.points[i].x+d*increase.x;
+                            y=selfObj.points[i].y+d*increase.y;
+                            x_t=selfObj.points[i].x_t+d*increase.x;
+                            x_b=selfObj.points[i].x_b+d*increase.x;
+                            y_t=selfObj.points[i].y_t+d*increase.y;
+                            y_b=selfObj.points[i].y_b+d*increase.y;
+                            selfObj.points.push({x: x, y: y, x_t: x_t, y_t: y_t, x_b: x_b, y_b:y_b});
+                        }
+                    }
+                }
+                N = selfObj.points.length;
+                // Add points to coordindate array
+                for (var i=0; i<N; i++){
+                    points.push([selfObj.points[i].x,selfObj.points[i].y])
+                    points.push([selfObj.points[i].x_t,selfObj.points[i].y_t])
+                    points.push([selfObj.points[i].x_b,selfObj.points[i].y_b])
+                }
+                // Use third party hull.js to generate convex hull
+                var newpoints = module(points,50);
+                selfObj.oldpoints = selfObj.points.map(a => Object.assign({}, a));
+                selfObj.points=[];
+                for (var i=0; i<newpoints.length; i++){
+                    selfObj.points.push({
+                        x: newpoints[i][0],
+                        y: newpoints[i][1]
+                    });
+                }
+
+                // Check if points need to be removed
+                var i=0;
+                N = selfObj.points.length;
+                do {
+                    idx=i%N;
+                    next=(i+1)%N;
+                    var dist = normsq(selfObj.points[idx],selfObj.points[next]);
+                    if (dist<500) {
+                        dist = Math.sqrt(dist);
+                        selfObj.points.splice(next,1);
+                        N--;
+                    } else {
+                        i++;
+                    }
+                } while (i<N)
+
+
+
+                selfObj.completed=true;
+            }
+            this.changePos();
+        }
+        selfObj.onSegment = function(p, q, r){
+            if (q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && 
+                    q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)) 
+                return true; 
+            return false; 
+        }
+        selfObj.orientation = function(p, q, r){ 
+            val = (q.y-p.y)*(r.x-q.x)-(q.x-p.x)*(r.y-q.y); 
+            
+            if (val == 0) return 0;     // colinear 
+            return (val > 0)? 1: 2;     // clock or counterclock wise 
+        }
+        selfObj.doIntersect = function(p1, q1, p2, q2){
+            // Find the four orientations needed for general and special cases
+            //
+            var o1 = this.orientation(p1, q1, p2);
+            var o2 = this.orientation(p1, q1, q2);
+            var o3 = this.orientation(p2, q2, p1);
+            var o4 = this.orientation(p2, q2, q1);
+        
+            // General case
+            if (o1 != o2 && o3 != o4) return true;
+        
+            // Special Cases 
+            // p1, q1 and p2 are colinear and p2 lies on segment p1q1
+            if (o1 == 0 && this.onSegment(p1, p2, q1)) return true;
+        
+            // p1, q1 and p2 are colinear and q2 lies on segment p1q1
+            if (o2 == 0 && this.onSegment(p1, q2, q1)) return true;
+        
+            // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+            if (o3 == 0 && this.onSegment(p2, p1, q2)) return true;
+        
+            // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+            if (o4 == 0 && this.onSegment(p2, q1, q2)) return true;
+        
+            return false; // Doesn't fall in any of the above cases
+        }
+        selfObj.pointInPolygon = function(points, p){
+            // There must be at least 3 vertices in points[]
+            var n = points.length;
+            if (this.shape=="Snake"){
+                var new_points=[];
+                for (var i=0; i<n; i++)
+                    new_points.push({x: points[i].x_t, y: points[i].y_t});
+                for (var i=n-1; i>-1; i--)
+                    new_points.push({x: points[i].x_b, y: points[i].y_b});
+                points=new_points;
+                n = points.length;
+            }
+            
+            if (n < 3)  return false;
+        
+            // Create a point for line segment from p to infinite
+            var extreme = {x: 0, y: p.y};
+        
+            // Count intersections of the above line with sides of points
+            var count = 0, i = 0;
+            do {
+                // Loop index back to zero at end
+                var next = (i+1)%n;
+        
+                // Check if the line segment from 'p' to 'extreme' intersects 
+                // with the line segment from 'points[i]' to 'points[next]' 
+                if (this.doIntersect(points[i], points[next], p, extreme)) 
+                { 
+                    // If the point 'p' is colinear with line segment 'i-next', 
+                    // then check if it lies on segment. If it lies, return true, 
+                    // otherwise false 
+                    if (this.orientation(points[i], p, points[next]) == 0) 
+                    return this.onSegment(points[i], p, points[next]); 
+        
+                    count++; 
+                } 
+                i = next; 
+            } while (i != 0); 
+        
+            // Return true if count is odd, false otherwise 
+            return count&1;  // Same as (count%2 == 1) 
         }
     }
     selfObj.pixToWorld();
@@ -1055,8 +1530,6 @@ function cartesianToElliptical(shape){
 
 // Makes w/h of canvas same as image
 function init(){
-    //var background = document.getElementById("imageCanvas");
-    // UICanvas.width=drawerRect.w;
     drawCanvas.width = document.getElementById("canv_cont").clientWidth;
     drawCanvas.height = document.getElementById("canv_cont").clientHeight;
     drawCanvas.cursor="auto";
@@ -1093,7 +1566,7 @@ var tablePressed;
 var tableButton = 8;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
-    // console.log(mP_0);
+    console.log(mP_0);
     buttonPressed=false;
     shapePressed = false;
     shapeAmended=false
@@ -1131,8 +1604,8 @@ element.addEventListener("mousedown", function(e){
         // Ensures drop down cant be used
         shapeHighlighted = false;
     } else {
-        console.log(disableSelectReset);
-        if (!highlightRemoval&&!disableSelectReset)
+        console.log(disableSelectReset,selectLock);
+        if (!selectLock&&!disableSelectReset)
         {
             state.resetSelected();
         }
@@ -1159,16 +1632,16 @@ element.addEventListener("mousedown", function(e){
     
     if (isInside(mP_0, drawerRect) && !buttonPressed && !shapePressed && shapes != [] && !preventDrawing && !exploringMode) {
         flag = 0;
-        if (state.shape=="Snake") {
-            tempSnake=createShape(mP_0.x, mP_0.y, mP_0.x, mP_0.y, state.shape);
+        if (state.shape=="Snake"||state.shape=="Region"||state.shape=="Freehand") {
+            tempShape=Shape(mP_0.x, mP_0.y, mP_0.x, mP_0.y, state.shape);
         }
         // Relevant prompt
         noshapeDrawn();
     }
 
     focusObject = getFocusObject(getMousePos(drawCanvas, e));
-    updateCursor(focusObject.cursor); 
-    
+    updateCursor(focusObject.cursor);
+
     resetCanvas();
     
     
@@ -1190,7 +1663,6 @@ element.addEventListener("mousemove", function(e){
     
     // If user is clicking a shape
     if (state.focusNo > -1) {
-        console.log(state.focusNo);
         if (t-t_0>75){
             shapes[state.focusNo].interact(mP,mP_0);
             resetCanvas();
@@ -1202,7 +1674,7 @@ element.addEventListener("mousemove", function(e){
     } else if (flag === 0) {
         if (state.shape!="None"&&t-t_0>150){ 
             resetCanvas();
-            if (state.shape=="Snake") tempSnake.create(mP);
+            if (state.shape=="Snake"||state.shape=="Region"||state.shape=="Freehand") tempShape.create(mP);
             else drawShape(mP_0.x,mP_0.y,mP.x-mP_0.x,mP.y-mP_0.y,state.shape);
             shapeDrawn = true;   
             stopDropDown = true;
@@ -1229,11 +1701,11 @@ element.addEventListener("mouseup", function(e){
         shapes[state.focusNo].changePos();
     }
     if (shapeDrawn){
-        if (state.shape=="Snake") {
-            tempSnake.complete();
-            shapes.push(tempSnake);
+        if (state.shape=="Snake"||state.shape=="Region"||state.shape=="Freehand") {
+            tempShape.complete();
+            shapes.push(tempShape);
         }
-        else shapes.push(createShape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
+        else shapes.push(Shape(mP_0.x, mP_0.y, mP.x, mP.y, state.shape));
         state.addUndo(shapes.length-1, 'delete', Object.assign({}, shapes[shapes.length-1]));
         allShapes();
         state.selectShape(shapes.length - 1);
@@ -1245,18 +1717,18 @@ element.addEventListener("mouseup", function(e){
     resetCanvas();
 }, false);
 element.addEventListener("keydown", function(e){
-    if (e.keyCode==46) deleteShape();
-    if (e.keyCode == 90 && e.ctrlKey) undo();
-    if (e.keyCode == 89 && e.ctrlKey) redo();
+    // Check the last place clicked was inside the canvas and not in exploring mode
+    if (!focusObject.canvas&&!exploringMode) {
+        if (e.keyCode == 46) deleteShape();
+        if (e.keyCode == 89 && e.ctrlKey) redo();
+        if (e.keyCode == 90 && e.ctrlKey) undo();
+    }
 }, false);
 
 // Returns mouse position relative to (passed) canvas
 function getMousePos(drawCanvas, evt) {
     var rect = drawCanvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
+    return Point(evt.clientX-rect.left, evt.clientY-rect.top)
 }
 
 function updateCursor(c="auto"){
@@ -1284,7 +1756,7 @@ function getFocusObject(pos){
     if (isInside(pos,drawerRect)&&shapes!=[]){
         return drawCanvas;
     }
-    return {cursor: "auto"}
+    return {cursor: "auto", canvas: true}
 }
 
 // Check if a given position is inside a given rectangle
@@ -1296,9 +1768,8 @@ function isInsideButtons(pos){
     for (var i=0;i<buttons.length;i++) if (isInside(pos,buttons[i].rect)) return true;
 }
 
-function defaultState(keep_shape=false, keepUndoRedoStacks=false){
+function defaultState(keepDrawingTool=false, keepUndoRedoStacks=false){
     var outObj={
-        drawing: false,
         focusNo: -1,
         selectedNo: -1,
         addUndo: function(idx, action='amend', shape=Object.assign({}, shapes[idx]), clearStack=true){
@@ -1307,9 +1778,8 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             // Have to copy centre object also since js has no deep copy
             if (action!='clear') {
                 shape.centre=Object.assign({},shape.centre);
-                if (shape.shape=="Snake")
-                    for (var i=0; i<shape.points.length; i++) 
-                        shape.points[i]=Object.assign({},shape.points[i]);
+                if (shape.shape=="Snake"||shape.shape=="Region"||shape.shape=="Freehand")
+                    shape.points = shape.points.map(a => Object.assign({}, a));
             }
             if (clearStack) this.redoStack=[];
             this.undoStack.push({
@@ -1323,9 +1793,8 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             if (obj.action!='clear'){
                 obj.shape=Object.assign({}, obj.shape);
                 obj.shape.centre=Object.assign({}, obj.shape.centre);
-                if (obj.shape.shape=="Snake")
-                    for (var i=0; i<obj.shape.points.length; i++)
-                        obj.shape.points[i]=Object.assign({},obj.shape.points[i]);
+                if (obj.shape.shape=="Snake"||obj.shape.shape=="Region"||obj.shape.shape=="Freehand")
+                    obj.shape.points = obj.shape.points.map(a => Object.assign({}, a));
             }
             this.redoStack.push(obj);
         },
@@ -1340,12 +1809,12 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             if (undoObj.action=='amend'){
                 shapes[i]=Object.assign({}, undoObj.shape);
                 shapes[i].resetPos();
-                this.selectShape(i);
+                this.selectShape(i, false);
             } else if (undoObj.action=='delete'){
                 deleteShape(i,false);
             } else if (undoObj.action=='create'){
                 shapes.splice(i,0,Object.assign({}, undoObj.shape));
-                this.selectShape(i);
+                this.selectShape(i, false);
             } else if (undoObj.action=='clear'){
                 shapes=undoObj.shape;
             }
@@ -1360,17 +1829,17 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             if (redoObj.action=='amend'){
                 shapes[i]=Object.assign({}, redoObj.shape);
                 shapes[i].changePos();
-                this.selectShape(i);
+                this.selectShape(i, false);
             } else if (redoObj.action=='delete'){   // Should recreate the shape if undo deleted
                 shapes.splice(i,0,Object.assign({}, redoObj.shape));
-                this.selectShape(i);
+                this.selectShape(i, false);
             } else if (redoObj.action=='create'){   // vice versa
-                deleteShape(i);
+                deleteShape(i,false);
             }
             resetCanvas();
         },
-        selectShape: function(i){
-            this.focusNo=i;
+        selectShape: function(i, focus=true){
+            if (focus) this.focusNo=i;
             this.selectedNo=i;
             shapePressed=true;
             shapes[i].selected=true;
@@ -1399,7 +1868,7 @@ function defaultState(keep_shape=false, keepUndoRedoStacks=false){
             }
         }
     }
-    if (keep_shape) outObj.shape=state.shape;
+    if (keepDrawingTool) outObj.shape=state.shape;
     if (keepUndoRedoStacks){
         outObj.undoStack=state.undoStack;
         outObj.redoStack=state.redoStack;
@@ -1547,52 +2016,18 @@ function drawSnake(shape){
     ctx.closePath();
 }
 
-function drawSnake2(shape){
-    var x_diff_0=shape.points[1].x-shape.points[0].x;
-    var y_diff_0=shape.points[1].y-shape.points[0].y;
-    var theta_0=-Math.atan(y_diff_0/x_diff_0);
-    var x_diff_1;
-    var y_diff_1;
-    var theta_1;
-    var d=1;
-    var buffer=[];
-    var buffer_0;
-    var buffer_1;
-    var topCoord_0;
-    var botCoord_0;
-    var N=shape.points.length-1;
-    
+function drawRegion(shape){
     ctx.beginPath();
+    var N=shape.points.length;
     
-    
-    buffer.push(rotateCoords(0,10,theta_0));
-    topCoord_0={x: shape.points[0].x+d*buffer[0].x, y: shape.points[0].y+d*buffer[0].y};
-    ctx.moveTo(topCoord_0.x,topCoord_0.y);
-    
-    for (var i=0; i<N; i++){
-        if (i>0) theta_0=theta_1;
-        
-        if (i<shape.points.length-2){
-            x_diff_1=shape.points[i+1].x-shape.points[i].x;
-            y_diff_1=shape.points[i+1].y-shape.points[i].y;
-            theta_1=-Math.atan(y_diff_1/x_diff_1);
-        }
-        
-        buffer.push(rotateCoords(0,10,theta_1));
-        topCoord_1={x: shape.points[i+1].x+d*buffer[i+1].x, y: shape.points[i+1].y+d*buffer[i+1].y};
-        
-        ctx.lineTo(topCoord_1.x,topCoord_1.y);
+    // Follow region points
+    ctx.moveTo(shape.points[0].x,shape.points[0].y);
+    for (var i=1; i<N; i++){
+        ctx.lineTo(shape.points[i].x,shape.points[i].y);
     }
     
-    botCoord_1={x: shape.points[N].x-d*buffer[N].x, y: shape.points[N].y-d*buffer[N].y};
-    ctx.lineTo(botCoord_1.x,botCoord_1.y);
-    
-    for (var i=N-1; i>-1; i--){
-        botCoord_1={x: shape.points[i].x-d*buffer[i].x, y: shape.points[i].y-d*buffer[i].y};
-        ctx.lineTo(botCoord_1.x,botCoord_1.y);
-        console.log(i);
-    }
-    ctx.lineTo(topCoord_0.x,topCoord_0.y);
+    // Connect end point to start point
+    ctx.lineTo(shape.points[0].x,shape.points[0].y);
     
     ctx.lineWidth = 5;
     ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
@@ -1602,93 +2037,23 @@ function drawSnake2(shape){
     ctx.closePath();
 }
 
-function drawSomething(shape){
-    var x_diff_0=shape.points[1].x-shape.points[0].x;
-    var y_diff_0=shape.points[1].y-shape.points[0].y;
-    var theta_0=-Math.atan(y_diff_0/x_diff_0);
-    var x_diff_1;
-    var y_diff_1;
-    var theta_1;
-    var d=1;
-    var buffer=[];
-    var buffer_0;
-    var buffer_1;
-    var topCoord_0;
-    var botCoord_0;
-    
-    ctx.beginPath();
-    
-    
-    buffer.push(rotateCoords(0,10,theta_0));
-    topCoord_0={x: shape.points[0].x+d*buffer[0].x, y: shape.points[0].y+d*buffer[0].y};
-    ctx.moveTo(topCoord_0.x,topCoord_0.y);
-    
-    for (var i=0; i<shape.points.length-1; i++){
-        if (i>0) theta_0=theta_1;
-        
-        if (i<shape.points.length-2){
-            x_diff_1=shape.points[i+1].x-shape.points[i].x;
-            y_diff_1=shape.points[i+1].y-shape.points[i].y;
-            theta_1=-Math.atan(y_diff_1/x_diff_1);
+function drawFreehand(shape){
+    var N=shape.points.length;
+    if (shape.completed) {
+        drawRegion(shape);
+    } else {
+        for (var i=0; i<N-1; i++){
+            ctx.beginPath();
+            ctx.moveTo(shape.points[i].x_t,shape.points[i].y_t);
+            ctx.lineTo(shape.points[i+1].x_t,shape.points[i+1].y_t);
+            ctx.lineTo(shape.points[i+1].x_b,shape.points[i+1].y_b);
+            ctx.lineTo(shape.points[i].x_b,shape.points[i].y_b);
+            ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+            ctx.fill();
+            ctx.closePath();
         }
-        
-        buffer.push(rotateCoords(0,10,theta_1));
-        topCoord_1={x: shape.points[i+1].x+d*buffer[i+1].x, y: shape.points[i+1].y+d*buffer[i+1].y};
-        
-        ctx.lineTo(topCoord_1.x,topCoord_1.y);
     }
     
-    // botCoord_0={x: shape.points[i].x-d*buffer[i].x, y: shape.points[i].y-d*buffer[i+1].y};
-    
-    
-    // for (var i=0; i<shape.points.length-1; i++){
-        // if (i>0) theta_0=theta_1;
-        
-        // if (i<shape.points.length-2){
-            // x_diff_1=shape.points[i+1].x-shape.points[i].x;
-            // y_diff_1=shape.points[i+1].y-shape.points[i].y;
-            // theta_1=-Math.atan(y_diff_1/x_diff_1);
-        // }
-        
-        // var buffer_0=rotateCoords(0,10,theta_0);
-        // var buffer_1=rotateCoords(0,10,theta_1);
-        // var topCoord_0={x: shape.points[i].x+d*buffer_0.x, y: shape.points[i].y+d*buffer_0.y};
-        // var botCoord_0={x: shape.points[i].x-d*buffer_0.x, y: shape.points[i].y-d*buffer_0.y};
-        
-        // if (i==0) {
-            // ctx.moveTo(topCoord_0.x,topCoord_0.y);
-            // ctx.lineTo(botCoord_0.x,botCoord_0.y);
-        // }
-        
-        // if (Math.abs(theta_1-theta_0)>2) {
-            // console.log("Switch");
-            // d*=-1
-        // }
-        
-        // var topCoord_1={x: shape.points[i+1].x+d*buffer_1.x, y: shape.points[i+1].y+d*buffer_1.y};
-        // var botCoord_1={x: shape.points[i+1].x-d*buffer_1.x, y: shape.points[i+1].y-d*buffer_1.y};
-        
-        // ctx.moveTo(topCoord_0.x,topCoord_0.y);
-        // ctx.lineTo(topCoord_1.x,topCoord_1.y);
-        
-        // ctx.moveTo(botCoord_0.x,botCoord_0.y);
-        // ctx.lineTo(botCoord_1.x,botCoord_1.y);
-        
-        
-    // }
-    
-    ctx.moveTo(topCoord_0.x,topCoord_0.y);
-    // ctx.lineTo(botCoord_0.x,botCoord_0.y);
-    
-    ctx.moveTo(topCoord_1.x,topCoord_1.y);
-    // ctx.lineTo(botCoord_1.x,botCoord_1.y);
-    
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = "rgba(255, 0, 0, 0.3)";
-    ctx.stroke();
-    ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
-    ctx.fill()
-    ctx.closePath();
 }
 
 function rotateCoords(x,y,theta,p={x:0,y:0}){
@@ -1790,16 +2155,18 @@ function addFeature(feature) {
 
 // Prevents drawing or clicking shapes when on drop down
 // Keeps shape highlighted when clicking drop down feature
-var highlightRemoval
+var selectLock=false;
 function changeTo() {
+    console.log("Enforcing lock on list open")
     preventDrawing = true;
-    highlightRemoval = false;
+    selectLock = true;
 }
 
 // Opposite of above
 function changeBack() {
+    console.log("Removing lock after list close")
     preventDrawing = false;
-    highlightRemoval = true;
+    selectLock = false;
 }
 
 // Prevent Drawing or clicking shapes when on a table
