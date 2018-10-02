@@ -1,0 +1,9 @@
+Flask_Migrate==2.1.1
+SQLAlchemy==1.2.4
+alembic==0.9.8
+Flask==1.0.2
+Flask_WTF==0.14.2
+Flask_SQLAlchemy==2.3.2
+python-dotenv==0.9.1
+psycopg2==2.7.5
+gunicorn==19.9.0
