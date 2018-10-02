@@ -4,5 +4,6 @@ import random
 
 def get_random_galaxy(survey=None):
     if survey is None:
-        rand = random.randrange(1, Galaxy.query.count()+1)
+        start = Galaxy.query.first().g_id
+        rand = random.randrange(start, start+Galaxy.query.count()+1)
     return Galaxy.query.get(rand)

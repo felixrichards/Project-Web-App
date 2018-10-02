@@ -1,0 +1,46 @@
+hips_initial_fov     = 0.02427
+hips_initial_ra      = 0.0
+hips_initial_dec     = +0.0
+creator_did          = ivo://UNK.AUTH/P/felixtest
+hips_overlay         = mean
+hips_hierarchy       = median
+#hips_creator        = HiPS creator (institute or person)
+#hips_copyright      = Copyright mention of the HiPS
+obs_title            = sim_a
+#obs_collection      = Dataset collection name
+#obs_description     = Dataset text description
+#obs_ack             = Acknowledgement mention
+#prov_progenitor     = Provenance of the original data (free text)
+#bib_reference       = Bibcode for bibliographic reference
+#bib_reference_url   = URL to bibliographic reference
+#obs_copyright       = Copyright mention of the original data
+#obs_copyright_url   = URL to copyright page of the original data
+#t_min               = Start time in MJD ( =(Unixtime/86400)+40587  or https://heasarc.gsfc.nasa.gov/cgi-bin/Tools/xTime/xTime.pl)
+#t_max               = Stop time in MJD
+#obs_regime          = Waveband keyword (Radio Infrared Optical UV X-ray Gamma-ray)
+#em_min              = Start in spectral coordinates in meters ( =2.998E8/freq in Hz, or =1.2398841929E-12*energy in MeV )
+#em_max              = Stop in spectral coordinates in meters
+hips_builder         = Aladin/HipsGen v10.093
+hips_version         = 1.4
+hips_release_date    = 2018-10-02T18:32Z
+hips_frame           = equatorial
+hips_order           = 11
+hips_order_min       = 0
+hips_tile_width      = 512
+#hips_service_url    = ex: http://yourHipsServer/sim_a
+hips_status          = public master clonableOnce
+hips_tile_format     = png
+hips_pixel_scale     = 5.591E-5
+s_pixel_scale        = 6.666E-5
+dataproduct_type     = image
+dataproduct_subtype  = color
+moc_sky_fraction     = 9.993E-6
+hips_estsize         = 63865
+hipsgen_date         = 2018-10-02T18:32Z
+hipsgen_params       = maxthread=20 in=a creator_did=felixtest color=png out=sim_a obs_title=sim_a
+#____FOR_COMPATIBILITY_WITH_OLD_HIPS_CLIENTS____
+label                = sim_a
+coordsys             = C
+maxOrder             = 11
+format               = png
+isColored            = true
