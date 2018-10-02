@@ -51,7 +51,6 @@ buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
  * @returns {undefined}
  */
 function showAnnotation() {
-    console.log(exploringMode)
     exploringMode = false;
     if (buttons.length == 2)
     {
@@ -1566,7 +1565,6 @@ var tablePressed;
 var tableButton = 8;
 element.addEventListener("mousedown", function(e){
     mP_0=getMousePos(drawCanvas,e);
-    console.log(mP_0);
     buttonPressed=false;
     shapePressed = false;
     shapeAmended=false
@@ -1604,7 +1602,6 @@ element.addEventListener("mousedown", function(e){
         // Ensures drop down cant be used
         shapeHighlighted = false;
     } else {
-        console.log(disableSelectReset,selectLock);
         if (!selectLock&&!disableSelectReset)
         {
             state.resetSelected();
