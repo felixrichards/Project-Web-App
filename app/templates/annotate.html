@@ -371,6 +371,7 @@
 <div id="target">
     <div id="canv_cont">
         <div id="aladin-lite-div" style="width: 100%; height:100%; border:none"></div>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js" charset="utf-8"></script>
         <script type="text/javascript">
                 // Initialise the Aladin object
@@ -385,6 +386,8 @@
                     showFrame: false,
                     showFullscreenControl: false,
                 });
+
+                console.log("ID: {{galaxy.g_id}}.", "RA: {{galaxy.ra}}.", "DEC: {{galaxy.dec}}.")
                 
                 aladin.setImageSurvey(aladin.createImageSurvey('', '', src="{{ url_for('static', filename='testhips') }}", 'equatorial', 11, {imgFormat: 'png'}));
 
@@ -402,8 +405,18 @@
                 // This will be used to navigate automatically to a given galaxy
                 // May be used to calculate shape parameters in world coordinates
                 // May be used to keep shapes in correct location when user pans
-                var ra = 0.0;
-                var dec = 0.0;
+                var ra;
+                var dec;
+                try {
+                    ra = {{galaxy.ra}};
+                    dec ={{galaxy.dec}};
+                } catch(error) {
+                    console.error("Received invalid coordinates from server.");
+                    ra = 0;
+                    dec = 0;
+                }
+
+
 
                 // Navigates to given RA, Dec
                 aladin.gotoRaDec(ra, dec);
@@ -427,12 +440,7 @@
                 <li class="FeatureHover" id="featureHover">
                     <a id="featureLabel"> What feature will you draw?  &nbsp; <i class="fa fa-caret-down"></i></a>
                     <ul onmouseover="changeTo()" onmouseout="changeBack()">
-                        <li>
-                            <a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">
-                                Mergers
-                                <i class="fa fa-info-circle" id="moreInfo" onclick="featureTableShow()" onmouseover=""></i>
-                            </a>
-                        </li>
+                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Mergers<i class="fa fa-info-circle" id="moreInfo" onclick="featureTableShow()" onmouseover=""></i></a></li>
                         <li><a id="featureItems" onclick="addFeature('Shells')" onmouseover="changeTo()" onmouseout="changeBack()">Shells</a></li>
                         <li><a id="featureItems" onclick="addFeature('Plumes')" onmouseover="changeTo()" onmouseout="changeBack()">Plumes</a></li>
                         <li><a id="featureItems" onclick="addFeature('Tital Tails')" onmouseover="changeTo()" onmouseout="changeBack()">Tital Tails</a></li>
@@ -448,11 +456,7 @@
                         <li><a id="featureItems" onclick="addFeature('Spiral Arm')" onmouseover="changeTo()" onmouseout="changeBack()">Spiral Arm</a></li>
                         <li><a id="featureItems" onclick="addFeature('Dust Lane')" onmouseover="changeTo()" onmouseout="changeBack()">Dust Lane</a></li>
                         
-                        <li>
-                            <a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">
-                                Halo
-                            </a>
-                        </li>
+                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
                         <li><a id="featureItems" onclick="addFeature('Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
                         
                         <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Other</a></li>
@@ -486,7 +490,7 @@
                     <a href="/">Home</a>
                 </div>
                 <div>
-                    <a href="/Annotate">New Annotation</a>
+                    <a href="/annotate">New Annotation</a>
                 </div>
             </div>
 

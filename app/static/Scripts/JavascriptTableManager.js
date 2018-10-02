@@ -170,7 +170,7 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     var index = $(this).index();
     z_order=getZOrder();
     index = z_order[index];
-    state.selectShape(getHighlightedShape(index));
+    state.selectShape(getHighlightedShape(index), false);
     shapes[getHighlightedShape(index)].boundingRect.selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
