@@ -7,8 +7,7 @@ class Galaxy(db.Model):
     g_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     survey = db.Column(db.String(64), index=True)
-    ra = db.Column(psql.DOUBLE_PRECISION(precision=15), index=True)
-    dec = db.Column(psql.DOUBLE_PRECISION(precision=15), index=True)
+
     annotations = db.relationship('Annotation', backref='name', lazy='dynamic')
 
     def __repr__(self):
@@ -82,32 +81,7 @@ class Shape(db.Model):
     shape = db.Column(db.String(64), index=True, nullable=False)
     number = db.Column(db.Integer, nullable=False)
     feature = db.Column(db.String(32), nullable=False)
-    x0 = db.Column(psql.DOUBLE_PRECISION(precision=15), nullable=False)
-    y0 = db.Column(psql.DOUBLE_PRECISION(precision=15), nullable=False)
-    ra_xy = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    dec_xy = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    theta = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    xw = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    yh = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    ra_wh = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    dec_wh = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    r = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    x1 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    x2 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    x3 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    y1 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    y2 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    y3 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    ra1 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    ra2 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    ra3 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    dec1 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    dec2 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    dec3 = db.Column(psql.DOUBLE_PRECISION(precision=15))
-    x_points = db.Column(psql.ARRAY(psql.DOUBLE_PRECISION(precision=15)))
-    y_points = db.Column(psql.ARRAY(psql.DOUBLE_PRECISION(precision=15)))
-    ra_points = db.Column(psql.ARRAY(psql.DOUBLE_PRECISION(precision=15)))
-    dec_points = db.Column(psql.ARRAY(psql.DOUBLE_PRECISION(precision=15)))
+
 
     def __repr__(self):
         return '<Shape ID: {}. Annotation ID: {}. Shape: {}>'.format(self.s_id, self.a_id, self.shape)
