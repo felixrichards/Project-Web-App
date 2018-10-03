@@ -7,7 +7,8 @@ class Galaxy(db.Model):
     g_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     survey = db.Column(db.String(64), index=True)
-
+    ra = db.Column(psql.REAL, index=True)
+    dec = db.Column(psql.REAL, index=True)
     annotations = db.relationship('Annotation', backref='name', lazy='dynamic')
 
     def __repr__(self):
@@ -81,7 +82,32 @@ class Shape(db.Model):
     shape = db.Column(db.String(64), index=True, nullable=False)
     number = db.Column(db.Integer, nullable=False)
     feature = db.Column(db.String(32), nullable=False)
-
+    x0 = db.Column(psql.REAL, nullable=False)
+    y0 = db.Column(psql.REAL, nullable=False)
+    ra_xy = db.Column(psql.REAL)
+    dec_xy = db.Column(psql.REAL)
+    theta = db.Column(psql.REAL)
+    xw = db.Column(psql.REAL)
+    yh = db.Column(psql.REAL)
+    ra_wh = db.Column(psql.REAL)
+    dec_wh = db.Column(psql.REAL)
+    r = db.Column(psql.REAL)
+    x1 = db.Column(psql.REAL)
+    x2 = db.Column(psql.REAL)
+    x3 = db.Column(psql.REAL)
+    y1 = db.Column(psql.REAL)
+    y2 = db.Column(psql.REAL)
+    y3 = db.Column(psql.REAL)
+    ra1 = db.Column(psql.REAL)
+    ra2 = db.Column(psql.REAL)
+    ra3 = db.Column(psql.REAL)
+    dec1 = db.Column(psql.REAL)
+    dec2 = db.Column(psql.REAL)
+    dec3 = db.Column(psql.REAL)
+    x_points = db.Column(psql.ARRAY(psql.REAL))
+    y_points = db.Column(psql.ARRAY(psql.REAL))
+    ra_points = db.Column(psql.ARRAY(psql.REAL))
+    dec_points = db.Column(psql.ARRAY(psql.REAL))
 
     def __repr__(self):
         return '<Shape ID: {}. Annotation ID: {}. Shape: {}>'.format(self.s_id, self.a_id, self.shape)
