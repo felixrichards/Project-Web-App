@@ -391,20 +391,12 @@
                 
                 survey_names=['sim_a','sim_b','sim_c','sim_d']
                 surveys=[]
-                
                 for (var i=0; i<survey_names.length; i++){
-                    surveys.push(aladin.createImageSurvey('', survey_names[i], src="{{ url_for('static', filename='') }}"+survey_names[i], 'equatorial', 11, {imgFormat: 'png'}))
+                    surveys.push(aladin.createImageSurvey(survey_names[i], survey_names[i],
+                        src="{{ url_for('static', filename='') }}"+survey_names[i],
+                        'equatorial', 11, {imgFormat: 'png'}))
                     aladin.setImageSurvey(surveys[i]);
                 }
-                
-                // hips_sim_a = aladin.createImageSurvey('', 'sim_a', src="{{ url_for('static', filename='sim_a') }}", 'equatorial', 11, {imgFormat: 'png'})
-                // aladin.setImageSurvey(hips_sim_a);
-                // hips_sim_b = aladin.createImageSurvey('', 'sim_b', src="{{ url_for('static', filename='sim_b') }}", 'equatorial', 11, {imgFormat: 'png'})
-                // aladin.setImageSurvey(hips_sim_b);
-                // hips_sim_c = aladin.createImageSurvey('', 'sim_c', src="{{ url_for('static', filename='sim_c') }}", 'equatorial', 11, {imgFormat: 'png'})
-                // aladin.setImageSurvey(hips_sim_c);
-                // hips_sim_d = aladin.createImageSurvey('', 'sim_d', src="{{ url_for('static', filename='sim_d') }}", 'equatorial', 11, {imgFormat: 'png'})
-                // aladin.setImageSurvey(hips_sim_d);
 
                 $('.aladin-location').css('display', 'none');
                 $('.aladin-logo-container').css('display', 'none');
