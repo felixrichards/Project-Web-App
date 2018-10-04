@@ -3,7 +3,7 @@
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingHiddenTable.css')}}">
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingCheatSheet.css')}}">
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingScrollBar.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingScrollbar.css')}}">
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingGalaxySearch.css')}}">
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingCanvas.css')}}">
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingTutorial.css')}}">
@@ -379,6 +379,7 @@
                 // FoV: zoom controller
                 // Extra options control UI features that are loaded
                 // See here: http://aladin.unistra.fr/AladinLite/doc/API/
+
                 var aladin = A.aladin('#aladin-lite-div', {
                     fov: 0.2,
                     showGotoControl: false,
@@ -392,17 +393,23 @@
                 survey_names=['sim_a','sim_b','sim_c','sim_d']
                 surveys=[]
                 for (var i=0; i<survey_names.length; i++){
-                    surveys.push(aladin.createImageSurvey(survey_names[i], survey_names[i],
-                        src="{{ url_for('static', filename='') }}"+survey_names[i],
-                        'equatorial', 11, {imgFormat: 'png'}))
-                    aladin.setImageSurvey(surveys[i]);
+                    surveys.push({
+                        "id": survey_names[i],
+                        "url": "{{ url_for('static', filename='') }}"+survey_names[i],
+                        "name": survey_names[i],
+                        "maxOrder": 11,
+                        "frame": "equatorial",
+                        "format": "png"
+                    });
                 }
+                
+                setTimeout(function() {HpxImageSurvey.SURVEYS = surveys;aladin.setImageSurvey("sim_a");}, 1000);
 
                 $('.aladin-location').css('display', 'none');
                 $('.aladin-logo-container').css('display', 'none');
-                $('.aladin-layersControl-container').css('background', 'none');
                 $('.aladin-layersControl-container').css('top', '4');
                 $('.aladin-layersControl-container').css('left', '41');
+                $('.aladin-layersControl-container').css('background', 'none');
 
                 // Creates a marker at a given RA, Dec
                 // This will be used to navigate automatically to a given galaxy
