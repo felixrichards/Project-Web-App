@@ -536,15 +536,15 @@ function Shape(x0,y0,x,y,shape){
      *  @property {number} h The height.
      *  @property {number} theta The angle of rotation.
      *  @property {Point} centre The centre of the box.
-     *  @property {array} amendBoxes An array containing each amendBox object.
+     *  @property {array} amendBoxes An array containing each AmendBox object.
      *  @property {function} redraw Redraws the bounding box and its amendBoxes
-     *  @property {function} selectBox Selects the amendBox with given index. If zero, the box itself is selected.
+     *  @property {function} selectBox Selects the AmendBox with given index. If zero, the box itself is selected.
      *  @property {number} selectedIdx The index of the selected object. If none, -1
      *  @property {function} isInside Checks if a given position is inside the BoundingRect or the amendBoxes
-     *  @property {function} getObj Returns amendBox object with given index. If -1, return this
+     *  @property {function} getObj Returns AmendBox object with given index. If -1, return this
      *  @property {string} cursor The cursor type that should appear when hovering 
      */
-    var createBoundingRect=function(shape){
+    function BoundingRect(shape){
         boundingRect={};
         if (shape.shape=="Circle"){
             circle=cartesianToPolar(shape);
@@ -607,7 +607,8 @@ function Shape(x0,y0,x,y,shape){
         /**
          * Draws the bounding rectangle
          * 
-         * @param {Shape} shape The boundingRect object to draw
+         * @param {BoundingRect} shape The boundingRect object to draw
+         * @param {string} shape.shape - The type of shape
          * @returns {undefined}
          */
         function drawBoundingRect(shape){
@@ -619,9 +620,43 @@ function Shape(x0,y0,x,y,shape){
             }
         }
         
-        var amendBoxes=function(){
-            var amendBox=function(loc,dir,theta=0,p=Point(0,0),type=""){
+        /** 
+         *  @class AmendBoxes
+         *  @type {Object}
+         *  @param {Shape} shape - The shape to create amend boxes for
+         *  @param {string} shape.shape - The type of shape
+         * 
+         *  @property {function} getBox Get's a single amend box with the given dir
+         *  @property {function} redraw Redraws all amend boxes
+         *  @property {function} isInside Checks if the given pos is inside any boxes
+         */
+        function AmendBoxes(shape){
+
+            /** 
+             *  @class AmendBox
+             *  @type {Object}
+             *  @param {Point} loc - The point to create an amend box at
+             *  @param {number} dir - A unique identifier for the box (can be used to restrict direction of amendment)
+             *  @param {number} theta - The angle of rotation of the box
+             *  @param {Point} p - The point to rotate on
+             *  @param {string} [type=""] - The type of amend box, options are "" (white), "length" (yellow), "rotate" green
+             * 
+             *  @property {Rect} rect The rectangle object describing the box
+             *  @property {Point} p The point to rotate around
+             *  @property {number} dir A unique identifier for the box (can be used to restrict direction of amendment)
+             *  @property {string} cursor The cursor type to appear when user hovers
+             *  @property {function} isInside Checks if the given pos is inside the amend box
+             *  @property {function} redraw Redraws the amend box
+             */
+            function AmendBox(loc,dir,theta=0,p=Point(0,0),type=""){
                 boxW=15;
+
+                /**
+                 * Draws the amend box
+                 * 
+                 * @param {AmendBox} shape The AmendBox object to draw
+                 * @returns {undefined}
+                 */
                 function drawAmendRect(shape,p){
                     shape.p=p;
                     if (shape.type=="rotate") shape.colour="rgba(20, 200, 20, 0.5)";
@@ -644,65 +679,56 @@ function Shape(x0,y0,x,y,shape){
                     }
                 }
             }
-            
+
             var j=1;
-            var amendBoxes=createAmendBoxes(shape);
-            function createAmendBoxes(shape){
-                var x_n=shape.x;
-                var y_n=shape.y;
-                
-                var amendBoxes=[];
-                if (shape.shape=="Line"){
-                    var x1_n=shape.x1;
-                    var y1_n=shape.y1;
-                    var x2_n=shape.x2;
-                    var y2_n=shape.y2;
-                    var x3_n=shape.x3;
-                    var y3_n=shape.y3;
-                    amendBoxes.push(amendBox({x:x_n,y:y_n},j++));     //Up
-                    amendBoxes.push(amendBox({x:x1_n,y:y1_n},j++));       //UpRight
-                    amendBoxes.push(amendBox({x:x2_n,y:y2_n},j++));     //Up
-                    amendBoxes.push(amendBox({x:x3_n,y:y3_n},j++));       //UpRight
-                } else if (shape.shape=="Snake"){
-                    for (var i=0; i<shape.points.length; i++){
-                        amendBoxes.push(amendBox({x:shape.points[i].x_t, y:shape.points[i].y_t}, j++,0,0,"length"));
-                        amendBoxes.push(amendBox({x:shape.points[i].x_b, y:shape.points[i].y_b}, j++,0,0,"length"));
-                    }
-                    for (var i=0; i<shape.points.length; i++){
-                        amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
-                    }
-                } else if (shape.shape=="Region"){
-                    // for (var i=0; i<shape.points.length; i++){
-                        // amendBoxes.push(amendBox({x:shape.points[i].x_t, y:shape.points[i].y_t}, j++,0,0,"length"));
-                        // amendBoxes.push(amendBox({x:shape.points[i].x_b, y:shape.points[i].y_b}, j++,0,0,"length"));
-                    // }
-                    for (var i=0; i<shape.points.length; i++){
-                        amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
-                    }
-                } else if (shape.shape=="Freehand"){
-                    for (var i=0; i<shape.points.length; i++){
-                        amendBoxes.push(amendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
-                    }
-                } else {
-                    x_n=boundingRect.x;
-                    y_n=boundingRect.y;
-                    var w_n=boundingRect.w;
-                    var h_n=boundingRect.h;
-                    var t=boundingRect.theta;
-                    var p=shape.centre;
-                    var r_shift=20;
-                    amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n},j++,t,p));     //Up
-                    amendBoxes.push(amendBox({x:x_n+w_n,y:y_n},j++,t,p));       //UpRight
-                    amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n/2},j++,t,p)); //Right
-                    amendBoxes.push(amendBox({x:x_n+w_n,y:y_n+h_n},j++,t,p));   //DownRight
-                    amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n+h_n},j++,t,p)); //Down
-                    amendBoxes.push(amendBox({x:x_n,y:y_n+h_n},j++,t,p));       //DownLeft
-                    amendBoxes.push(amendBox({x:x_n,y:y_n+h_n/2},j++,t,p));     //Left
-                    amendBoxes.push(amendBox({x:x_n,y:y_n},j++,t,p));           //UpLeft
-                    if (shape.shape!="Circle") 
-                        amendBoxes.push(amendBox({x:x_n+w_n/2,y:y_n-r_shift},j++,t,p,"rotate"));           //Rotation
+            var x_n=shape.x;
+            var y_n=shape.y;
+            var amendBoxes=[];
+            if (shape.shape=="Line"){
+                var x1_n=shape.x1;
+                var y1_n=shape.y1;
+                var x2_n=shape.x2;
+                var y2_n=shape.y2;
+                var x3_n=shape.x3;
+                var y3_n=shape.y3;
+                amendBoxes.push(AmendBox({x:x_n,y:y_n},j++));
+                amendBoxes.push(AmendBox({x:x1_n,y:y1_n},j++));
+                amendBoxes.push(AmendBox({x:x2_n,y:y2_n},j++));
+                amendBoxes.push(AmendBox({x:x3_n,y:y3_n},j++));
+            } else if (shape.shape=="Snake"){
+                for (var i=0; i<shape.points.length; i++){
+                    amendBoxes.push(AmendBox({x:shape.points[i].x_t, y:shape.points[i].y_t}, j++,0,0,"length"));
+                    amendBoxes.push(AmendBox({x:shape.points[i].x_b, y:shape.points[i].y_b}, j++,0,0,"length"));
                 }
-                return amendBoxes;
+                for (var i=0; i<shape.points.length; i++){
+                    amendBoxes.push(AmendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
+                }
+            } else if (shape.shape=="Region"){
+                for (var i=0; i<shape.points.length; i++){
+                    amendBoxes.push(AmendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
+                }
+            } else if (shape.shape=="Freehand"){
+                for (var i=0; i<shape.points.length; i++){
+                    amendBoxes.push(AmendBox({x:shape.points[i].x, y:shape.points[i].y}, j++));
+                }
+            } else {
+                x_n=boundingRect.x;
+                y_n=boundingRect.y;
+                var w_n=boundingRect.w;
+                var h_n=boundingRect.h;
+                var t=boundingRect.theta;
+                var p=shape.centre;
+                var r_shift=20;
+                amendBoxes.push(AmendBox({x:x_n+w_n/2,y:y_n},j++,t,p));     //Up
+                amendBoxes.push(AmendBox({x:x_n+w_n,y:y_n},j++,t,p));       //UpRight
+                amendBoxes.push(AmendBox({x:x_n+w_n,y:y_n+h_n/2},j++,t,p)); //Right
+                amendBoxes.push(AmendBox({x:x_n+w_n,y:y_n+h_n},j++,t,p));   //DownRight
+                amendBoxes.push(AmendBox({x:x_n+w_n/2,y:y_n+h_n},j++,t,p)); //Down
+                amendBoxes.push(AmendBox({x:x_n,y:y_n+h_n},j++,t,p));       //DownLeft
+                amendBoxes.push(AmendBox({x:x_n,y:y_n+h_n/2},j++,t,p));     //Left
+                amendBoxes.push(AmendBox({x:x_n,y:y_n},j++,t,p));           //UpLeft
+                if (shape.shape!="Circle") 
+                    amendBoxes.push(AmendBox({x:x_n+w_n/2,y:y_n-r_shift},j++,t,p,"rotate"));           //Rotation
             }
             
             return {
@@ -730,7 +756,7 @@ function Shape(x0,y0,x,y,shape){
             theta:shape.theta,
             centre:shape.centre,
             shape: shape.shape,
-            amendBoxes:amendBoxes(),
+            amendBoxes:AmendBoxes(shape),
             redraw: function(){
                 drawBoundingRect(this);
                 this.amendBoxes.redraw();
@@ -756,6 +782,14 @@ function Shape(x0,y0,x,y,shape){
         };
     }
     
+    /**
+     * Amends the shape based on the dir of the amend box clicked
+     * 
+     * @param {Point} pos Current position of cursor (during mouse drag)
+     * @param {Point} pos_0 Initial position of cursor (at mouse click)
+     * @param {number} dir The dir of the amend box that is being interacted with
+     * @returns {undefined}
+     */
     function amend(pos,pos_0,dir){
         var inc=0;
         if (this.shape=="Line") {
@@ -781,7 +815,6 @@ function Shape(x0,y0,x,y,shape){
                 this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
             } else {
                 idx=dir-this.points.length*2-1;
-                console.log(idx);
                 this.points[idx].x=pos.x;
                 this.points[idx].y=pos.y;
             }
@@ -1110,7 +1143,7 @@ function Shape(x0,y0,x,y,shape){
         boundingRect: 0,
         createBoundingRect: function(){
             var i = this.boundingRect.selectedIdx;
-            this.boundingRect=createBoundingRect(this);
+            this.boundingRect=BoundingRect(this);
             this.boundingRect.redraw()
             this.boundingRect.selectedIdx=i;
         },
@@ -1305,14 +1338,11 @@ function Shape(x0,y0,x,y,shape){
                 t_0=selfObj.points[i].t_0;
                 d = selfObj.points[i].d;
             }
-            // Check if angle has cycled to negative
-            // if (i>1&&theta*t_0<-0.75){
-            //     d=d*-1;
-            //     selfObj.points[i].d=d;
-            // }
 
-            // Think this is a better solution than above
-            d=Math.sign(selfObj.points[i].x-selfObj.points[i-1].x)
+            if (i>0) d=Math.sign(selfObj.points[i].x-selfObj.points[i-1].x);
+            else d = Math.sign(selfObj.points[1].x-selfObj.points[0].x);
+            if (d==0) d=1;
+
             selfObj.points[i].d=d;
 
             addToPoint(i,calcBuffer(theta,d*selfObj.points[i].l));

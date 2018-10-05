@@ -382,14 +382,11 @@
                     showFullscreenControl: false,
                 });
 
-                console.log("ID: {{galaxy.g_id}}.", "RA: {{galaxy.ra}}.", "DEC: {{galaxy.dec}}.");
                 survey_names = "{{galaxy.survey}}".split(',');
-                console.log("Survey:",survey_names);
-                // survey_names = ['sim_a','sim_b','sim_c','sim_d'];
                 surveys = [];
 
                 aladin.setImageSurvey(aladin.createImageSurvey(
-                    survey_names[0], 
+                    survey_names[0],
                     survey_names[0],
                     "{{ url_for('static', filename='') }}"+survey_names[0],
                     "equatorial",
