@@ -382,10 +382,20 @@
                     showFullscreenControl: false,
                 });
 
-                console.log("ID: {{galaxy.g_id}}.", "RA: {{galaxy.ra}}.", "DEC: {{galaxy.dec}}.")
-                
-                survey_names=['sim_a','sim_b','sim_c','sim_d']
-                surveys=[]
+                console.log("ID: {{galaxy.g_id}}.", "RA: {{galaxy.ra}}.", "DEC: {{galaxy.dec}}.");
+                survey_names = "{{galaxy.survey}}".split(',');
+                console.log("Survey:",survey_names);
+                // survey_names = ['sim_a','sim_b','sim_c','sim_d'];
+                surveys = [];
+
+                aladin.setImageSurvey(aladin.createImageSurvey(
+                    survey_names[0], 
+                    survey_names[0],
+                    "{{ url_for('static', filename='') }}"+survey_names[0],
+                    "equatorial",
+                    13,
+                    {imgFormat: 'png'}
+                ));
                 for (var i=0; i<survey_names.length; i++){
                     surveys.push({
                         "id": survey_names[i],
@@ -396,8 +406,8 @@
                         "format": "png"
                     });
                 }
-                
-                setTimeout(function() {HpxImageSurvey.SURVEYS = surveys;aladin.setImageSurvey("sim_a");}, 1000);
+
+                setTimeout(function() {HpxImageSurvey.SURVEYS = surveys;aladin.setImageSurvey(surveys[0].id);}, 1000);
 
                 $('.aladin-location').css('display', 'none');
                 $('.aladin-logo-container').css('display', 'none');
@@ -413,7 +423,7 @@
                 var dec;
                 try {
                     ra = {{galaxy.ra}};
-                    dec ={{galaxy.dec}};
+                    dec = {{galaxy.dec}};
                 } catch(error) {
                     console.error("Received invalid coordinates from server.");
                     ra = 0;
@@ -483,7 +493,7 @@
         </div>
 
         <div class="submitButton" id="submitButton">
-            <a href=# class="button" id="submit">Submit</a>
+            <a class="button" id="submit">Submit</a>
         </div>
 
         <div id="TheEnd" class="overlayEnd">

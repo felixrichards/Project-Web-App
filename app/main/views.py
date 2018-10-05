@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, session
 from flask.views import MethodView
 from app.models import Galaxy, Annotation
 from app.utils import get_random_galaxy
+from app import db
 
 
 class AnnotateView(MethodView):
@@ -37,4 +38,6 @@ class AnnotateView(MethodView):
         print("In post request")
         print(session['g_id'])
         a = Annotation(g_id=session['g_id'], shapes=shapes)
+        db.session.add(a)
+        db.session.commit()
         return ""
