@@ -911,6 +911,11 @@ function Shape(x0,y0,x,y,shape){
         }
     }
     
+    /**
+     * Updates the shape's pixel-based positional attributes from the world-based positional attributes
+     * 
+     * @returns {undefined}
+     */
     function worldToPix(){
         if (this.shape=="Line"){
             [this.x,this.y]=aladin.world2pix(this.xy_ra,this.xy_dec);
@@ -941,6 +946,11 @@ function Shape(x0,y0,x,y,shape){
         this.redraw()
     }
     
+    /**
+     * Updates the shape's world-based positional attributes from the pixel-based positional attributes
+     * 
+     * @returns {undefined}
+     */
     function pixToWorld(){
         if (this.shape=="Line"){
             [this.xy_ra,this.xy_dec]=aladin.pix2world(this.x,this.y);
@@ -1043,7 +1053,6 @@ function Shape(x0,y0,x,y,shape){
                     this.points[i].y_b=this.points[i].y0_b+y_shift;
                 }
             } else if (this.shape=="Freehand") {
-                // CODE HERE FOR MOVE
                 for (var i=0; i<this.points.length; i++){
                     this.points[i].x=this.points[i].x0+x_shift;
                     this.points[i].y=this.points[i].y0+y_shift;
@@ -1166,10 +1175,6 @@ function Shape(x0,y0,x,y,shape){
         },
         pixToWorld: pixToWorld,
         worldToPix: worldToPix
-        
-    }
-    function setSelfSelectedIdx(idx){
-        selfObj.boundingRect.selectedIdx=idx;
     }
     
     // Line specific object functionality
