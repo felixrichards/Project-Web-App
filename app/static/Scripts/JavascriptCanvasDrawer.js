@@ -35,6 +35,7 @@ var button_x_shift=5;
 var button_size=32;
 var button_x_inc=button_x_shift+button_size;
 var button_x_right_shift=drawerRect.w;
+var button_map = {};
 // button_x_right_shift=300
 
 var exploringMode = true;
@@ -57,6 +58,7 @@ function showAnnotation() {
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].clear()
         }
+        button_map={};
         buttons = [];
         $(".btn").remove()
         button_x_shift = 5;
@@ -109,14 +111,14 @@ function showAnnotation() {
             buttons[i].clear()
         }
         buttons = [];
+        button_map={};
         $(".btn").remove()
         button_x_shift = 5;
 
         buttons.push(Button(button_x_shift, 5, button_size, button_size,
-            function () { showAnnotation(); }, "Switch"))
+            function () { showAnnotation(); }, "Switch", "D, N"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { }, "Layers"))
-        // document.getElementById("pencil").style.display = "block";
         $(".nav").show()
         $(".annotate").hide()
         document.getElementById("myCheatSheet").style.width = "0";
@@ -352,6 +354,8 @@ function Button(x, y, w, h, behaviour, img, hotkey=""){
     }
     if (o.img=="Rect"||o.img=="Circle"||o.img=="Ellipse"||o.img=="Line"||o.img=="Snake"||o.img=="Region"||o.img=="Freehand")
         o.toggle=true;
+
+    button_map[img] = buttons.length;
 
     var c = (exploringMode ? "nav" : "annotate");
     $("<i>", {
@@ -1767,22 +1771,32 @@ element.addEventListener("mouseup", function(e){
     resetCanvas();
 }, false);
 element.addEventListener("keydown", function(e){
+
+
+    /**
+     * Checks whether a modifier is being pressed (ctrl,shift,alt)
+     * @returns {boolean}
+     */
+    function checkModifier(){
+        return (e.ctrlKey||e.shiftKey||e.altKey);
+    }
+
     // Check the last place clicked was inside the canvas and not in exploring mode
     if (!focusObject.canvas) {
         if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
         if (!exploringMode) {
-            if (e.keyCode == 46) deleteShape();
-            if (e.keyCode == 89 && e.ctrlKey) redo();
-            if (e.keyCode == 90 && e.ctrlKey) undo();
-            if (e.keyCode == 82) drawWith("Rect")       // R
-            if (e.keyCode == 67) drawWith("Circle")     // C
-            if (e.keyCode == 69) drawWith("Ellipse")    // E
-            if (e.keyCode == 76) drawWith("Line")       // L
-            if (e.keyCode == 83) drawWith("Snake")      // S
-            if (e.keyCode == 65) drawWith("Region")     // A
-            if (e.keyCode == 70) drawWith("Freehand")   // F
-            if (e.keyCode == 84) showHideTable()        // T
-            if (e.keyCode == 73) showHideCheatSheet()   // I
+            if (e.keyCode == 89 && e.ctrlKey) buttons[button_map['Redo']].click();
+            if (e.keyCode == 90 && e.ctrlKey) buttons[button_map['Undo']].click();
+            if (e.keyCode == 82 && !checkModifier()) buttons[button_map['Rect']].click();       // R
+            if (e.keyCode == 67 && !checkModifier()) buttons[button_map['Circle']].click();     // C
+            if (e.keyCode == 69 && !checkModifier()) buttons[button_map['Ellipse']].click();    // E
+            if (e.keyCode == 76 && !checkModifier()) buttons[button_map['Line']].click();       // L
+            if (e.keyCode == 83 && !checkModifier()) buttons[button_map['Snake']].click();      // S
+            if (e.keyCode == 65 && !checkModifier()) buttons[button_map['Region']].click();     // A
+            if (e.keyCode == 70 && !checkModifier()) buttons[button_map['Freehand']].click();   // F
+            if (e.keyCode == 46 && !checkModifier()) buttons[button_map['Delete']].click();     // Del
+            if (e.keyCode == 84 && !checkModifier()) buttons[button_map['Table']].click();      // T
+            if (e.keyCode == 73 && !checkModifier()) buttons[button_map['Info']].click();       // I
         }
     }
 }, false);
@@ -2372,14 +2386,12 @@ function addFeature(feature) {
 // Keeps shape highlighted when clicking drop down feature
 var selectLock=false;
 function changeTo() {
-    console.log("Enforcing lock on list open")
     preventDrawing = true;
     selectLock = true;
 }
 
 // Opposite of above
 function changeBack() {
-    console.log("Removing lock after list close")
     preventDrawing = false;
     selectLock = false;
 }
