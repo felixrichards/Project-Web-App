@@ -7,7 +7,7 @@ var ui_ctx = UICanvas.getContext("2d");
 
 var element=window;
 var parentDiv = document.getElementById("canv_cont");
-var state=defaultState();
+var state=State();
 
 // Stops mouse activity on canvas interfering with content outside canvas (e.g. highlighting text)
 document.getElementById('drawCanvas').onmousedown = function(){
@@ -40,7 +40,7 @@ var button_x_right_shift=drawerRect.w;
 var exploringMode = true;
 //Left sitting buttons
 buttons.push(Button(button_x_shift,5,button_size,button_size,
-    function () { showAnnotation(); }, "Switch"))
+    function () { showAnnotation(); }, "Switch", "D, N"))
 buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
     function () {  }, "Layers"))
 
@@ -58,46 +58,41 @@ function showAnnotation() {
             buttons[i].clear()
         }
         buttons = [];
+        $(".btn").remove()
         button_x_shift = 5;
 
         buttons.push(Button(button_x_shift, 5, button_size, button_size,
-            function () { showAnnotation(); }, "Switch"))
-        document.getElementById("pencil").style.display = "none";
-        document.getElementById("arrows").style.display = "block";
-        document.getElementById("bin").style.display = "block";
-        document.getElementById("undo").style.display = "block";
-        document.getElementById("restart").style.display = "block";
-        document.getElementById("table").style.display = "block";
-        document.getElementById("info").style.display = "block";
-        document.getElementById("redo").style.display = "block";
-        document.getElementById("featureDropdownContainer").style.display = "block";
+            function () { showAnnotation(); }, "Switch", "D, N"))
+            
+        $(".nav").hide()
+        $(".annotate").show()
 
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Rect"; }, "Rect"))
+            function () { drawWith("Rect"); }, "Rect", "R"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Circle"; }, "Circle"))
+            function () { drawWith("Circle"); }, "Circle", "C"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Ellipse"; }, "Ellipse"))
+            function () { drawWith("Ellipse"); }, "Ellipse", "E"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Line"; }, "Line"))
+            function () { drawWith("Line"); }, "Line", "L"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Snake"; }, "Snake"))
+            function () { drawWith("Snake"); }, "Snake", "S"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Region"; }, "Region"))
+            function () { drawWith("Region"); }, "Region", "A"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { state.shape = "Freehand"; }, "Freehand"))
+            function () { drawWith("Freehand"); }, "Freehand", "F"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { deleteShape(); }, "Delete"))
+            function () { deleteShape(); }, "Delete", "Del"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { undo();}, "Undo"))
+            function () { undo();}, "Undo", "Ctrl+Z"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { redo();}, "Redo"))
+            function () { redo();}, "Redo", "Ctrl+Y"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { clear(); }, "Reset"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { showHideTable(); }, "Table"))
+            function () { showHideTable(); }, "Table", "T"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
-            function () { showHideCheatSheet(); }, "Info"))
+            function () { showHideCheatSheet(); }, "Info", "I"))
 
         $('.aladin-zoomControl').css('right', '4000');
         $('.aladin-layersControl-container').css('top', '4000');
@@ -106,7 +101,7 @@ function showAnnotation() {
         $('.aladin-layerBox').css('display', 'none');
 
         state.resetSelected();
-        state = defaultState(false,true);
+        state = State(false,true);
     }
     else {
         exploringMode = true;
@@ -114,21 +109,16 @@ function showAnnotation() {
             buttons[i].clear()
         }
         buttons = [];
+        $(".btn").remove()
         button_x_shift = 5;
 
         buttons.push(Button(button_x_shift, 5, button_size, button_size,
             function () { showAnnotation(); }, "Switch"))
         buttons.push(Button(button_x_shift += button_x_inc, 5, button_size, button_size,
             function () { }, "Layers"))
-        document.getElementById("pencil").style.display = "block";
-        document.getElementById("arrows").style.display = "none";
-        document.getElementById("bin").style.display = "none";
-        document.getElementById("undo").style.display = "none";
-        document.getElementById("restart").style.display = "none";
-        document.getElementById("table").style.display = "none";
-        document.getElementById("info").style.display = "none";
-        document.getElementById("redo").style.display = "none";
-        document.getElementById("featureDropdownContainer").style.display = "none";
+        // document.getElementById("pencil").style.display = "block";
+        $(".nav").show()
+        $(".annotate").hide()
         document.getElementById("myCheatSheet").style.width = "0";
         document.getElementById("mySidenav").style.width = "0";
         document.getElementById("aladin-lite-div").style.pointerEvents = "unset";
@@ -140,8 +130,18 @@ function showAnnotation() {
         nextShape = false;
 
         state.resetSelected();
-        state = defaultState(false,true);
+        state = State(false,true);
     }
+}
+
+/**
+ * Changes the drawing tool to the passed shape
+ * 
+ * @param {string} shape The shape to draw: "Rect", "Circle", "Ellipse", "Line", "Snake", "Region", "Freehand"
+ * @returns {number}
+ */
+function drawWith(shape){
+    state.shape = shape;
 }
 
 /**
@@ -174,7 +174,7 @@ function redo(){
  * @returns {number}
  */
 function clear(){
-    state = defaultState(true, true);
+    state = State(true, true);
     state.addUndo(-1, 'clear', shapes.slice());
     shapes = [];
     resetCanvas();
@@ -238,7 +238,7 @@ function Point(x, y){
  *  @property {string} img The icon to use. Possible options are 'Rect','Circle','Ellipse','Line'
  *  @property {boolean} toggle Whether the button acts as a toggle
  *  @property {CanvasRenderingContext2D} ctx The canvas context to draw on
- *  @property {function} behaviour The behaviour to execute when clicked.
+ *  @method {function} behaviour The behaviour to execute when clicked.
  *  @property {function} redraw Redraws the button
  *  @property {string} cursor The cursor type that should appear when hovering
  *  @property {boolean} clicked Whether the button is toggled
@@ -256,10 +256,11 @@ function Point(x, y){
  *  @param {number} h The height.
  *  @param {function} behaviour The behaviour to execute when clicked.
  *  @param {string} img The icon to use. Possible options are 'Rect','Circle','Ellipse','Line'
- *  @param {boolean} toggle Whether the button should act as a toggle
+ *  @param {boolean} [toggle=false] Whether the button should act as a toggle
+ *  @param {string} [hotkey=""] The hotkey for button
  *  @returns {Button}
  */
-function Button(x, y, w, h, behaviour, img, toggle=false){
+function Button(x, y, w, h, behaviour, img, hotkey=""){
     drawButton=function(btn){
         btn.ctx.beginPath();
         btn.ctx.rect(btn.rect.x,btn.rect.y,btn.rect.w,btn.rect.h);
@@ -311,11 +312,13 @@ function Button(x, y, w, h, behaviour, img, toggle=false){
             btn.ctx.closePath();
         }
     }
+
     o={
         rect: Rect(x, y, w, h),
         img: img,
         toggle:false,
         ctx: ui_ctx,
+        // element: ,
         behaviour: behaviour,
         redraw: function redraw(){
             drawButton(this);
@@ -347,10 +350,25 @@ function Button(x, y, w, h, behaviour, img, toggle=false){
             this.ctx.clearRect(this.rect.x,this.rect.y,this.rect.w,this.rect.h);
         }
     }
-    if (o.img=="Rect"||o.img=="Circle"||o.img=="Ellipse"||o.img=="Line"||o.img=="Snake"||o.img=="Region"||o.img=="Freehand"||toggle)
+    if (o.img=="Rect"||o.img=="Circle"||o.img=="Ellipse"||o.img=="Line"||o.img=="Snake"||o.img=="Region"||o.img=="Freehand")
         o.toggle=true;
+
+    var c = (exploringMode ? "nav" : "annotate");
+    $("<i>", {
+        'class': c +" btn",
+        'title': hotkey,
+        css: {
+            position: "absolute",
+            display: "inline",
+            "z-index": 8,
+            "left": o.rect.x,
+            "top": o.rect.y,
+            "width": o.rect.w,
+            "height": o.rect.h
+        }
+    }).appendTo("#iconList");
+
     o.redraw();
-    
     
     return o;
 }
@@ -1750,23 +1768,53 @@ element.addEventListener("mouseup", function(e){
 }, false);
 element.addEventListener("keydown", function(e){
     // Check the last place clicked was inside the canvas and not in exploring mode
-    if (!focusObject.canvas&&!exploringMode) {
-        if (e.keyCode == 46) deleteShape();
-        if (e.keyCode == 89 && e.ctrlKey) redo();
-        if (e.keyCode == 90 && e.ctrlKey) undo();
+    if (!focusObject.canvas) {
+        if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
+        if (!exploringMode) {
+            if (e.keyCode == 46) deleteShape();
+            if (e.keyCode == 89 && e.ctrlKey) redo();
+            if (e.keyCode == 90 && e.ctrlKey) undo();
+            if (e.keyCode == 82) drawWith("Rect")       // R
+            if (e.keyCode == 67) drawWith("Circle")     // C
+            if (e.keyCode == 69) drawWith("Ellipse")    // E
+            if (e.keyCode == 76) drawWith("Line")       // L
+            if (e.keyCode == 83) drawWith("Snake")      // S
+            if (e.keyCode == 65) drawWith("Region")     // A
+            if (e.keyCode == 70) drawWith("Freehand")   // F
+            if (e.keyCode == 84) showHideTable()        // T
+            if (e.keyCode == 73) showHideCheatSheet()   // I
+        }
     }
 }, false);
 
-// Returns mouse position relative to (passed) canvas
+/**
+ * Returns mouse position relative to (passed) canvas
+ * 
+ * @param {Element} drawCanvas the canvas to get mouse position from
+ * @param {Event} evt Event object
+ * @returns {Point}
+ */
 function getMousePos(drawCanvas, evt) {
     var rect = drawCanvas.getBoundingClientRect();
     return Point(evt.clientX-rect.left, evt.clientY-rect.top)
 }
 
+/**
+ * Updates the cursor
+ * 
+ * @param {string} c cursor type to apply
+ * @returns {undefined}
+ */
 function updateCursor(c="auto"){
     document.body.style.cursor=c;
 }
 
+/**
+ * Retrieves object that the given position is over
+ * 
+ * @param {Point} pos The pos to check
+ * @returns {Object}
+ */
 function getFocusObject(pos){
     for (var i=0;i<buttons.length;i++){
         if (isInside(pos,buttons[i].rect)){
@@ -1791,16 +1839,49 @@ function getFocusObject(pos){
     return {cursor: "auto", canvas: true}
 }
 
-// Check if a given position is inside a given rectangle
+/**
+ * Checks if the given pos is inside the given object
+ * 
+ * @param {Point} pos The position to check
+ * @param {Rect} rect The rect to check against
+ * @returns {boolean}
+ */
 function isInside(pos,rect){
     return pos.x >= rect.x && pos.x <= rect.x+rect.w && pos.y <= rect.y+rect.h && pos.y >= rect.y
 }
 
+/**
+ * Checks if the given pos is inside any buttons
+ * 
+ * @param {Point} pos The position to check
+ * @returns {boolean}
+ */
 function isInsideButtons(pos){
     for (var i=0;i<buttons.length;i++) if (isInside(pos,buttons[i].rect)) return true;
 }
 
-function defaultState(keepDrawingTool=false, keepUndoRedoStacks=false){
+/** 
+ *  @typedef State
+ *  @type {Object}
+ *  @property {number} focusNo The shape index currently being interacted with
+ *  @property {number} selectedNo The shape index currently selected
+ *  @property {function} addUndo Add a shape to undo stack
+ *  @property {function} addRedo Add a shape to redo stack
+ *  @property {Array.<Shape>} undoStack The undo stack
+ *  @property {Array.<Shape>} redoStack The redo stack
+ *  @property {function} undo Performs an undo
+ *  @property {function} redo Performs a redo
+ *  @property {function} selectShape Selects the shape with the given index
+ *  @property {function} resetSelected Resets the selected shape
+ */
+
+/** 
+ *  Creates a State
+ *  @param {boolean} keepDrawingTool Whether to keep/reset the drawing tool
+ *  @param {boolean} keepUndoRedoStacks Whether to keep/reset the undoredo stacks
+ *  @returns {Rect}
+ */
+function State(keepDrawingTool=false, keepUndoRedoStacks=false){
     var outObj={
         focusNo: -1,
         selectedNo: -1,
@@ -1909,25 +1990,49 @@ function defaultState(keepDrawingTool=false, keepUndoRedoStacks=false){
     return outObj;
 }
 
-function getHighlightedShape(index) {
-    let indexs = shapes.findIndex(el => el.id === index)
+/**
+ * Gets shape with given id
+ * 
+ * @param {number} id The id to check
+ * @returns {number}
+ */
+function getHighlightedShape(id) {
+    let indexs = shapes.findIndex(el => el.id === id)
     return indexs
 }
 
-// Chooses the shape to draw
+/**
+ * Chooses the shape to draw
+ * 
+*  @param {number} x The X-coordinate of top left.
+*  @param {number} y The Y-coordinate of top left.
+*  @param {number} w The width.
+*  @param {number} h The height.
+ * @param {string} shape The type of shape to draw
+ * @param {number} theta The angle to rotate by
+ * @param {Point} [p=Point(x+w/2,y+h/2)] The point to rotate around
+ * @returns {undefined}
+ */
 function drawShape(x,y,w,h,shape,theta=0,p={x:x+w/2,y:y+h/2}){
     var fn=window["draw"+shape];
     if (shape=="Line"){
         drawLine(x,y,x+w,y+h)
     }else if(typeof fn === 'function') {
         fn({x:x,y:y,w:w,h:h,theta:theta,p:p})
-        // fn(x,y,w,h,theta);
     }
 }
 
-// Draws a rectangle with the given parameters
-// Joins up the four corners and then fills: this allows the corners to be rotated
-// Boolean parameters describe the type of box for styling purposes
+/**
+ * Draws a rectangle with the given parameters
+ * Joins up the four corners and then fills: this allows the corners to be rotated
+ * Boolean parameters describe the type of box for styling purposes
+ * 
+ * @param {Rect} shape The object to draw
+ * @param {boolean} button Whether it is a button
+ * @param {boolean} bounding Whether it is a bounding box
+ * @param {boolean} amend Whether it is an amend box
+ * @returns {undefined}
+ */
 function drawRect(shape,button=false,bounding=false,amend=false){
     ctx.beginPath();
     if (shape.theta==0){
@@ -1965,7 +2070,12 @@ function drawRect(shape,button=false,bounding=false,amend=false){
     ctx.closePath();
 }
 
-// Draws circle with given parameters
+/**
+ * Draws circle with given parameters
+ * 
+ * @param {Shape} shape The object to draw
+ * @returns {undefined}
+ */
 function drawCircle(shape){
     ctx.beginPath();
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
@@ -1977,7 +2087,12 @@ function drawCircle(shape){
     ctx.closePath();
 }
 
-// Draws circle with given parameters
+/**
+ * Draws ellipse with given parameters
+ * 
+ * @param {Shape} shape The object to draw
+ * @returns {undefined}
+ */
 function drawEllipse(shape){
     ctx.beginPath();
     // Transform coordinates
@@ -2010,7 +2125,19 @@ function drawEllipse(shape){
     ctx.closePath();
 }
 
-// Draws a bezier curve with given parameters
+/**
+ * Draws a bezier curve with given parameters
+ * 
+ * @param {number} x X-coordinate of start of line
+ * @param {number} y Y-coordinate of start of line
+ * @param {number} x3 X-coordinate of end of line
+ * @param {number} y3 Y-coordinate of end of line
+ * @param {number} [x1=] first parameter of bezier curve
+ * @param {number} [y1=] first parameter of bezier curve
+ * @param {number} [x2=] second parameter of bezier curve
+ * @param {number} [y2=] second parameter of bezier curve
+ * @returns {undefined}
+ */
 function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(y3-y)/3){
     ctx.beginPath();
     ctx.moveTo(x,y);
@@ -2024,6 +2151,13 @@ function drawLine(x,y,x3,y3,x1=x+(x3-x)/3,y1=y+(y3-y)/3,x2=x+2*(x3-x)/3,y2=y+2*(
     ctx.closePath();
 }
 
+/**
+ * Draws a snake
+ * 
+ * @param {Shape} shape The object to draw
+ * @param {Array.<Points>} shape.points Points to draw from
+ * @returns {undefined}
+ */
 function drawSnake(shape){
     ctx.beginPath();
     var N=shape.points.length;
@@ -2048,6 +2182,13 @@ function drawSnake(shape){
     ctx.closePath();
 }
 
+/**
+ * Draws a region
+ * 
+ * @param {Shape} shape The object to draw
+ * @param {Array.<Points>} shape.points Points to draw from
+ * @returns {undefined}
+ */
 function drawRegion(shape){
     ctx.beginPath();
     var N=shape.points.length;
@@ -2069,6 +2210,13 @@ function drawRegion(shape){
     ctx.closePath();
 }
 
+/**
+ * Draws a freehand region
+ * 
+ * @param {Shape} shape The object to draw
+ * @param {Array.<Points>} shape.points Points to draw from
+ * @returns {undefined}
+ */
 function drawFreehand(shape){
     var N=shape.points.length;
     if (shape.completed) {
@@ -2088,6 +2236,15 @@ function drawFreehand(shape){
     
 }
 
+/**
+ * Rotates a given coordinate
+ * 
+ * @param {number} x X component
+ * @param {number} y Y component
+ * @param {number} theta Angle to rotate by
+ * @param {Point} p Point to rotate about
+ * @returns {Point}
+ */
 function rotateCoords(x,y,theta,p={x:0,y:0}){
     return {
         x:rotateXCoord(x,y,theta,p),
@@ -2095,18 +2252,44 @@ function rotateCoords(x,y,theta,p={x:0,y:0}){
     };
 }
 
+/**
+ * Calculates Y component of coordinate rotation
+ * 
+ * @param {number} x X component
+ * @param {number} y Y component
+ * @param {number} theta Angle to rotate by
+ * @param {Point} p Point to rotate about
+ * @returns {number}
+ */
 function rotateXCoord(x,y,theta,p={x:0,y:0}){
     x=x-p.x;
     y=y-p.y;
     return x*Math.cos(theta)+y*Math.sin(theta)+p.x;
 }
 
+/**
+ * Calculates Y component of coordinate rotation
+ * 
+ * @param {number} x X component
+ * @param {number} y Y component
+ * @param {number} theta Angle to rotate by
+ * @param {Point} p Point to rotate about
+ * @returns {number}
+ */
 function rotateYCoord(x,y,theta,p={x:0,y:0}){
     x=x-p.x;
     y=y-p.y;
     return -x*Math.sin(theta)+y*Math.cos(theta)+p.y;
 }
 
+/**
+ * Calculates Y component of coordinate rotation
+ * 
+ * @param {Shape} rect The object to rotate
+ * @param {number} rect.theta Angle to rotate by
+ * @param {Point} p Point to rotate about
+ * @returns {Shape}
+ */
 function rotateRect(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
     o={};
     o.x_t_l=rotateXCoord(rect.x,rect.y,rect.theta,p);
