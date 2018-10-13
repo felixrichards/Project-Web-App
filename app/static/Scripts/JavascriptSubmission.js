@@ -3,7 +3,7 @@ $(function () {
 
         resetButtons();
         state.resetSelected();
-        state = defaultState();
+        state = State();
         
         var csrftoken = $('meta[name=csrf-token]').attr('content')
 
