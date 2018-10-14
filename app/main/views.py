@@ -38,6 +38,5 @@ class AnnotateView(MethodView):
         print("In post request")
         print(session['g_id'])
         a = Annotation(g_id=session['g_id'], shapes=shapes)
-        db.session.add(a)
         db.session.commit()
         return ""

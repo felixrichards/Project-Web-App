@@ -27,6 +27,9 @@ class Annotation(db.Model):
         print("kwargs are")
         print(kwargs)
         super(Annotation, self).__init__(**kwargs)
+        db.session.add(self)
+        db.session.flush()
+        db.session.refresh(self)
         print(self)
         for shape in shapes:
             s = Shape(a_id=self.a_id, shape=shape['shape'],

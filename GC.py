@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.models import Galaxy, Annotation
+from app.models import Galaxy, Annotation, Shape
 
 
 app = create_app()
@@ -7,4 +7,4 @@ app = create_app()
 
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'Galaxy': Galaxy, 'Annotation': Annotation}
+    return {'db': db, 'Galaxy': Galaxy, 'Annotation': Annotation, 'Shape': Shape}
