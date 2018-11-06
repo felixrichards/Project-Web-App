@@ -2,7 +2,6 @@
 *.pyc
 *.pyc
 *.pyc
-.env
 latest.dump
 __pycache__/config.cpython-36.pyc
 __pycache__/GC.cpython-36.pyc
