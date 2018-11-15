@@ -940,28 +940,28 @@ function Shape(x0,y0,x,y,shape){
      */
     function worldToPix(){
         if (this.shape=="Line"){
-            [this.x,this.y]=aladin.world2pix(this.xy_ra,this.xy_dec);
-            [this.x1,this.y1]=aladin.world2pix(this.xy1_ra,this.xy1_dec);
-            [this.x2,this.y2]=aladin.world2pix(this.xy2_ra,this.xy2_dec);
-            [this.x3,this.y3]=aladin.world2pix(this.xy3_ra,this.xy3_dec);
+            [this.x,this.y]=aladin.world2pix(this.ra_xy,this.dec_xy);
+            [this.x1,this.y1]=aladin.world2pix(this.ra1,this.dec1);
+            [this.x2,this.y2]=aladin.world2pix(this.ra2,this.dec2);
+            [this.x3,this.y3]=aladin.world2pix(this.ra3,this.dec3);
         } else if (this.shape=="Snake"){
             for (var i=0; i<this.points.length; i++){
-                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].xy_ra,this.points[i].xy_dec);
-                [this.points[i].x_t,this.points[i].y_t]=aladin.world2pix(this.points[i].xy_t_ra,this.points[i].xy_t_dec);
-                [this.points[i].x_b,this.points[i].y_b]=aladin.world2pix(this.points[i].xy_b_ra,this.points[i].xy_b_dec);
+                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].ra_xy,this.points[i].dec_xy);
+                [this.points[i].x_t,this.points[i].y_t]=aladin.world2pix(this.points[i].ra_xy_t,this.points[i].dec_xy_t);
+                [this.points[i].x_b,this.points[i].y_b]=aladin.world2pix(this.points[i].ra_xy_b,this.points[i].dec_xy_b);
                 this.points[i].l=Math.sqrt(Math.pow(this.points[i].x_t-this.points[i].x,2)+Math.pow(this.points[i].y_t-this.points[i].y,2));
             }
         } else if (this.shape=="Region"){
             for (var i=0; i<this.points.length; i++){
-                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].xy_ra,this.points[i].xy_dec);
+                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].ra_xy,this.points[i].dec_xy);
             }
         } else if (this.shape=="Freehand"){
             for (var i=0; i<this.points.length; i++){
-                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].xy_ra,this.points[i].xy_dec);
+                [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].ra_xy,this.points[i].dec_xy);
             }
         } else {
-            [this.x,this.y]=aladin.world2pix(this.xy_ra,this.xy_dec);
-            [this.xw,this.yh]=aladin.world2pix(this.wh_ra,this.wh_dec);
+            [this.x,this.y]=aladin.world2pix(this.ra_xy,this.dec_xy);
+            [this.xw,this.yh]=aladin.world2pix(this.ra_wh,this.dec_wh);
             [this.w,this.h]=[this.xw-this.x,this.yh-this.y];
         }
         this.changePos(false);
@@ -975,33 +975,33 @@ function Shape(x0,y0,x,y,shape){
      */
     function pixToWorld(){
         if (this.shape=="Line"){
-            [this.xy_ra,this.xy_dec]=aladin.pix2world(this.x,this.y);
-            [this.xy1_ra,this.xy1_dec]=aladin.pix2world(this.x1,this.y1);
-            [this.xy2_ra,this.xy2_dec]=aladin.pix2world(this.x2,this.y2);
-            [this.xy3_ra,this.xy3_dec]=aladin.pix2world(this.x3,this.y3);
+            [this.ra_xy,this.dec_xy]=aladin.pix2world(this.x,this.y);
+            [this.ra1,this.dec1]=aladin.pix2world(this.x1,this.y1);
+            [this.ra2,this.dec2]=aladin.pix2world(this.x2,this.y2);
+            [this.ra3,this.dec3]=aladin.pix2world(this.x3,this.y3);
         } else if (this.shape=="Snake"){
             for (var i=0; i<this.points.length; i++){
-                [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
-                [this.points[i].xy_t_ra,this.points[i].xy_t_dec]=aladin.pix2world(this.points[i].x_t,this.points[i].y_t);
-                [this.points[i].xy_b_ra,this.points[i].xy_b_dec]=aladin.pix2world(this.points[i].x_b,this.points[i].y_b);
+                [this.points[i].ra_xy,this.points[i].dec_xy]=aladin.pix2world(this.points[i].x,this.points[i].y);
+                [this.points[i].ra_xy_t,this.points[i].dec_xy_t]=aladin.pix2world(this.points[i].x_t,this.points[i].y_t);
+                [this.points[i].ra_xy_b,this.points[i].dec_xy_b]=aladin.pix2world(this.points[i].x_b,this.points[i].y_b);
             }
         } else if (this.shape=="Region"){
             for (var i=0; i<this.points.length; i++){
-                [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
+                [this.points[i].ra_xy,this.points[i].dec_xy]=aladin.pix2world(this.points[i].x,this.points[i].y);
             }
         } else if (this.shape=="Freehand"){
             for (var i=0; i<this.points.length; i++){
-                [this.points[i].xy_ra,this.points[i].xy_dec]=aladin.pix2world(this.points[i].x,this.points[i].y);
+                [this.points[i].ra_xy,this.points[i].dec_xy]=aladin.pix2world(this.points[i].x,this.points[i].y);
             }
         } else {
-            [this.xy_ra,this.xy_dec]=aladin.pix2world(this.x, this.y);
-            [this.wh_ra,this.wh_dec]=aladin.pix2world(this.x+this.w, this.y+this.h);
+            [this.ra_xy,this.dec_xy]=aladin.pix2world(this.x, this.y);
+            [this.ra_wh,this.dec_wh]=aladin.pix2world(this.x+this.w, this.y+this.h);
         }
     }
     
     var selfObj={
         shape: shape,
-        noFeature: nextShapeValue,
+        feature: nextShapeValue,
         x:x0,
         y:y0,
         x0:x0,
@@ -2332,13 +2332,13 @@ var nextShapeValue = "-"
 // Two prompts for no features and current features. 
 function getFeature(shape)
 {
-    if (shape.noFeature == "-" && !noAccess)
+    if (shape.feature == "-" && !noAccess)
     {
         document.getElementById("featureLabel").innerHTML = ("What feature is this " + shape.shape + "? " + "&nbsp; <i class='fa fa-caret-down'></i>")
     }
     else if (!noAccess)
     {
-        document.getElementById("featureLabel").innerHTML = ("Feature: " + shape.noFeature + "&nbsp; <i class='fa fa-caret-down'></i>")
+        document.getElementById("featureLabel").innerHTML = ("Feature: " + shape.feature + "&nbsp; <i class='fa fa-caret-down'></i>")
     }
 
     // If on submit a user clicks a shape then the colour of the dropdown goes from red to grey
@@ -2363,20 +2363,20 @@ function noshapeDrawn() {
 }
 
 // Give a shape a feature
-function addFeature(feature) {
+function addFeature(feat) {
     // If no access is true then an image is not highlighted hence "Next Feature"
     // If !noAccess then a shape is highlighted hence given a feature
     if (!noAccess)
     {
-        globalShapes[getHighlightedShape(currentShape.id)].noFeature = feature;
+        globalShapes[getHighlightedShape(currentShape.id)].feature = feat;
         updateTable(shapes);
         updateRowsRed(getHighlightedShape(currentShape.id), "Red");
     }
     else {
-        document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feature + "&nbsp; <i class='fa fa-caret-down'></i>")
+        document.getElementById("featureLabel").innerHTML = ("Next Feature: " + feat + "&nbsp; <i class='fa fa-caret-down'></i>")
         // If this is true then it prevents asking what feature to draw when clicking the canvas and allows a future shape to be given a feature
         nextShape = true
-        nextShapeValue = feature;
+        nextShapeValue = feat;
     }
      // IF on submit a user clicks a shape then the colour of the dropdown goes from red to grey
     document.getElementById("featureLabel").style.backgroundColor = "rgba(0,0,0,0.1)"

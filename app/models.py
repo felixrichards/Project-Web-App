@@ -33,45 +33,45 @@ class Annotation(db.Model):
         print(self)
         for shape in shapes:
             s = Shape(a_id=self.a_id, shape=shape['shape'],
-                        number=shape['id'], feature=shape['noFeature'],
+                        number=shape['id'], feature=shape['feature'],
                         x0=shape['x0'], y0=shape['y0'])
             if shape['shape'] == 'Rect' or shape['shape'] == 'Circle' or shape['shape'] == 'Ellipse':
-                s.ra_xy = shape['xy_ra']
-                s.dec_xy = shape['xy_dec']
+                s.ra_xy = shape['ra_xy']
+                s.dec_xy = shape['dec_xy']
                 s.xw = shape['x'] + shape['w']
                 s.yh = shape['y'] + shape['h']
-                s.ra_xy = shape['wh_ra']
-                s.dec_xy = shape['wh_dec']
+                s.ra_wh = shape['ra_wh']
+                s.dec_wh = shape['dec_wh']
                 s.theta = shape['theta']
             if shape['shape'] == 'Line':
-                s.ra_xy = shape['xy_ra']
-                s.dec_xy = shape['xy_dec']
+                s.ra_xy = shape['ra_xy']
+                s.dec_xy = shape['dec_xy']
                 s.x1 = shape['x1']
                 s.x2 = shape['x2']
                 s.x3 = shape['x3']
                 s.y1 = shape['y1']
                 s.y2 = shape['y2']
                 s.y3 = shape['y3']
-                s.ra1 = shape['xy1_ra']
-                s.ra2 = shape['xy2_ra']
-                s.ra3 = shape['xy3_ra']
-                s.dec1 = shape['xy1_dec']
-                s.dec2 = shape['xy2_dec']
-                s.dec3 = shape['xy3_dec']
+                s.ra1 = shape['ra1']
+                s.ra2 = shape['ra2']
+                s.ra3 = shape['ra3']
+                s.dec1 = shape['dec1']
+                s.dec2 = shape['dec2']
+                s.dec3 = shape['dec3']
             if shape['shape'] == 'Region' or shape['shape'] == 'Freehand':
                 s.x_points = [si['x'] for si in shape['points']]
                 s.y_points = [si['y'] for si in shape['points']]
-                s.ra_points = [si['xy_ra'] for si in shape['points']]
-                s.dec_points = [si['xy_dec'] for si in shape['points']]
+                s.ra_points = [si['ra_xy'] for si in shape['points']]
+                s.dec_points = [si['dec_xy'] for si in shape['points']]
             if shape['shape'] == 'Snake':
                 s.x_points = [si['x_t'] for si in shape['points']]
                 s.y_points = [si['y_t'] for si in shape['points']]
-                s.ra_points = [si['xy_t_ra'] for si in shape['points']]
-                s.dec_points = [si['xy_t_dec'] for si in shape['points']]
+                s.ra_points = [si['ra_xy_t'] for si in shape['points']]
+                s.dec_points = [si['dec_xy_t'] for si in shape['points']]
                 s.x_points += [si['x_b'] for si in reversed(shape['points'])]
                 s.y_points += [si['y_b'] for si in reversed(shape['points'])]
-                s.ra_points += [si['xy_b_ra'] for si in reversed(shape['points'])]
-                s.dec_points += [si['xy_b_dec'] for si in reversed(shape['points'])]
+                s.ra_points += [si['ra_xy_b'] for si in reversed(shape['points'])]
+                s.dec_points += [si['dec_xy_b'] for si in reversed(shape['points'])]
             db.session.add(s)
         print("added shapes")
 

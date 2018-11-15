@@ -41,7 +41,7 @@ function checkFeatures()
             'Halo','Not Sure']
 
     for (var i = 0; i < shapes.length; i++) {
-        if (!features.includes(shapes[i].noFeature)) {
+        if (!features.includes(shapes[i].feature)) {
             globalShapes.push(shapes[i]);
         }
     }

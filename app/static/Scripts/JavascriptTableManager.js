@@ -38,7 +38,7 @@ function updateTable(shapes){
                 .append($('<td>')
                     .text(globalShapes[i].id)
                 )
-                .append($('<td id=' + globalShapes[i].id + '>' + globalShapes[i].noFeature + '</td>')
+                .append($('<td id=' + globalShapes[i].id + '>' + globalShapes[i].feature + '</td>')
                 )
         );
     }
@@ -158,7 +158,7 @@ function updateRowsRed(selected_idx = -1, feature) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
 
         for (var i = 0; i < shapes.length; i++) {
-            if (shapes[i].noFeature == "-") {
+            if (shapes[i].feature == "-") {
                 globalShapes.push(shapes[i]);
                 $('#obj_table tbody tr:eq(' + i + ')').addClass("selectedFeature");
             }

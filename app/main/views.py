@@ -1,12 +1,12 @@
 from flask import render_template, request, redirect, url_for, session
 from flask.views import MethodView
-from app.models import Galaxy, Annotation
+from app.models import Galaxy, Annotation, Shape
 from app.utils import get_random_galaxy
 from app import db
 
 
 class AnnotateView(MethodView):
-    def get(self, g_id=None, g_name=None, g_survey=None):
+    def get(self, g_id=None, g_name=None, g_survey=None, a_id=None):
         if 'advanced' not in session:
             session['advanced'] = 0
         if g_id is None and g_name is None and g_survey is None:
@@ -29,9 +29,13 @@ class AnnotateView(MethodView):
             # find galaxy by survey
             galaxy = get_random_galaxy(survey=g_survey)
 
+        shapes = None
+        if a_id is not None:
+            shapes = Shape.query.filter_by(a_id=a_id).all()
+
         session['g_id'] = galaxy.g_id
         
-        return render_template('annotate.html', title='Annotate', galaxy=galaxy)
+        return render_template('annotate.html', title='Annotate', galaxy=galaxy, shapes=shapes)
     
     def post(self, g_id=None, g_name=None):
         shapes = request.get_json()

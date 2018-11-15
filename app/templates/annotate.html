@@ -374,74 +374,112 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js" charset="utf-8"></script>
         <script type="text/javascript">
-                var aladin = A.aladin('#aladin-lite-div', {
-                    fov: 0.2,
-                    showGotoControl: false,
-                    showLayersControl: true,
-                    showFrame: false,
-                    showFullscreenControl: false,
-                });
-
-                survey_names = "{{galaxy.survey}}".split(',');
-                surveys = [];
-
-                aladin.setImageSurvey(aladin.createImageSurvey(
-                    survey_names[0],
-                    survey_names[0],
-                    "{{ url_for('static', filename='') }}"+survey_names[0],
-                    "equatorial",
-                    11,
-                    {imgFormat: 'png'}
-                ));
-                
-                for (var i=0; i<survey_names.length; i++){
-                    surveys.push({
-                        "id": survey_names[i],
-                        "url": "{{ url_for('static', filename='') }}"+survey_names[i],
-                        "name": survey_names[i],
-                        "maxOrder": 11,
-                        "frame": "equatorial",
-                        "format": "png"
-                    });
+            var loadedShapes=[]
+            
+            {% for s in shapes %}
+                lS = {
+                    shape: "{{s.shape}}",
+                    id: "{{s.number}}",
+                    feature: "{{s.feature}}"
                 }
-
-
-                $('.aladin-location').css('display', 'none');
-                $('.aladin-logo-container').css('display', 'none');
-                $('.aladin-layersControl-container').css('top', '4');
-                $('.aladin-layersControl-container').css('left', '41');
-                $('.aladin-layersControl-container').css('background', 'none');
-                setTimeout(function() {HpxImageSurvey.SURVEYS = surveys;aladin.setImageSurvey(surveys[0].id);}, 1000);
-
-                // Creates a marker at a given RA, Dec
-                // This will be used to navigate automatically to a given galaxy
-                // May be used to calculate shape parameters in world coordinates
-                // May be used to keep shapes in correct location when user pans
-                var ra;
-                var dec;
-                try {
-                    ra = {{galaxy.ra}};
-                    dec = {{galaxy.dec}};
-                } catch(error) {
-                    console.error("Received invalid coordinates from server.");
-                    ra = 0;
-                    dec = 0;
+                if ('{{shapes.shape}}' == "Line"){
+                    [lS.ra_dec, lS.dec_xy] = [{{shapes.ra_xy}}, {{shapes.dec_xy}}];
+                    [lS.ra1, lS.dec1] = [{{shapes.ra1}}, {{shapes.dec1}}];
+                    [lS.ra2, lS.dec2] = [{{shapes.ra2}}, {{shapes.dec2}}];
+                    [lS.ra3, lS.dec3] = [{{shapes.ra3}}, {{shapes.dec3}}];
+                } else if (lS.shape=="Snake"){ 
+                    for (var i=0; i<lS.points.length; i++){
+                        {{N = len(s.ra_points)}}
+                        {% for i in range(N) %}
+                            [lS.points[i].ra_xy_t, lS.points[i].dec_xy_t]=[{{shapes.ra_points[i]}}, {{shapes.dec_points[i]}}];
+                            [lS.points[i].ra_xy_b, lS.points[i].dec_xy_b]=[{{shapes.ra_points[N-i-1]}}, {{shapes.dec_points[N-i-1]}}];
+                            
+                        {% endfor %}
+                    }
+                } else if (lS.shape=="Region"){
+                    for (var i=0; i<lS.points.length; i++){
+                        [lS.points[i].xy_ra,lS.points[i].xy_dec]=aladin.pix2world(lS.points[i].x,lS.points[i].y);
+                    }
+                } else if (lS.shape=="Freehand"){
+                    for (var i=0; i<lS.points.length; i++){
+                        [lS.points[i].xy_ra,lS.points[i].xy_dec]=aladin.pix2world(lS.points[i].x,lS.points[i].y);
+                    }
+                } else {
+                    [lS.xy_ra,lS.xy_dec]=aladin.pix2world(lS.x, lS.y);
+                    [lS.wh_ra,lS.wh_dec]=aladin.pix2world(lS.x+lS.w, lS.y+lS.h);
                 }
+            {% endfor %}
+            
 
 
+            var aladin = A.aladin('#aladin-lite-div', {
+                fov: 0.2,
+                showGotoControl: false,
+                showLayersControl: true,
+                showFrame: false,
+                showFullscreenControl: false,
+            });
 
-                // Navigates to given RA, Dec
-                aladin.gotoRaDec(ra, dec);
-                aladin.setFoV(0.1);
+            survey_names = "{{galaxy.survey}}".split(',');
+            surveys = [];
 
-                // These are listeners for panning and scrolling
-                aladin.on('positionChanged', function (newPosition) {
-                    allWorldToPix();
+            aladin.setImageSurvey(aladin.createImageSurvey(
+                survey_names[0],
+                survey_names[0],
+                "{{ url_for('static', filename='') }}"+survey_names[0],
+                "equatorial",
+                11,
+                {imgFormat: 'png'}
+            ));
+            
+            for (var i=0; i<survey_names.length; i++){
+                surveys.push({
+                    "id": survey_names[i],
+                    "url": "{{ url_for('static', filename='') }}"+survey_names[i],
+                    "name": survey_names[i],
+                    "maxOrder": 11,
+                    "frame": "equatorial",
+                    "format": "png"
                 });
+            }
 
-                aladin.on('zoomChanged', function (newPosition) {
-                    allWorldToPix();
-                });
+
+            $('.aladin-location').css('display', 'none');
+            $('.aladin-logo-container').css('display', 'none');
+            $('.aladin-layersControl-container').css('top', '4');
+            $('.aladin-layersControl-container').css('left', '41');
+            $('.aladin-layersControl-container').css('background', 'none');
+            setTimeout(function() {HpxImageSurvey.SURVEYS = surveys;aladin.setImageSurvey(surveys[0].id);}, 1000);
+
+            // Creates a marker at a given RA, Dec
+            // This will be used to navigate automatically to a given galaxy
+            // May be used to calculate shape parameters in world coordinates
+            // May be used to keep shapes in correct location when user pans
+            var ra;
+            var dec;
+            try {
+                ra = {{galaxy.ra}};
+                dec = {{galaxy.dec}};
+            } catch(error) {
+                console.error("Received invalid coordinates from server.");
+                ra = 0;
+                dec = 0;
+            }
+
+
+
+            // Navigates to given RA, Dec
+            aladin.gotoRaDec(ra, dec);
+            aladin.setFoV(0.1);
+
+            // These are listeners for panning and scrolling
+            aladin.on('positionChanged', function (newPosition) {
+                allWorldToPix();
+            });
+
+            aladin.on('zoomChanged', function (newPosition) {
+                allWorldToPix();
+            });
         </script>
         <canvas class="drawCanvas" id="drawCanvas"></canvas>
         <canvas class="UICanvas" id="UICanvas"></canvas>

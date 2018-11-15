@@ -17,6 +17,7 @@ create_annotation_route('/annotate', 'annotate')
 create_annotation_route('/annotate/id/<g_id>', 'annotate_by_id')
 create_annotation_route('/annotate/name/<g_name>', 'annotate_by_name')
 create_annotation_route('/annotate/name/<g_survey>', 'annotate_by_survey')
+create_annotation_route('/verify/id/<a_id>', 'verify_by_id')
 
 @bp.route('/')
 @bp.route('/home')
