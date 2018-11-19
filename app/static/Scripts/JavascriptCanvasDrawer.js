@@ -1782,22 +1782,22 @@ element.addEventListener("keydown", function(e){
     }
 
     // Check the last place clicked was inside the canvas and not in exploring mode
-    if (!focusObject.canvas) {
+    if (focusObject!==null && !focusObject.canvas) {
         if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
-        if (!exploringMode) {
-            if (e.keyCode == 89 && e.ctrlKey) buttons[button_map['Redo']].click();
-            if (e.keyCode == 90 && e.ctrlKey) buttons[button_map['Undo']].click();
-            if (e.keyCode == 82 && !checkModifier()) buttons[button_map['Rect']].click();       // R
-            if (e.keyCode == 67 && !checkModifier()) buttons[button_map['Circle']].click();     // C
-            if (e.keyCode == 69 && !checkModifier()) buttons[button_map['Ellipse']].click();    // E
-            if (e.keyCode == 76 && !checkModifier()) buttons[button_map['Line']].click();       // L
-            if (e.keyCode == 83 && !checkModifier()) buttons[button_map['Snake']].click();      // S
-            if (e.keyCode == 65 && !checkModifier()) buttons[button_map['Region']].click();     // A
-            if (e.keyCode == 70 && !checkModifier()) buttons[button_map['Freehand']].click();   // F
-            if (e.keyCode == 46 && !checkModifier()) buttons[button_map['Delete']].click();     // Del
-            if (e.keyCode == 84 && !checkModifier()) buttons[button_map['Table']].click();      // T
-            if (e.keyCode == 73 && !checkModifier()) buttons[button_map['Info']].click();       // I
-        }
+            if (!exploringMode) {
+                if (e.keyCode == 89 && e.ctrlKey) buttons[button_map['Redo']].click();
+                if (e.keyCode == 90 && e.ctrlKey) buttons[button_map['Undo']].click();
+                if (e.keyCode == 82 && !checkModifier()) buttons[button_map['Rect']].click();       // R
+                if (e.keyCode == 67 && !checkModifier()) buttons[button_map['Circle']].click();     // C
+                if (e.keyCode == 69 && !checkModifier()) buttons[button_map['Ellipse']].click();    // E
+                if (e.keyCode == 76 && !checkModifier()) buttons[button_map['Line']].click();       // L
+                if (e.keyCode == 83 && !checkModifier()) buttons[button_map['Snake']].click();      // S
+                if (e.keyCode == 65 && !checkModifier()) buttons[button_map['Region']].click();     // A
+                if (e.keyCode == 70 && !checkModifier()) buttons[button_map['Freehand']].click();   // F
+                if (e.keyCode == 46 && !checkModifier()) buttons[button_map['Delete']].click();     // Del
+                if (e.keyCode == 84 && !checkModifier()) buttons[button_map['Table']].click();      // T
+                if (e.keyCode == 73 && !checkModifier()) buttons[button_map['Info']].click();       // I
+            }
     }
 }, false);
 

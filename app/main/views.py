@@ -15,7 +15,7 @@ class AnnotateView(MethodView):
             # comment out to keep url as /annotate
             
             if session['advanced']:
-                return redirect(url_for('annotate_by_id',g_id=galaxy.g_id))
+                return redirect(url_for('.annotate_by_id',g_id=galaxy.g_id))
         
         if g_id is not None:
             # find galaxy by id
@@ -31,7 +31,12 @@ class AnnotateView(MethodView):
 
         shapes = None
         if a_id is not None:
+            annotation = Annotation.query.filter_by(a_id=a_id).one_or_none()
+            if annotation is None:
+                return redirect(url_for('.annotate'))
+
             shapes = Shape.query.filter_by(a_id=a_id).all()
+            galaxy = Galaxy.query.filter_by(g_id=annotation.g_id).one_or_none()
 
         session['g_id'] = galaxy.g_id
         

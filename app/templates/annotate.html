@@ -374,44 +374,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js" charset="utf-8"></script>
         <script type="text/javascript">
-            var loadedShapes=[]
-            
-            {% for s in shapes %}
-                lS = {
-                    shape: "{{s.shape}}",
-                    id: "{{s.number}}",
-                    feature: "{{s.feature}}"
-                }
-                if ('{{shapes.shape}}' == "Line"){
-                    [lS.ra_dec, lS.dec_xy] = [{{shapes.ra_xy}}, {{shapes.dec_xy}}];
-                    [lS.ra1, lS.dec1] = [{{shapes.ra1}}, {{shapes.dec1}}];
-                    [lS.ra2, lS.dec2] = [{{shapes.ra2}}, {{shapes.dec2}}];
-                    [lS.ra3, lS.dec3] = [{{shapes.ra3}}, {{shapes.dec3}}];
-                } else if (lS.shape=="Snake"){ 
-                    for (var i=0; i<lS.points.length; i++){
-                        {{N = len(s.ra_points)}}
-                        {% for i in range(N) %}
-                            [lS.points[i].ra_xy_t, lS.points[i].dec_xy_t]=[{{shapes.ra_points[i]}}, {{shapes.dec_points[i]}}];
-                            [lS.points[i].ra_xy_b, lS.points[i].dec_xy_b]=[{{shapes.ra_points[N-i-1]}}, {{shapes.dec_points[N-i-1]}}];
-                            
-                        {% endfor %}
-                    }
-                } else if (lS.shape=="Region"){
-                    for (var i=0; i<lS.points.length; i++){
-                        [lS.points[i].xy_ra,lS.points[i].xy_dec]=aladin.pix2world(lS.points[i].x,lS.points[i].y);
-                    }
-                } else if (lS.shape=="Freehand"){
-                    for (var i=0; i<lS.points.length; i++){
-                        [lS.points[i].xy_ra,lS.points[i].xy_dec]=aladin.pix2world(lS.points[i].x,lS.points[i].y);
-                    }
-                } else {
-                    [lS.xy_ra,lS.xy_dec]=aladin.pix2world(lS.x, lS.y);
-                    [lS.wh_ra,lS.wh_dec]=aladin.pix2world(lS.x+lS.w, lS.y+lS.h);
-                }
-            {% endfor %}
-            
-
-
             var aladin = A.aladin('#aladin-lite-div', {
                 fov: 0.2,
                 showGotoControl: false,
@@ -484,7 +446,49 @@
         <canvas class="drawCanvas" id="drawCanvas"></canvas>
         <canvas class="UICanvas" id="UICanvas"></canvas>
         <script src="{{ url_for('static', filename='Scripts/JavascriptCanvasDrawer.js') }}"></script>
-
+        <script>
+            var loadedShapes=[]
+            
+            {% if shapes is not none %}
+                {% for s in shapes %}
+                    lS = Shape(0,0,0,0,"{{s.shape}}");
+                    lS.id = "{{s.number}}";
+                    lS.feature = "{{s.feature}}";
+                    {% if s.shape == "Line" %}
+                        [lS.ra_dec, lS.dec_xy] = [{{s.ra_xy}}, {{s.dec_xy}}];
+                        [lS.ra1, lS.dec1] = [{{s.ra1}}, {{s.dec1}}];
+                        [lS.ra2, lS.dec2] = [{{s.ra2}}, {{s.dec2}}];
+                        [lS.ra3, lS.dec3] = [{{s.ra3}}, {{s.dec3}}];
+                    {% elif s.shape == "Snake" %}
+                        {% set N = s.ra_points|length %}
+                        lS.points=[];
+                        for (var i=0; i<{{N}}; i++) lS.points.push({});
+                        // Middle coordinates are a workaround since they are not stored in DB
+                        {% for i in range(N) %}
+                            [lS.points[{{i}}].ra_xy_t, lS.points[{{i}}].dec_xy_t]=[{{s.ra_points[i]}}, {{s.dec_points[i]}}];
+                            [lS.points[{{i}}].ra_xy_b, lS.points[{{i}}].dec_xy_b]=[{{s.ra_points[N-i-1]}}, {{s.dec_points[N-i-1]}}];
+                            var tx,ty,bx,by;
+                            [tx, ty] = aladin.world2pix(lS.points[{{i}}].ra_xy_t, lS.points[{{i}}].dec_xy_t);
+                            [bx, by] = aladin.world2pix(lS.points[{{i}}].ra_xy_b, lS.points[{{i}}].dec_xy_b);
+                            [lS.points[{{i}}].ra_xy, lS.points[{{i}}].dec_xy]=aladin.pix2world((tx+bx)/2,(ty+by)/2)
+                        {% endfor %}
+                    {% elif s.shape == "Region" or s.shape == "Freehand" %}
+                        {% set N = s.ra_points|length %}
+                        lS.points=[];
+                        for (var i=0; i<{{N}}; i++) lS.points.push({});
+                        {% for i in range(N) %}
+                            [lS.points[{{i}}].ra_xy, lS.points[{{i}}].dec_xy]=[{{s.ra_points[i]}}, {{s.dec_points[i]}}];
+                        {% endfor %}
+                    {% else %}
+                        [lS.ra_xy,lS.dec_xy]=[{{s.ra_xy}}, {{s.dec_xy}}];
+                        [lS.ra_wh,lS.dec_wh]=[{{s.ra_wh}}, {{s.dec_wh}}];
+                        lS.theta={{s.theta}};
+                    {% endif %}
+                    loadedShapes.push(lS);
+                {% endfor %}
+                shapes = loadedShapes;
+            {% endif %}
+        </script>
         <div class="annotate FeatureDropdownContainer" id="featureDropdownContainer">
             <ul class="FeatureDropdown" id="menu">
                 <li class="FeatureHover" id="featureHover">
