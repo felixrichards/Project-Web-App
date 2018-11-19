@@ -1,3 +1,5 @@
+var a_id;
+var test_response;
 $(function () {
     $('a#submit').bind('click', function () {
 
@@ -21,7 +23,10 @@ $(function () {
                 contentType: "application/json; charset=utf-8",
                 type: 'POST',
                 success: function (response) {
-                    //console.log(response);
+                    response = JSON.parse(response)
+                    a_id = response.a_id
+                    $("#annotationIDResult").html("The ID for this annotation is "+a_id
+                         +"<br>You can access it at <a href='/verify/id/"+a_id+"'>/verify/id/"+a_id+"</a>")
                 },
                 error: function (error) {
                     console.log(error);
@@ -48,7 +53,7 @@ function checkFeatures()
 
     if (globalShapes.length == 0)
     {
-        document.getElementById("TheEnd").style.width = "100%"; 
+        document.getElementById("TheEnd").style.width = "100%";
         document.getElementById("mySidenav").style.width = "0px";
         $('.aladin-zoomControl').css('display', 'none');
         $('.aladin-layersControl-container').css('display', 'none');

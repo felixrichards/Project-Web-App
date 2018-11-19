@@ -171,6 +171,7 @@ i {
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
+    font-size:4vw;
 }
 
 .endingContainer h1{
@@ -182,8 +183,14 @@ i {
 .endingContainer h3 {
     font-size:4vw;
     color:white;
+    text-align:center;
+}
+
+.endingContainer p {
+    color:rgba(255, 255, 255, 0.835);
     padding-bottom:10px;
     text-align:center;
+    font-size: 2vw;
 }
 
 .endingContainer div{
@@ -192,15 +199,14 @@ i {
     padding-bottom:30px;
 }
 
-.endingContainer div a {
+.endingContainer a {
     text-align: center;
     text-decoration: none;
     color: red;
     width: 100%;
-    font-size: 4vw;
 }
 
-.endingContainer div  a:hover{
+.endingContainer a:hover{
      color:forestgreen;
 }
 

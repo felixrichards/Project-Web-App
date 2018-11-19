@@ -3,6 +3,7 @@ from flask.views import MethodView
 from app.models import Galaxy, Annotation, Shape
 from app.utils import get_random_galaxy
 from app import db
+import json
 
 
 class AnnotateView(MethodView):
@@ -47,5 +48,8 @@ class AnnotateView(MethodView):
         print("In post request")
         print(session['g_id'])
         a = Annotation(g_id=session['g_id'], shapes=shapes)
+        # db.session.flush()
+        # db.session.refresh()
         db.session.commit()
-        return ""
+        a_id = a.a_id
+        return json.dumps({"a_id": a_id}), 200, {'ContentType':'application/json'} 
