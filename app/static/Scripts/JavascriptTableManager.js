@@ -30,6 +30,9 @@ function updateTable(shapes){
         if (globalShapes[i].shape == "Circle") svg = document.getElementById("circle").innerHTML;
         if (globalShapes[i].shape == "Ellipse") svg = document.getElementById("ellipse").innerHTML;
         if (globalShapes[i].shape == "Line") svg = document.getElementById("line").innerHTML;
+        if (globalShapes[i].shape == "Snake") svg = document.getElementById("snake").innerHTML;
+        if (globalShapes[i].shape == "Region") svg = document.getElementById("region").innerHTML;
+        if (globalShapes[i].shape == "Freehand") svg = document.getElementById("freehand").innerHTML;
         $("#obj_table").find('tbody')
             .append($('<tr>')
                 .addClass(class_str)
@@ -45,33 +48,57 @@ function updateTable(shapes){
     submitAppear(shapes);
 }
 
-// Stores all of one shape depending on the filter in an arrray.
+// Stores all of one shape depending on the filter in an array.
 function whichShape() {
+    function isSelected(e){ 
+        return e.css('background-color') === "rgb(129, 129, 129)";
+    }
     globalShapes = [];
-    if ($("#rect").css('background-color') === "rgb(129, 129, 129)") {
+    if (isSelected($("#rect"))) {
         for (var i = 0; i < shapes.length; i++) {
             if (shapes[i].shape == "Rect") {
                 globalShapes.push(shapes[i]);
             }
         }
     }
-    else if ($("#circle").css('background-color') === "rgb(129, 129, 129)") {
+    else if (isSelected($("#circle"))) {
         for (var i = 0; i < shapes.length; i++) {
             if (shapes[i].shape == "Circle") {
                 globalShapes.push(shapes[i]);
             }
         }
     }
-    else if ($("#ellipse").css('background-color') === "rgb(129, 129, 129)") {
+    else if (isSelected($("#ellipse"))) {
         for (var i = 0; i < shapes.length; i++) {
             if (shapes[i].shape == "Ellipse") {
                 globalShapes.push(shapes[i]);
             }
         }
     }
-    else if ($("#line").css('background-color') === "rgb(129, 129, 129)") {
+    else if (isSelected($("#line"))) {
         for (var i = 0; i < shapes.length; i++) {
             if (shapes[i].shape == "Line") {
+                globalShapes.push(shapes[i]);
+            }
+        }
+    }
+    else if (isSelected($("#snake"))) {
+        for (var i = 0; i < shapes.length; i++) {
+            if (shapes[i].shape == "Snake") {
+                globalShapes.push(shapes[i]);
+            }
+        }
+    }
+    else if (isSelected($("#region"))) {
+        for (var i = 0; i < shapes.length; i++) {
+            if (shapes[i].shape == "Region") {
+                globalShapes.push(shapes[i]);
+            }
+        }
+    }
+    else if (isSelected($("#freehand"))) {
+        for (var i = 0; i < shapes.length; i++) {
+            if (shapes[i].shape == "Freehand") {
                 globalShapes.push(shapes[i]);
             }
         }
@@ -84,7 +111,7 @@ function whichShape() {
 }
 
 // Show or hide submit button based on number of shapes
-function submitAppear(shapes) {
+function submitAppear(shapes=shapes) {
     var element = document.getElementById("submitButton");
     if (shapes.length < 1)
     {

@@ -28,7 +28,7 @@
     <div class="extra" style="width:  100%; height: 100%;">
         <div class="tables" id="obj_table_div" style="width: 100%;  height:100%;">
             <div class="filterBlock">
-                <div class="square" id="all" tabindex='0'>
+                <div title="All" class="square" id="all" tabindex='0'>
                     <svg>
                         <rect x="5" y="5.5" width="5" height="5" fill="red" />
                         <circle cx="22" cy="8" r="3" fill="red" />
@@ -36,24 +36,39 @@
                         <line x1="20" y1="20" x2="25" y2="25" style="stroke:rgb(255,0,0);stroke-width:2" />
                     </svg>
                 </div>
-                <div class="square" id="rect" tabindex='1'>
+                <div title="Square" class="square" id="rect" tabindex='1'>
                     <svg>
                         <rect x="8" y="8" width="15" height="15" fill="red" />
                     </svg>
                 </div>
-                <div class="square" id="circle" tabindex='2'>
+                <div title="Circle" class="square" id="circle" tabindex='2'>
                     <svg>
                         <circle cx="15" cy="15" r="8" fill="red" />
                     </svg>
                 </div>
-                <div class="square" id="ellipse" tabindex='3'>
+                <div title="Ellipse" class="square" id="ellipse" tabindex='3'>
                     <svg>
                         <ellipse cx="15" cy="15" rx="10" ry="5" fill="red" />
                     </svg>
                 </div>
-                <div class="square" id="line" tabindex='4'>
+                <div title="Line" class="square" id="line" tabindex='4'>
                     <svg>
                         <line x1="5" y1="5" x2="22" y2="22" style="stroke:rgb(255,0,0);stroke-width:2" />
+                    </svg>
+                </div>
+                <div title="Snake" class="square" id="snake" tabindex='5'>
+                    <svg>
+                        <path fill="#ff0000" stroke="#ff0000" stroke-width="2" stroke-linejoin="round" stroke-dashoffset="" fill-rule="nonzero" marker-start="" marker-mid="" marker-end="" id="svg_21" d="M4.591836683604182,13.826530623192681 " style="color: rgb(255, 0, 0);" class=""/><path fill="#ff0000" fill-opacity="1" stroke="#ff0000" stroke-opacity="1" stroke-width="1" stroke-dasharray="none" stroke-linejoin="round" stroke-linecap="butt" stroke-dashoffset="" fill-rule="nonzero" opacity="1" marker-start="" marker-mid="" marker-end="" id="svg_1" d="M5.979592806053161,6.153060827274323 C5.081632806053162,6.071430827274322 13.408162806053161,4.683670827274323 13.571432806053162,4.683670827274323 C13.734692806053161,4.683670827274323 20.51020280605316,9.500000827274322 20.673472806053162,9.581630827274322 C20.836732806053163,9.663260827274323 25.08163280605316,15.540820827274324 25.061222806053163,15.510200827274321 C25.08163280605316,15.540820827274324 26.38775280605316,22.31633082727432 26.367342806053163,22.285710827274322 C26.38775280605316,22.31633082727432 25.979592806053162,27.70408082727432 25.95918280605316,27.673470827274322 C25.979592806053162,27.70408082727432 18.061222806053163,29.173470827274322 18.04081280605316,29.142860827274323 C18.061222806053163,29.173470827274322 7.530612806053162,29.581630827274324 7.510202806053162,29.55102082727432 C7.530612806053162,29.581630827274324 7.122452806053161,25.09184082727432 7.102042806053161,25.061220827274322 C7.122452806053161,25.09184082727432 16.836732806053163,24.765310827274323 16.81632280605316,24.734690827274324 C16.836732806053163,24.765310827274323 20.91836280605316,23.70408082727432 20.91836280605316,23.540820827274324 C20.91836280605316,23.377550827274323 21.16326280605316,21.581630827274324 21.16326280605316,21.581630827274324 C21.16326280605316,21.581630827274324 19.530612806053163,15.948980827274323 19.530612806053163,15.948980827274323 C19.530612806053163,15.948980827274323 16.51020280605316,13.091840827274323 16.489792806053163,13.061220827274322 C16.51020280605316,13.091840827274323 13.163262806053162,9.418370827274323 13.142852806053162,9.387750827274322 C13.163262806053162,9.418370827274323 5.8163228060531615,10.153060827274322 5.897962806053162,10.071430827274323 C5.979592806053161,9.989800827274323 5.734692806053162,6.2346908272743224 5.979592806053161,6.153060827274323 z" style="color: rgb(255, 0, 0);" class=""/>
+                    </svg>
+                </div>
+                <div title="Region" class="square" id="region" tabindex='6'>
+                    <svg>
+                        <path fill="#ff0000" stroke="#ff0000" stroke-width="2" stroke-linejoin="round" stroke-dashoffset="" fill-rule="nonzero" marker-start="" marker-mid="" marker-end="" id="svg_3" d="M3.897959453058099,15.521695094925727 L15.156072723376898,6.729899569180732 L22.526167808348127,13.46307285668531 L19.258463985547973,17.461318636075841 L26.71428523690031,21.37910091091367 L19.705514133852965,24.47272107003739 L10.424653656481786,27.02040825990399 L3.897959453058099,15.521695094925727 z" style="color: rgb(255, 0, 0);" class="selected"/>
+                    </svg>
+                </div>
+                <div title="Freehand" class="square" id="freehand" tabindex='7'>
+                    <svg>
+                        <polyline fill="none" stroke="#ff0000" stroke-width="2" stroke-linejoin="round" stroke-dashoffset="" fill-rule="nonzero" marker-start="" marker-mid="" marker-end="" id="svg_1" points="8.532993354100519,8.532993354100526 8.532993354100519,8.837561870224008 8.32994767668486,9.548221741178807 7.314719289606578,11.071064321796229 7.01015077348309,11.680201354043206 6.908627934775261,11.680201354043206 7.11167361219092,11.578678515335369 7.517764967022238,10.969541483088406 8.32994767668486,10.360404450841429 10.157358773425777,9.44669890247097 12.695429741121487,8.736039031516171 14.218272321738915,8.329947676684867 14.522840837862397,8.329947676684867 14.725886515278056,8.634516192808348 14.421317999154576,9.852790257302289 13.406089612076286,10.969541483088406 12.289338386290176,12.593906902413664 10.868018644380577,14.116749483031086 9.852790257302289,14.928932192693708 9.751267418594459,15.030455031401543 9.751267418594459,15.131977870109367 9.852790257302289,15.131977870109367 10.055835934717948,15.030455031401543 10.969541483088406,14.015226644323265 12.390861224998005,12.289338386290169 13.710658128199775,10.969541483088406 15.538069224940683,9.954313096010125 15.944160579771998,9.751267418594466 15.538069224940683,10.360404450841429 14.218272321738915,12.187815547582346 12.086292708874517,14.015226644323265 9.751267418594459,15.741114902356344 8.43147051539269,17.162434644265943 8.025379160561378,17.467003160389424 8.025379160561378,17.56852599909726 8.126901999269208,17.56852599909726 9.04060754763966,16.756343289434625 10.055835934717948,15.233500708817203 11.680201354043206,13.609135289491945 13.609135289491945,11.680201354043206 15.131977870109372,10.563450128257088 16.147206257187655,9.954313096010125 16.451774773311143,9.852790257302289 16.553297612018966,9.852790257302289 16.553297612018966,10.258881612133607 16.553297612018966,11.375632837919724 15.538069224940683,13.304566773368464 13.913703805615427,15.233500708817203 11.375632837919717,17.56852599909726 10.868018644380577,17.974617353928565 10.868018644380577,17.670048837805084 11.781724192751028,16.045683418479825 13.304566773368455,13.812180966907604 15.538069224940683,12.187815547582346 17.263957482973765,11.071064321796229 18.279185870052054,10.664972966964925 17.974617353928565,11.274109999211888 16.857866128142454,12.695429741121487 15.639592063648513,14.522840837862402 13.507612450784116,16.85786612814246 11.883247031458858,18.27918587005206 11.172587160504058,18.888322902299024 11.071064321796229,18.98984574100686 11.172587160504058,18.98984574100686 12.187815547582346,17.873094515220743 13.507612450784116,16.553297612018966 15.131977870109372,14.725886515278063 16.451774773311143,13.203043934660625 16.553297612018966,12.99999825724497 16.451774773311143,13.710658128199766 15.436546386232857,15.741114902356344 13.913703805615427,17.873094515220743 11.883247031458858,19.903551289377305 10.868018644380577,20.51268832162428 10.664972966964918,20.71573399903994 10.868018644380577,20.71573399903994 11.375632837919717,20.309642644208623 13.710658128199775,18.0761401926364 15.944160579771998,15.944160579772003 18.786800063591194,14.319795160446745 20.00507412808514,13.913703805615427 20.208119805500793,13.812180966907604 20.208119805500793,14.116749483031086 20.208119805500793,14.624363676570226 19.497459934545994,16.045683418479825 17.771571676512913,18.177663031344224 16.147206257187655,20.00507412808514 14.827409353985887,21.324871031286904 14.421317999154576,21.527916708702563 14.522840837862397,21.527916708702563 15.842637741064173,20.309642644208623 17.873094515220743,18.482231547467705 19.90355128937731,16.85786612814246 21.73096238611822,15.842637741064168 21.83248522482605,15.741114902356344 21.83248522482605,16.045683418479825 20.309642644208623,17.974617353928565 18.380708708759883,20.00507412808514 16.045683418479825,21.73096238611822 14.421317999154576,22.94923645061216 14.522840837862397,22.84771361190434 15.741114902356344,21.832485224826044 17.263957482973765,20.614211160332104 18.685277224883365,19.70050561196166 19.497459934545994,19.192891418422505 19.802028450669482,18.888322902299024 19.700505611961653,19.497459934546 19.091368579714683,20.817256837747763 17.568525999097254,22.84771361190434 17.060911805558113,23.456850644151302 16.857866128142454,23.65989632156696 17.162434644265943,23.65989632156696 18.076140192636394,23.253804966735643 20.208119805500793,21.93400806353388 22.137053740949533,20.817256837747763 23.35532780544348,20.309642644208623 23.65989632156696,20.2081198055008 23.65989632156696,20.411165482916445 23.65989632156696,20.817256837747763 23.05075928931999,21.832485224826044 21.83248522482605,24.167510515106102 21.426393869994733,24.77664754735308 21.426393869994733,24.8781703860609 21.93400806353388,24.675124708645242 22.94923645061216,23.86294199898262 23.35532780544348,23.55837348285914 23.45685064415131,23.35532780544348 23.45685064415131,23.456850644151302 23.45685064415131,23.761419160274798 22.847713611904332,24.675124708645242 22.64466793448868,24.979693224768738 22.94923645061216,24.979693224768738 23.35532780544348,24.472079031229597 23.558373482859132,24.37055619252176 23.76141916027479,24.37055619252176 23.86294199898262,24.37055619252176 23.86294199898262,24.57360186993742 23.76141916027479,24.77664754735308 " style="color: rgb(255, 0, 0);"/>
                     </svg>
                 </div>
             </div>
@@ -446,6 +461,10 @@
         <canvas class="drawCanvas" id="drawCanvas"></canvas>
         <canvas class="UICanvas" id="UICanvas"></canvas>
         <script src="{{ url_for('static', filename='Scripts/JavascriptCanvasDrawer.js') }}"></script>
+
+        <div class="submitButton" id="submitButton">
+            <a class="button" id="submit">Submit</a>
+        </div>
         <script>
             var loadedShapes=[]
             
@@ -460,17 +479,17 @@
                         [lS.ra2, lS.dec2] = [{{s.ra2}}, {{s.dec2}}];
                         [lS.ra3, lS.dec3] = [{{s.ra3}}, {{s.dec3}}];
                     {% elif s.shape == "Snake" %}
-                        {% set N = s.ra_points|length %}
+                        {% set N = s.ra_points|length // 2 %}
                         lS.points=[];
                         for (var i=0; i<{{N}}; i++) lS.points.push({});
                         // Middle coordinates are a workaround since they are not stored in DB
                         {% for i in range(N) %}
                             [lS.points[{{i}}].ra_xy_t, lS.points[{{i}}].dec_xy_t]=[{{s.ra_points[i]}}, {{s.dec_points[i]}}];
-                            [lS.points[{{i}}].ra_xy_b, lS.points[{{i}}].dec_xy_b]=[{{s.ra_points[N-i-1]}}, {{s.dec_points[N-i-1]}}];
+                            [lS.points[{{i}}].ra_xy_b, lS.points[{{i}}].dec_xy_b]=[{{s.ra_points[N*2-i-1]}}, {{s.dec_points[N*2-i-1]}}];
                             var tx,ty,bx,by;
                             [tx, ty] = aladin.world2pix(lS.points[{{i}}].ra_xy_t, lS.points[{{i}}].dec_xy_t);
                             [bx, by] = aladin.world2pix(lS.points[{{i}}].ra_xy_b, lS.points[{{i}}].dec_xy_b);
-                            [lS.points[{{i}}].ra_xy, lS.points[{{i}}].dec_xy]=aladin.pix2world((tx+bx)/2,(ty+by)/2)
+                            [lS.points[{{i}}].ra_xy, lS.points[{{i}}].dec_xy]=aladin.pix2world((tx+bx)/2,(ty+by)/2);
                         {% endfor %}
                     {% elif s.shape == "Region" or s.shape == "Freehand" %}
                         {% set N = s.ra_points|length %}
@@ -487,34 +506,35 @@
                     loadedShapes.push(lS);
                 {% endfor %}
                 shapes = loadedShapes;
+                updateTable(shapes);
             {% endif %}
         </script>
         <div class="annotate FeatureDropdownContainer" id="featureDropdownContainer">
             <ul class="FeatureDropdown" id="menu">
                 <li class="FeatureHover" id="featureHover">
                     <a id="featureLabel"> What feature will you draw?  &nbsp; <i class="fa fa-caret-down"></i></a>
-                    <ul onmouseover="changeTo()" onmouseout="changeBack()">
-                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Mergers<i class="fa fa-info-circle" id="moreInfo" onclick="featureTableShow()" onmouseover=""></i></a></li>
-                        <li><a id="featureItems" onclick="addFeature('Shells')" onmouseover="changeTo()" onmouseout="changeBack()">Shells</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Plumes')" onmouseover="changeTo()" onmouseout="changeBack()">Plumes</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Tital Tails')" onmouseover="changeTo()" onmouseout="changeBack()">Tital Tails</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Streams')" onmouseover="changeTo()" onmouseout="changeBack()">Streams</a></li>
+                    <ul onmouseover="changeTo()" onmouseout="changeBack()" style="overflow: visible">
+                        <li><a id="featureTitle" onmouseover="changeTo()" onmouseout="changeBack()">Mergers<i class="fa fa-info-circle" id="moreInfo" onclick="featureTableShow()" onmouseover=""></i></a></li>
+                        <li><a id="featureItem" onclick="addFeature('Shells')" onmouseover="changeTo()" onmouseout="changeBack()">Shells</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Plumes')" onmouseover="changeTo()" onmouseout="changeBack()">Plumes</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Tital Tails')" onmouseover="changeTo()" onmouseout="changeBack()">Tital Tails</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Streams')" onmouseover="changeTo()" onmouseout="changeBack()">Streams</a></li>
                         
-                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Artifacts</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Ghosted Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Ghosted Halo</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Cirrus')" onmouseover="changeTo()" onmouseout="changeBack()">Cirrus</a></li>
+                        <li><a id="featureTitle" onmouseover="changeTo()" onmouseout="changeBack()">Artifacts</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Ghosted Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Ghosted Halo</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Cirrus')" onmouseover="changeTo()" onmouseout="changeBack()">Cirrus</a></li>
                         
-                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Internal Structures</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Bar')" onmouseover="changeTo()" onmouseout="changeBack()">Bar</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Ring')" onmouseover="changeTo()" onmouseout="changeBack()">Ring</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Spiral Arm')" onmouseover="changeTo()" onmouseout="changeBack()">Spiral Arm</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Dust Lane')" onmouseover="changeTo()" onmouseout="changeBack()">Dust Lane</a></li>
+                        <li><a id="featureTitle" onmouseover="changeTo()" onmouseout="changeBack()">Internal Structures</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Bar')" onmouseover="changeTo()" onmouseout="changeBack()">Bar</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Ring')" onmouseover="changeTo()" onmouseout="changeBack()">Ring</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Spiral Arm')" onmouseover="changeTo()" onmouseout="changeBack()">Spiral Arm</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Dust Lane')" onmouseover="changeTo()" onmouseout="changeBack()">Dust Lane</a></li>
                         
-                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
+                        <li><a id="featureTitle" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Halo')" onmouseover="changeTo()" onmouseout="changeBack()">Halo</a></li>
                         
-                        <li><a id="bigger" onmouseover="changeTo()" onmouseout="changeBack()">Other</a></li>
-                        <li><a id="featureItems" onclick="addFeature('Not Sure')" onmouseover="changeTo()" onmouseout="changeBack()">Not Sure</a></li>
+                        <li><a id="featureTitle" onmouseover="changeTo()" onmouseout="changeBack()">Other</a></li>
+                        <li><a id="featureItem" onclick="addFeature('Not Sure')" onmouseover="changeTo()" onmouseout="changeBack()">Not Sure</a></li>
                         <li><div class="spacingFeatures"></div></li>
                     </ul>
                 </li>
@@ -530,10 +550,6 @@
             <i class="annotate fa fa-undo" id="restart"></i>
             <i class="annotate fa fa-table" id="table"></i>
             <i class="annotate fa fa-info" id="info"></i>
-        </div>
-
-        <div class="submitButton" id="submitButton">
-            <a class="button" id="submit">Submit</a>
         </div>
 
         <div id="TheEnd" class="overlayEnd">
