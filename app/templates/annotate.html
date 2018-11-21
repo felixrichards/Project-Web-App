@@ -498,6 +498,7 @@
                         {% for i in range(N) %}
                             [lS.points[{{i}}].ra_xy, lS.points[{{i}}].dec_xy]=[{{s.ra_points[i]}}, {{s.dec_points[i]}}];
                         {% endfor %}
+                        lS.completed=true;
                     {% else %}
                         [lS.ra_xy,lS.dec_xy]=[{{s.ra_xy}}, {{s.dec_xy}}];
                         [lS.ra_wh,lS.dec_wh]=[{{s.ra_wh}}, {{s.dec_wh}}];
