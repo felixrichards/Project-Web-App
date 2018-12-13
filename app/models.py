@@ -1,6 +1,23 @@
 from app import db
 from sqlalchemy.sql import func
 import sqlalchemy.dialects.postgresql as psql
+from flask_login import UserMixin
+from app import login
+
+
+@login.user_loader
+def load_user(u_id):
+    return User.query.get(int(u_id))
+
+
+class User(UserMixin, db.Model):
+    u_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(120), index=True, unique=True)
+    firstname = db.Column(db.String(64), index=True)
+    lastname = db.Column(db.String(64), index=True)
+    institution = db.Column(db.String(64), index=True)
+    advanced = db.Column(db.Boolean)
 
 
 class Galaxy(db.Model):
@@ -18,6 +35,7 @@ class Galaxy(db.Model):
 class Annotation(db.Model):
     a_id = db.Column(db.Integer, primary_key=True)
     g_id = db.Column(db.Integer, db.ForeignKey('galaxy.g_id'))
+    u_id = db.Column(db.Integer, db.ForeignKey('user.u_id'))
     timestamp = db.Column(db.DateTime, index=True, default=func.now(), server_default=func.now())
     shapes = db.relationship('Shape', backref='name', lazy='dynamic')
 

@@ -56,7 +56,7 @@ def AdvancedAccess():
     return render_template('AdvancedLogin.html')
 
 @bp.route('/NGC-1300', methods=['GET', 'POST'])
-def Login():
+def TempLogin():
     if request.method == 'POST':
         session.pop('user', None)
 

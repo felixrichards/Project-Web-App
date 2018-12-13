@@ -43,11 +43,15 @@ class AnnotateView(MethodView):
         
         return render_template('annotate.html', title='Annotate', galaxy=galaxy, shapes=shapes)
     
-    def post(self, g_id=None, g_name=None):
+    def post(self, g_id=None, g_name=None, g_survey=None, a_id=None):
         shapes = request.get_json()
         print("In post request")
         print(session['g_id'])
-        a = Annotation(g_id=session['g_id'], shapes=shapes)
+        if a_id is not None:
+            a = Annotation.query.filter_by(a_id=a_id).one_or_none()
+            
+        else:
+            a = Annotation(g_id=session['g_id'], shapes=shapes)
         # db.session.flush()
         # db.session.refresh()
         db.session.commit()
