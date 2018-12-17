@@ -13,6 +13,7 @@ SQLAlchemy = "==1.2.4"
 Flask = "==1.0.2"
 Flask-WTF = "==0.14.2"
 Flask-SQLAlchemy = "==2.3.2"
+flask-bootstrap = "*"
 
 [dev-packages]
 

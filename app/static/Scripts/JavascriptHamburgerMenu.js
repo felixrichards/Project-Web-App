@@ -24,9 +24,11 @@ function myFunction(x) {
 window.onresize = window.onload = function () {
     if ($(window).width() > 1000) {
         document.getElementById("myNav").style.width = "0%"
-        $('.aladin-zoomControl').css('display', 'block');
-        $('.aladin-layersControl-container').css('display', 'block');
-        $('.UICanvas').css('display', 'block');
-        document.getElementById("iconList").style.display = "block";
+        if ($('.UICanvas').length){
+            $('.aladin-zoomControl').css('display', 'block');
+            $('.aladin-layersControl-container').css('display', 'block');
+            $('.UICanvas').css('display', 'block');
+            document.getElementById("iconList").style.display = "block";
+        }
     }
 };

@@ -1,7 +1,8 @@
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingHeaderFooter.css')}}">
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingHamburgerMenu.css')}}">
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/StylingScrollbar.css')}}">
-<link rel="shortcut icon" href="{{url_for('static', filename='Icon/favicon.ico')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/login.css')}}">
+<link rel="shortcut icon" href="{{url_for('static', filename='Images/Icon/favicon.ico')}}">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{{
   url_for('static', filename ='Scripts/jquery.js') }}">\x3C/script>')</script>
@@ -20,6 +21,7 @@
     </head>
     <body>
         <script src="{{ url_for('static', filename='Scripts/JavascriptHamburgerMenu.js') }}"></script>
+        <script src="{{ url_for('static', filename='Scripts/JavascriptSubmission.js') }}"></script>
         <ul class="navMain">
             <li>
                 <div class="container" id="x" onclick="myFunction(this)">
@@ -46,7 +48,32 @@
                 </div>
             </li>
             <li><a href="/annotate" class="getInvolved">Get Involved</a></li>
+            <li><a href="#" id="loginbtn">Login</a></li>
         </ul>
+        <script src="{{ url_for('static', filename='Scripts/login.js') }}"></script>
+
+
+        <div id="logindiv" class="modal">
+            <div class="modalcontent">
+                {% block login %}{% endblock %}
+            </div>
+        </div>
+        <script>
+            $(function () {
+                $('a#loginbtn').bind('click', function () {
+                    var csrftoken = $('meta[name=csrf-token]').attr('content')
+                    var url = "{{ url_for('auth.login') }}";
+                    $.get(url, function(data) {
+                        console.log(data)
+                        $('#logindiv .modalcontent').html(data);
+                        $('#logindiv').css('display','block');
+                        console.log("hello")
+                    });
+                });
+            });
+        </script>
+
+
         <div class="footer">
             <a href="#news1">About</a>
             <a href="#news2">Contact Us</a>

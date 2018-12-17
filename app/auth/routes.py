@@ -1,15 +1,17 @@
-from flask import render_template, redirect, url_for, request
-from flask_login import login_user, logout_user, current_user, login_required
+from flask import render_template, redirect, url_for, request, flash
+from flask_login import login_user, logout_user, current_user
+from flask_babel import _
+from werkzeug.urls import url_parse
 from app import db
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm
 from app.models import User
 
 
-@bp.route('/<callback>/login')
-def login_popup(callback):
-    # user = User.query.filter_by(username=username).first_or_404()
-    return render_template('login_popup.html')
+# @bp.route('/<callback>/login')
+# def login_popup(callback):
+#     # user = User.query.filter_by(username=username).first_or_404()
+#     return render_template('login_popup.html')
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -28,7 +30,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
         return redirect(next_page)
-    return render_template('auth/login.html', title=_('Sign In'), form=form)
+    return render_template('login.html', title=_('Sign In'), form=form)
 
 
 @bp.route('/logout')
