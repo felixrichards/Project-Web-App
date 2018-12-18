@@ -11,8 +11,6 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    left: 10%;
-    right: 90%;
     background-color: #333;
     text-align: center;
 }
@@ -99,27 +97,6 @@ li.dropdown {
 
 .footer a:hover {
     text-decoration: underline;
-}
-
-.header {
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-}
-
-.sideNav {
-    position: absolute;
-    width: 10%;
-    height: 100%;
-}
-
-.leftNav {
-    left: 0;
-}
-
-.rightNav {
-    right: 0;
-    top: 0;
 }
 
 @media only screen and (max-width: 500px) {
