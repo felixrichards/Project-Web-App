@@ -8,8 +8,20 @@
   url_for('static', filename ='Scripts/jquery.js') }}">\x3C/script>')</script>
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
-<script>window.jQuery || document.write('<script src="{{
-  url_for('static', filename ='Scripts/jquery-ui.js') }}">\x3C/script>')</script>
+<script>
+    window.jQuery || document.write('<script src="{{
+        url_for('static', filename ='Scripts/jquery-ui.js') }}">\x3C/script>');
+    
+    var csrftoken = $('meta[name=csrf-token]').attr('content');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+        }
+    })
+  </script>
   
 <html>
     <head>
@@ -67,7 +79,37 @@
                         console.log(data)
                         $('#logindiv .modalcontent').html(data);
                         $('#logindiv').css('display','block');
-                        console.log("hello")
+                        console.log("login get")
+
+                        $('#submit').click(function(event) {
+                            console.log("my code running")
+                            event.preventDefault();
+                            console.log("Attempting to post login data");
+                            $.ajax({
+                                url: url,
+                                data: $('#login_form').serialize(),
+                                contentType: "application/json; charset=utf-8",
+                                type: 'POST',
+                                success: function (response) {
+                                    response = JSON.parse(response)
+                                    console.log(response);
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                    error = JSON.parse(error);
+                                    console.log(error);
+                                }
+                            });
+
+                            // $.post(url, data=$('#login_form').serialize(), function(data) {
+                            //     if (data.status == 'ok') {
+                            //         $('#logindiv').css('display','none');
+                            //         location.reload();
+                            //     } else {
+                            //         // $('#logindiv .modalcontent').html(data);
+                            //     }
+                            // });
+                        });
                     });
                 });
             });

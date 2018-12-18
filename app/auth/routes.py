@@ -6,6 +6,7 @@ from app import db
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm
 from app.models import User
+import json
 
 
 # @bp.route('/<callback>/login')
@@ -18,18 +19,18 @@ from app.models import User
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
+    print("Login route")
     form = LoginForm()
+    print("Form accepted")
     if form.validate_on_submit():
+        print("post")
         user = User.query.filter_by(username=form.username.data).first()
         if user is None:
-            flash(_('No username given'))
-            return redirect(url_for('auth.login'))
+            print("Invalid authentication")
+            return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
+        print("Valid authentication")
         login_user(user, remember=form.remember_me.data)
-        print(request.args.get('next'))
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('main.index')
-        return redirect(next_page)
+        return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
     return render_template('login.html', title=_('Sign In'), form=form)
 
 
