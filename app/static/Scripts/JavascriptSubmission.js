@@ -33,7 +33,8 @@ function checkFeatures()
     features=['Shells','Plumes','Tital Tails','Streams',
             'Ghosted Halo','Cirrus',
             'Bar','Ring','Spiral Arm','Dust Lane',
-            'Halo','Not Sure']
+            'Halo',
+            'Main Galaxy','Dwarf Galaxy','Not Sure']
 
     for (var i = 0; i < shapes.length; i++) {
         if (!features.includes(shapes[i].feature)) {

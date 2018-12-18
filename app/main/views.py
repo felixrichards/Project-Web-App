@@ -47,11 +47,11 @@ class AnnotateView(MethodView):
         shapes = request.get_json()
         print("In post request")
         print(session['g_id'])
-        if a_id is not None:
-            a = Annotation.query.filter_by(a_id=a_id).one_or_none()
-            
-        else:
+        if a_id is None:
             a = Annotation(g_id=session['g_id'], shapes=shapes)
+        else: 
+            a = Annotation.query.filter_by(a_id=a_id).one_or_none()
+            a.modify_shapes(shapes)
         # db.session.flush()
         # db.session.refresh()
         db.session.commit()

@@ -253,8 +253,46 @@ li ul
     position: absolute;
 }
 
-#bigger{
-    font-size:25px;
+#featurelabel {
+    padding: 8px 15px 8px 15px;
+}
+
+@media screen and (min-height: 801px) {
+    #featureTitle{
+        font-size:25px;
+    }
+    
+    #featureItem {
+        font-size: 14px;
+    }
+
+    #featureDropdown {
+        padding: 8px 15px 8px 15px;
+    }
+
+    .FeatureDropdown li a {
+        padding: 8px 15px 8px 15px;
+    }
+}
+@media screen and (max-height: 800px) {
+    #featureTitle{
+        font-size:15px;
+    }
+    
+    #featureItem {
+        font-size: 11px;
+    }
+    
+    #featureDropdown {
+        padding: 8px 15px 8px 15px;
+    }
+    
+    .FeatureDropdown li a {
+        padding: 2px 15px 2px 15px;
+    }
+}
+
+#featureTitle{
     color:crimson
 }
 
@@ -262,7 +300,7 @@ li ul
     cursor: default;
 }
 
-#featureItems:hover {
+#featureItem:hover {
     color: forestgreen;
     cursor: pointer;
 }
