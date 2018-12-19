@@ -1,8 +1,10 @@
 $(function () {
     $('a#loginbtn').bind('click', function () {
-        var csrftoken = $('meta[name=csrf-token]').attr('content')
+        // var csrftoken = $('meta[name=csrf-token]').attr('content')
+        
         $('#logindiv').css('display','block');
-        console.log("hello")
+
+        // console.log("hello")
         // $.ajaxSetup({
         //     beforeSend: function(xhr, settings) {
         //         if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {

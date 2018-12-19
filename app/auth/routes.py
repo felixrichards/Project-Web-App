@@ -20,6 +20,7 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     print("Login route")
+    print(request.form)
     form = LoginForm()
     print("Form accepted")
     if form.validate_on_submit():

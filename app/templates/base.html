@@ -10,8 +10,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
 <script>
     window.jQuery || document.write('<script src="{{
-        url_for('static', filename ='Scripts/jquery-ui.js') }}">\x3C/script>');
-    
+        url_for('static', filename ='Scripts/jquery-ui.js') }}">\x3C/script>')</script>
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
     var csrftoken = $('meta[name=csrf-token]').attr('content');
 
     $.ajaxSetup({
@@ -21,8 +23,8 @@
             }
         }
     })
-  </script>
-  
+</script>
+
 <html>
     <head>
         {% if title %}
@@ -75,6 +77,15 @@
                 $('a#loginbtn').bind('click', function () {
                     var csrftoken = $('meta[name=csrf-token]').attr('content')
                     var url = "{{ url_for('auth.login') }}";
+
+                    // $.ajaxSetup({
+                    //     beforeSend: function(xhr, settings) {
+                    //         if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    //             xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                    //         }
+                    //     }
+                    // });
+
                     $.get(url, function(data) {
                         console.log(data)
                         $('#logindiv .modalcontent').html(data);
@@ -85,6 +96,7 @@
                             console.log("my code running")
                             event.preventDefault();
                             console.log("Attempting to post login data");
+                            console.log($('#login_form').serialize())
                             $.ajax({
                                 url: url,
                                 data: $('#login_form').serialize(),
@@ -96,8 +108,8 @@
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    error = JSON.parse(error);
-                                    console.log(error);
+                                    // error = JSON.parse(error);
+                                    // console.log(error);
                                 }
                             });
 
