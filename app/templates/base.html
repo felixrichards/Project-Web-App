@@ -64,7 +64,7 @@
             <li><a href="/annotate" class="getInvolved">Get Involved</a></li>
             {% if current_user.is_anonymous %}
             <li>
-                <a href="#" id="loginbtn">Login</a>
+                <a href="#" class="loginbtn">Login</a>
             </li>
             {% else %}
                 {% block user_dropdown %}
@@ -80,6 +80,28 @@
                 {% block login %}{% endblock %}
             </div>
         </div>
+
+        <div class="footer">
+            <a href="#news1">About</a>
+            <a href="#news2">Contact Us</a>
+            <a href="#news3">FAQ</a>
+            <a href="#news4">Privacy Policy</a>
+        </div>
+        <div id="myNav" class="overlay">
+            <div class="overlay-content">
+                <a href="/">Home</a>
+                <a href="/news">News</a>
+                <a href="/team">Our Team</a>
+                <a href="/funding">Funders</a>
+                <a href="/tutorial">Tutorial</a>
+                <a href="/annotate" class="getInvolved">Get Involved</a>
+                {% if current_user.is_anonymous %}
+                <a href="#" class="loginbtn">Login</a>
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+
         {% if current_user.is_anonymous %}
         <script>
             function loadModal(url){
@@ -103,14 +125,12 @@
                             success: function (response) {
                                 response = JSON.parse(response)
                                 console.log(response);
-                                $('a#loginbtn').remove()
+                                $('a.loginbtn').remove()
                                 $('#form_container').css('display','none');
                                 $('.navMain').append(response.user_dropdown);
                             },
                             error: function (error) {
                                 console.log(error);
-                                // error = JSON.parse(error);
-                                // console.log(error);
                             }
                         });
                     });
@@ -118,7 +138,7 @@
             }
             
             $(function () {
-                $('a#loginbtn').bind('click', function () {
+                $('a.loginbtn').bind('click', function () {
                     var csrftoken = $('meta[name=csrf-token]').attr('content')
                     var url = "{{ url_for('auth.login') }}";
                     loadModal(url);
@@ -127,22 +147,6 @@
         </script>
         {% endif %}
             
-        <div class="footer">
-            <a href="#news1">About</a>
-            <a href="#news2">Contact Us</a>
-            <a href="#news3">FAQ</a>
-            <a href="#news4">Privacy Policy</a>
-        </div>
-        <div id="myNav" class="overlay">
-            <div class="overlay-content">
-                <a href="/">Home</a>
-                <a href="/news">News</a>
-                <a href="/team">Our Team</a>
-                <a href="/funding">Funders</a>
-                <a href="/tutorial">Tutorial</a>
-                <a href="/annotate" class="getInvolved">Get Involved</a>
-            </div>
-        </div>
         
         {% block content %}{% endblock %}
         </body>
