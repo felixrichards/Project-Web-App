@@ -1,0 +1,10 @@
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block user_dropdown %}
+<li class="dropdown" id="dropdown">
+    <a class="dropbtn">{{current_user.username}}</a>
+    <div class="dropdown-content tutorial">
+        <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+</li>
+{% endblock %}
