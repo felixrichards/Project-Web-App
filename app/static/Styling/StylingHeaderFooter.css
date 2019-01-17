@@ -29,6 +29,8 @@ li a, .dropbtn {
     text-decoration: none;
 }
 
+a:visited{}
+
 li a:hover, .dropdown:hover .dropbtn {
     text-decoration:underline;
 }

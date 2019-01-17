@@ -19,6 +19,9 @@ class User(UserMixin, db.Model):
     institution = db.Column(db.String(64), index=True)
     advanced = db.Column(db.Boolean)
 
+    def get_id(self):
+        return self.u_id
+
 
 class Galaxy(db.Model):
     g_id = db.Column(db.Integer, primary_key=True)

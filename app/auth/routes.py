@@ -30,8 +30,10 @@ def login():
             print("Invalid authentication")
             return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
         print("Valid authentication")
-        login_user(user, remember=form.remember_me.data)
-        return json.dumps({"success": True}), 200, {'ContentType': 'application/json'}
+        login_user(user, remember=True)
+        return json.dumps({"success": True,
+                           "username": user.username,
+                           "user_dropdown": render_template('user_dropdown.html')}), 200, {'ContentType': 'application/json'}
     return render_template('login.html', title=_('Sign In'), form=form)
 
 
@@ -54,5 +56,5 @@ def register():
         db.session.commit()
         flash(_('Congratulations, you are now a registered user!'))
         return redirect(url_for('auth.login'))
-    return render_template('auth/register.html', title=_('Register'),
+    return render_template('register.html', title=_('Register'),
                            form=form)

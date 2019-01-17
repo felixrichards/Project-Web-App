@@ -62,72 +62,71 @@
                 </div>
             </li>
             <li><a href="/annotate" class="getInvolved">Get Involved</a></li>
-            <li><a href="#" id="loginbtn">Login</a></li>
+            {% if current_user.is_anonymous %}
+            <li>
+                <a href="#" id="loginbtn">Login</a>
+            </li>
+            {% else %}
+                {% block user_dropdown %}
+                    {% include 'user_dropdown.html' %}
+                {% endblock %}
+            {% endif %}
         </ul>
         <script src="{{ url_for('static', filename='Scripts/login.js') }}"></script>
 
 
-        <div id="logindiv" class="modal">
-            <div class="modalcontent">
+        <div id="form_container" class="modal">
+            <div class="modalcontent animate">
                 {% block login %}{% endblock %}
             </div>
         </div>
+        {% if current_user.is_anonymous %}
         <script>
+            function loadModal(url){
+                $.get(url, function(data) {
+                    $('#form_container .modalcontent').html(data);
+                    $('#form_container').css('display','block');
+                    
+                    $('#submit').click(function(event) {
+                        console.log("my code running")
+                        event.preventDefault();
+                        console.log("Attempting to post login data");
+
+                        console.log($('.form_data').serialize())
+                        var data = "crsf_token="+csrftoken+"&"+$('.form_data').serialize()
+                        console.log(data);
+                        
+                        $.ajax({
+                            url: url,
+                            data: data,
+                            type: 'POST',
+                            success: function (response) {
+                                response = JSON.parse(response)
+                                console.log(response);
+                                $('a#loginbtn').remove()
+                                $('#form_container').css('display','none');
+                                $('.navMain').append(response.user_dropdown);
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                // error = JSON.parse(error);
+                                // console.log(error);
+                            }
+                        });
+                    });
+                });
+            }
+            
             $(function () {
                 $('a#loginbtn').bind('click', function () {
                     var csrftoken = $('meta[name=csrf-token]').attr('content')
                     var url = "{{ url_for('auth.login') }}";
-
-                    // $.ajaxSetup({
-                    //     beforeSend: function(xhr, settings) {
-                    //         if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                    //             xhr.setRequestHeader("X-CSRFToken", csrftoken)
-                    //         }
-                    //     }
-                    // });
-
-                    $.get(url, function(data) {
-                        console.log(data)
-                        $('#logindiv .modalcontent').html(data);
-                        $('#logindiv').css('display','block');
-                        console.log("login get")
-
-                        $('#submit').click(function(event) {
-                            console.log("my code running")
-                            event.preventDefault();
-                            console.log("Attempting to post login data");
-                            console.log($('#login_form').serialize())
-                            $.ajax({
-                                url: url,
-                                data: $('#login_form').serialize(),
-                                contentType: "application/json; charset=utf-8",
-                                type: 'POST',
-                                success: function (response) {
-                                    response = JSON.parse(response)
-                                    console.log(response);
-                                },
-                                error: function (error) {
-                                    console.log(error);
-                                    // error = JSON.parse(error);
-                                    // console.log(error);
-                                }
-                            });
-
-                            // $.post(url, data=$('#login_form').serialize(), function(data) {
-                            //     if (data.status == 'ok') {
-                            //         $('#logindiv').css('display','none');
-                            //         location.reload();
-                            //     } else {
-                            //         // $('#logindiv .modalcontent').html(data);
-                            //     }
-                            // });
-                        });
-                    });
+                    loadModal(url);
                 });
             });
         </script>
-
-
+        {% endif %}
+            
         <div class="footer">
             <a href="#news1">About</a>
             <a href="#news2">Contact Us</a>
@@ -144,6 +143,7 @@
                 <a href="/annotate" class="getInvolved">Get Involved</a>
             </div>
         </div>
+        
         {% block content %}{% endblock %}
-    </body>
-</html>
+        </body>
+        </html>
