@@ -120,6 +120,7 @@
                         console.log($('.form_data').serialize())
                         var data = "csrf_token="+csrftoken+"&"+$('.form_data').serialize()
                         console.log(data);
+                        $('#invalid').css('display', 'none');
                         
                         $.ajax({
                             url: url,
@@ -128,9 +129,13 @@
                             success: function (response) {
                                 response = JSON.parse(response)
                                 console.log(response);
-                                $('a.loginbtn').remove()
-                                $('#form_container').css('display','none');
-                                $('.navMain').append(response.user_dropdown);
+                                if (response.success){
+                                    $('a.loginbtn').remove()
+                                    $('#form_container').css('display','none');
+                                    $('.navMain').append(response.user_dropdown);
+                                } else {
+                                    $('#invalid').css('display', 'block');
+                                }
                             },
                             error: function (error) {
                                 console.log(error);

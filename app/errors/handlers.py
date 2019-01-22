@@ -3,6 +3,11 @@ from app import db
 from app.errors import bp
 
 
+@bp.app_errorhandler(401)
+def forbidden(error):
+    return render_template('errors/401.html', title='401'), 401
+
+
 @bp.app_errorhandler(403)
 def forbidden(error):
     return render_template('errors/403.html', title='403'), 403

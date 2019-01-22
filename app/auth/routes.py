@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, request, flash, session
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import _
 from app import db
 from app.auth import bp
@@ -32,13 +32,15 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None:
             print("Invalid authentication")
-            return json.dumps({"success": False}), 400, {'ContentType': 'application/json'}
+            return json.dumps({"success": False}), 200, {'ContentType': 'application/json'}
         print("Valid authentication")
         if user.check_password(form.password.data):
             login_user(user, remember=True)
-        return json.dumps({"success": True,
+            return json.dumps({"success": True,
                            "username": user.username,
                            "user_dropdown": render_template('user_dropdown.html')}), 200, {'ContentType': 'application/json'}
+        else:
+            return json.dumps({"success": False}), 200, {'ContentType': 'application/json'}
     return render_template('login.html', title=_('Sign In'), form=form)
 
 
@@ -71,6 +73,7 @@ def register():
 
 
 @bp.route('/manage', methods=['GET', 'POST'])
+@login_required
 def manage():
     my_access = current_user.get_access()
     if my_access < 2:
@@ -100,6 +103,7 @@ def manage():
         return json.dumps({"success": True,
                            "old_access": old_access,
                            "new_access": new_access,
+                           'reset': r_form.reset_password.data,
                            "username": user.username}), 200, {'ContentType': 'application/json'}
 
     print(r_form.errors)
@@ -107,9 +111,8 @@ def manage():
 
 
 @bp.route('/set_password', methods=['GET', 'POST'])
+@login_required
 def password():
-    if not current_user.is_authenticated:
-        return redirect(url_for('index'))
     form = PasswordForm()
 
     if form.validate_on_submit():
