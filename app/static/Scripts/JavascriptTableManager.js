@@ -33,8 +33,17 @@ function updateTable(shapes){
         if (globalShapes[i].shape == "Snake") svg = document.getElementById("snake").innerHTML;
         if (globalShapes[i].shape == "Region") svg = document.getElementById("region").innerHTML;
         if (globalShapes[i].shape == "Freehand") svg = document.getElementById("freehand").innerHTML;
+
+        if (typeof(allow_note)!="undefined"){
+            if (allow_note){
+                var note_id = "note-"+globalShapes[i].id;
+                var note_input_id = "input-"+note_id;
+                var note_html = "<td id='" + note_id + "' class='note collapse'></td>";
+                note_id = '#'+note_id;
+            } else var note_html = "";
+        }
         $("#obj_table").find('tbody')
-            .append($('<tr>')
+            .append($("<tr id='tr-" + globalShapes[i].id + "'>")
                 .addClass(class_str)
                 .append($('<td>' + svg + '</td>')
                 )
@@ -43,7 +52,41 @@ function updateTable(shapes){
                 )
                 .append($('<td id=' + globalShapes[i].id + '>' + globalShapes[i].feature + '</td>')
                 )
+                .append($(note_html))
         );
+            
+        if (typeof(allow_note)!="undefined"){
+            if (allow_note){
+                $("#obj_table").find('tbody')
+                    .append($("<tr id='tr-note-" + globalShapes[i].id + "' class='collapse'>")
+                        .append($("<td colspan='4'>")
+                            .append($("<input id='"+note_input_id + "' type='text' s_id=" + globalShapes[i].id + " value="+globalShapes[i].note+">")
+                                .keyup(function() {
+                                    shapes[getShapeByID($(this).attr('s_id'))].note = $(this).val();
+                                })
+                            )
+                        )
+                );
+                    
+                $(note_id).bind('click', function(){
+                    // var tr = $("#tr-"+$(this).attr('id'));
+                    // console.log("hello")
+
+
+                    $("#tr-"+$(this).attr('id')).css('display', 'table-row');
+
+
+                    // if ($(this).hasClass('collapse')){
+                    //     $(this).removeClass('collapse');
+                    //     $(this).addClass('expand');
+                    // }
+                });
+            }
+        }
+    }
+
+    function openNote(note_id){
+        
     }
     submitAppear(shapes);
 }

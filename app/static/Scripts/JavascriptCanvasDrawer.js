@@ -61,7 +61,7 @@ function showAnnotation() {
         }
         button_map={};
         buttons = [];
-        $(".btn").remove()
+        $("i.btn").remove()
         button_x_shift = 5;
 
         buttons.push(Button(button_x_shift, 5, button_size, button_size,
@@ -114,7 +114,7 @@ function showAnnotation() {
         }
         buttons = [];
         button_map={};
-        $(".btn").remove()
+        $("i.btn").remove()
         button_x_shift = 5;
 
         buttons.push(Button(button_x_shift, 5, button_size, button_size,
@@ -1212,6 +1212,7 @@ function Shape(x0,y0,x,y,shape){
             }
             this.createBoundingRect();
         },
+        note: "",
         pixToWorld: pixToWorld,
         worldToPix: worldToPix
     }
@@ -1799,8 +1800,9 @@ element.addEventListener("keydown", function(e){
     }
 
     // Check the last place clicked was inside the canvas and not in exploring mode
-    if (focusObject!==null && !focusObject.canvas) {
-        if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
+    if (!($(':focus')[0]==$('#username')[0] && $(':focus')[0]!=null)){
+        if (focusObject!==null && !focusObject.canvas) {
+            if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
             if (!exploringMode) {
                 if (e.keyCode == 89 && e.ctrlKey) buttons[button_map['Redo']].click();
                 if (e.keyCode == 90 && e.ctrlKey) buttons[button_map['Undo']].click();
@@ -1815,6 +1817,7 @@ element.addEventListener("keydown", function(e){
                 if (e.keyCode == 84 && !checkModifier()) buttons[button_map['Table']].click();      // T
                 if (e.keyCode == 73 && !checkModifier()) buttons[button_map['Info']].click();       // I
             }
+        }
     }
 }, false);
 

@@ -2,8 +2,7 @@
 
 {% block content %}
 <div class='error'>
-    <h1>{{ _('500 - An unexpected error has occurred') }}</h1>
-    <p>{{ _('The administrator has been notified. Sorry for the inconvenience!') }}</p>
+    <h1>{{ _('403 - Forbidden') }}</h1>
     <li><a href="{{ url_for('main.index') }}">{{ _('Back') }}</a></li>
 </div>
 {% endblock %}

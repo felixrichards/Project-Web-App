@@ -1,5 +1,6 @@
 from flask import render_template, request, redirect, url_for, session
 from flask.views import MethodView
+from flask_login import current_user
 from app.models import Galaxy, Annotation, Shape
 from app.utils import get_random_galaxy
 from app import db
@@ -31,29 +32,37 @@ class AnnotateView(MethodView):
             galaxy = get_random_galaxy(survey=g_survey)
 
         shapes = None
+        # verify annotation
         if a_id is not None:
             annotation = Annotation.query.filter_by(a_id=a_id).one_or_none()
             if annotation is None:
                 return redirect(url_for('.annotate'))
 
-            shapes = Shape.query.filter_by(a_id=a_id).all()
-            galaxy = Galaxy.query.filter_by(g_id=annotation.g_id).one_or_none()
+            if not current_user.is_authenticated:
+                # User is not logged in
+                return redirect(url_for('auth.login'))
+            if current_user.get_id() == annotation.u_id or current_user.is_advanced():
+                shapes = Shape.query.filter_by(a_id=a_id).all()
+                galaxy = Galaxy.query.filter_by(g_id=annotation.g_id).one_or_none()
+            else:
+                # User is not expert and annotation does not belong to current user
+                return redirect(url_for('.annotate'))
 
         session['g_id'] = galaxy.g_id
         
         return render_template('annotate.html', title='Annotate', galaxy=galaxy, shapes=shapes)
     
-    def post(self, g_id=None, g_name=None, g_survey=None, a_id=None):
+    def post(self, g_id=None, g_name=None, g_survey=None, a_id=None, u_id=None):
         shapes = request.get_json()
         print("In post request")
         print(session['g_id'])
         if a_id is None:
-            a = Annotation(g_id=session['g_id'], shapes=shapes)
-        else: 
+            a = Annotation(g_id=session['g_id'], u_id=current_user.get_id(), shapes=shapes)
+        else:
             a = Annotation.query.filter_by(a_id=a_id).one_or_none()
             a.modify_shapes(shapes)
-        # db.session.flush()
-        # db.session.refresh()
+
         db.session.commit()
         a_id = a.a_id
-        return json.dumps({"a_id": a_id}), 200, {'ContentType':'application/json'} 
+        return json.dumps({"a_id": a_id,
+                           "is_authenticated": current_user.is_authenticated}), 200, {'ContentType': 'application/json'} 

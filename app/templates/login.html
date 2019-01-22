@@ -1,19 +1,38 @@
-
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block login %}
     <h1>{{ _('Sign In') }}</h1>
+    <div id="tab" class="tab">
+        <l>
+            <a id="default-tab" class="tablinks active">Default</a>
+            <a id="expert-tab" class="tablinks">Expert</a>
+        </l>
+    </div>
     <div class="form">
         <form id="login_form" class="form_data" action="{{url_for('auth.login')}}" method="post">
             {{ wtf.form_field(form.username, autocomplete="off", spellcheck="false") }}
+            <div id="expert-login" style="display: none;">
+                {{ wtf.form_field(form.password, autocomplete="off", spellcheck="false") }}
+            </div>
             {{ wtf.form_field(form.submit, class="btn btn-default loginButton") }}
         </form>
     </div>
     <p>{{ _('New User?') }} <a class="register-btn" href="#">{{ _('Click to Register!') }}</a></p>
 
     <script>
-        $('.register-btn').bind('click', function () {
-            var csrftoken = $('meta[name=csrf-token]').attr('content')
+        $("#default-tab").bind('click', function(){
+            $("#expert-login").css('display', 'none');
+            $("#default-tab").addClass("active");
+            $("#expert-tab").removeClass("active");
+            $("#username").focus()
+        });
+        $("#expert-tab").bind('click', function(){
+            $("#expert-login").css('display', 'block');
+            $("#expert-tab").addClass("active");
+            $("#default-tab").removeClass("active");
+            $("#username").focus()
+        });
+        $('.register-btn').bind('click', function() {
             var url = "{{ url_for('auth.register') }}";
             loadModal(url);
         });

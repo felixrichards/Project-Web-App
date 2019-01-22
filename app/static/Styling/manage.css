@@ -1,0 +1,13 @@
+.form {
+    text-align: center;
+    padding: 0 20% 0 20%;
+}
+
+form {
+    text-align: left;
+}
+
+p {
+    text-align: center;
+    font-weight: bold;
+}

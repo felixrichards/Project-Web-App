@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, url_for, session, g
+from flask_login import current_user
 from app import db
 from app.models import Galaxy, Annotation
 from app.utils import get_random_galaxy
@@ -9,7 +10,7 @@ from app.main import bp
 def create_annotation_route(url, endpoint, view=AnnotateView):
     annotate_view = view.as_view(endpoint)
     bp.add_url_rule(url, defaults={},
-                     view_func=annotate_view, methods=['GET',])
+                    view_func=annotate_view, methods=['GET',])
     bp.add_url_rule(url, view_func=annotate_view, methods=['POST',])
 
 
@@ -41,19 +42,33 @@ def news():
         
         return render_template('news.html', title='News', news=news)
 
+
 @bp.route('/tutorial')
 def Tutorial():
     return render_template('tutorial.html', title='Tutorial')
 
+
+@bp.route('/my_annotations')
+def annotations():
+    if current_user.is_authenticated:
+        anns = db.session.query(Annotation, Galaxy).\
+            join(Galaxy, Galaxy.g_id == Annotation.g_id).\
+            filter(Annotation.u_id == current_user.get_id()).\
+            all()
+
+        return render_template('annotations.html', title='My Annotations', anns=anns)
+
+
 @bp.route('/AdvancedLogin', methods=['GET', 'POST'])
 def AdvancedAccess():
     if request.method == 'POST':
-        session['advanced']=0
+        session['advanced'] = 0
         if request.form['password'] == 'NGC-5457':
-            session['advanced']=1
+            session['advanced'] = 1
             return redirect(url_for('annotate'))
 
     return render_template('AdvancedLogin.html')
+
 
 @bp.route('/NGC-1300', methods=['GET', 'POST'])
 def TempLogin():
@@ -65,6 +80,7 @@ def TempLogin():
             return redirect(url_for('protected'))
 
     return render_template('Anonymous.html')
+
 
 @bp.route('/AccessGranted', methods=['GET', 'POST'])
 def protected():

@@ -24,6 +24,14 @@
         <input type="text" placeholder="Ids, Galaxies, Surveys" name="search" ; autocomplete="off" onkeydown="search(this)">
     </div>
 </div>
+{% if current_user.is_advanced() %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('.Advanced').css('display', 'block');
+    }, false);
+    var allow_note = true;
+</script>
+{% endif %}
 <div id="mySidenav" class="sidenav">
     <div class="extra" style="width:  100%; height: 100%;">
         <div class="tables" id="obj_table_div" style="width: 100%;  height:100%;">
@@ -78,6 +86,9 @@
                         <th>Shape</th>
                         <th>ID</th>
                         <th>Feature</th>
+                        {% if current_user.is_advanced() %}
+                        <th>Note</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -87,7 +98,6 @@
             <script src="{{ url_for('static', filename='Scripts/JavascriptGalaxySearch.js') }}"></script>
             <script src="{{ url_for('static', filename='Scripts/JavascriptSubmission.js') }}"></script>
             <script src="{{ url_for('static', filename='Scripts/JavascriptFeatureInfo.js') }}"></script>
-            <script src="{{ url_for('static', filename='Scripts/JavascriptAdvancedMode.js') }}"></script>
         </div>
     </div>
 </div>
@@ -570,5 +580,5 @@
         </div>
     </div>
 </div>
-<script> var advanced = {{ session['advanced'] }}; </script>
+
 {% endblock %}
