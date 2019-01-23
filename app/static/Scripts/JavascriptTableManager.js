@@ -240,6 +240,7 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     var index = $(this).index();
     z_order=getZOrder();
     index = z_order[index];
+    state.resetSelected()
     state.selectShape(getHighlightedShape(index), false);
     shapes[getHighlightedShape(index)].boundingRect.selectedIdx = 0;
     resetCanvas();
@@ -258,13 +259,17 @@ $('.square').on('click', function () {
     $(this).css('background-color', '#818181');
 });
 
+$('.sidenav').keydown(function(e){
+    hotkey(e);
+})
+
 // Prevent clicking shapes when under the table
 var preventDrawing = false;
 $(".sidenav").hover(function () {
     preventDrawing = true
 }, function () {
    preventDrawing = false;
-    });
+});
 
 function showHideTable() {
     if (document.getElementById("mySidenav").style.width == "250px") {

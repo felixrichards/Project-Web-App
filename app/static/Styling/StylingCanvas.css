@@ -3,6 +3,14 @@
     margin: 0 auto;
 }
 
+#target:focus {
+    outline: none;
+}
+
+.hotkey-enabled:focus {
+    outline: none;
+}
+
 .Advanced{
     display:none;
 }

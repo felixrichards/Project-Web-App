@@ -5,7 +5,7 @@ var UICanvas = document.getElementById("UICanvas");
 var ctx = drawCanvas.getContext("2d");
 var ui_ctx = UICanvas.getContext("2d");
 
-var element=window;
+var element=$('#target')[0];
 var parentDiv = document.getElementById("canv_cont");
 var state=State();
 
@@ -1647,6 +1647,7 @@ element.addEventListener("mousedown", function(e){
     disableSelectReset=false;
     cursorLock=true;
     updateRows();
+    // $('#target').focus()
 
     document.getElementById("UICanvas").style.pointerEvents = "none";
 
@@ -1788,38 +1789,35 @@ element.addEventListener("mouseup", function(e){
     state.focusNo=-1
     resetCanvas();
 }, false);
-element.addEventListener("keydown", function(e){
+$( "#target" ).keydown(function(e){
+    hotkey(e);
+});
 
+/**
+ * Checks whether a modifier is being pressed (ctrl,shift,alt)
+ * @returns {boolean}
+ */
+function checkModifier(e){
+    return (e.ctrlKey||e.shiftKey||e.altKey);
+}
 
-    /**
-     * Checks whether a modifier is being pressed (ctrl,shift,alt)
-     * @returns {boolean}
-     */
-    function checkModifier(){
-        return (e.ctrlKey||e.shiftKey||e.altKey);
+function hotkey(e){
+    if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
+    if (!exploringMode) {
+        if (e.keyCode == 89 && e.ctrlKey) buttons[button_map['Redo']].click();
+        if (e.keyCode == 90 && e.ctrlKey) buttons[button_map['Undo']].click();
+        if (e.keyCode == 82 && !checkModifier(e)) buttons[button_map['Rect']].click();       // R
+        if (e.keyCode == 67 && !checkModifier(e)) buttons[button_map['Circle']].click();     // C
+        if (e.keyCode == 69 && !checkModifier(e)) buttons[button_map['Ellipse']].click();    // E
+        if (e.keyCode == 76 && !checkModifier(e)) buttons[button_map['Line']].click();       // L
+        if (e.keyCode == 83 && !checkModifier(e)) buttons[button_map['Snake']].click();      // S
+        if (e.keyCode == 65 && !checkModifier(e)) buttons[button_map['Region']].click();     // A
+        if (e.keyCode == 70 && !checkModifier(e)) buttons[button_map['Freehand']].click();   // F
+        if (e.keyCode == 46 && !checkModifier(e)) buttons[button_map['Delete']].click();     // Del
+        if (e.keyCode == 84 && !checkModifier(e)) buttons[button_map['Table']].click();      // T
+        if (e.keyCode == 73 && !checkModifier(e)) buttons[button_map['Info']].click();       // I
     }
-
-    // Check the last place clicked was inside the canvas and not in exploring mode
-    if (!($(':focus')[0]==$('#username')[0] && $(':focus')[0]!=null)){
-        if (focusObject!==null && !focusObject.canvas) {
-            if (e.keyCode == 68 || e.keyCode == 78) showAnnotation()       // D, N
-            if (!exploringMode) {
-                if (e.keyCode == 89 && e.ctrlKey) buttons[button_map['Redo']].click();
-                if (e.keyCode == 90 && e.ctrlKey) buttons[button_map['Undo']].click();
-                if (e.keyCode == 82 && !checkModifier()) buttons[button_map['Rect']].click();       // R
-                if (e.keyCode == 67 && !checkModifier()) buttons[button_map['Circle']].click();     // C
-                if (e.keyCode == 69 && !checkModifier()) buttons[button_map['Ellipse']].click();    // E
-                if (e.keyCode == 76 && !checkModifier()) buttons[button_map['Line']].click();       // L
-                if (e.keyCode == 83 && !checkModifier()) buttons[button_map['Snake']].click();      // S
-                if (e.keyCode == 65 && !checkModifier()) buttons[button_map['Region']].click();     // A
-                if (e.keyCode == 70 && !checkModifier()) buttons[button_map['Freehand']].click();   // F
-                if (e.keyCode == 46 && !checkModifier()) buttons[button_map['Delete']].click();     // Del
-                if (e.keyCode == 84 && !checkModifier()) buttons[button_map['Table']].click();      // T
-                if (e.keyCode == 73 && !checkModifier()) buttons[button_map['Info']].click();       // I
-            }
-        }
-    }
-}, false);
+}
 
 /**
  * Returns mouse position relative to (passed) canvas
