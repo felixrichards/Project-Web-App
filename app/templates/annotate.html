@@ -24,6 +24,7 @@
         <input type="text" placeholder="Ids, Galaxies, Surveys" name="search" ; autocomplete="off" onkeydown="search(this)">
     </div>
 </div>
+{% if current_user.is_authenticated %}
 {% if current_user.is_advanced() %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -31,6 +32,7 @@
     }, false);
     var allow_note = true;
 </script>
+{% endif %}
 {% endif %}
 <div id="mySidenav" class="sidenav">
     <div class="extra" style="width:  100%; height: 100%;">
@@ -86,8 +88,10 @@
                         <th>Shape</th>
                         <th>ID</th>
                         <th>Feature</th>
+                        {% if current_user.is_authenticated %}
                         {% if current_user.is_advanced() %}
                         <th>Note</th>
+                        {% endif %}
                         {% endif %}
                     </tr>
                 </thead>
