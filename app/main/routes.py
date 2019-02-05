@@ -20,18 +20,22 @@ create_annotation_route('/annotate/name/<g_name>', 'annotate_by_name')
 create_annotation_route('/annotate/name/<g_survey>', 'annotate_by_survey')
 create_annotation_route('/verify/id/<a_id>', 'verify_by_id')
 
+
 @bp.route('/')
 @bp.route('/home')
 def index():
     return render_template('home.html', title='Home')
 
+
 @bp.route('/team')
 def team():
     return render_template('team.html', title='Team')
 
+
 @bp.route('/funding')
 def funding():
     return render_template('funding.html', title='Funding')
+
 
 @bp.route('/news')
 def news():
@@ -39,7 +43,6 @@ def news():
         news = []
         for line in ins:
             news.append(line)
-        
         return render_template('news.html', title='News', news=news)
 
 
@@ -91,11 +94,10 @@ def protected():
             myfile.write(date + "\n")
             myfile.write(subject + "\n")
         return redirect(url_for('News'))
-
     if g.user:
         return render_template('updates.html')
-            
     return redirect(url_for('index'))
+
 
 @bp.before_request
 def before_request():
@@ -103,12 +105,13 @@ def before_request():
     if 'user' in session:
         g.user = session['user']
 
+
 @bp.route('/getsession')
 def getsession():
     if 'user' in session:
         return session['user']
-
     return 'Not logged in!'
+
 
 @bp.route('/dropsession')
 def dropsession():

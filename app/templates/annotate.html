@@ -486,6 +486,7 @@
             var loadedShapes=[]
             
             {% if shapes is not none %}
+                console.log({{shapes|length}})
                 {% for s in shapes %}
                     lS = Shape(0,0,0,0,"{{s.shape}}");
                     lS.id = "{{s.number}}";

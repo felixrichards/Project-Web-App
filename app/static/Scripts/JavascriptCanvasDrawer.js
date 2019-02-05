@@ -1213,6 +1213,18 @@ function Shape(x0,y0,x,y,shape){
             this.createBoundingRect();
         },
         note: "",
+        showNote: "collapse",
+        showNoteIcon: "fa fa-plus",
+        flipNote: function(){
+            if (this.showNote=="collapse") {
+                this.showNote="expand";
+                this.showNoteIcon = "fa fa-minus"
+            }
+            else {
+                this.showNote="collapse";
+                this.showNoteIcon = "fa fa-plus"
+            }
+        },
         pixToWorld: pixToWorld,
         worldToPix: worldToPix
     }

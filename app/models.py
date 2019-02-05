@@ -1,7 +1,7 @@
 from app import db
 from sqlalchemy.sql import func
 import sqlalchemy.dialects.postgresql as psql
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from app import login
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -96,6 +96,9 @@ class Annotation(db.Model):
             s = Shape(a_id=self.a_id, shape=shape['shape'],
                         number=shape['id'], feature=shape['feature'],
                         x0=shape['x0'], y0=shape['y0'])
+            if current_user.is_authenticated:
+                if current_user.is_advanced():
+                    s.note=shape['note']
             s.parse_js_shape(shape)
             db.session.add(s)
         print("added shapes")
@@ -116,6 +119,9 @@ class Annotation(db.Model):
             s = Shape(a_id=self.a_id, shape=shape['shape'],
                         number=shape['id'], feature=shape['feature'],
                         x0=shape['x0'], y0=shape['y0'])
+            if current_user.is_authenticated:
+                if current_user.is_advanced():
+                    s.note=shape['note']
             s.parse_js_shape(shape)
             db.session.add(s)
 
@@ -126,6 +132,7 @@ class Shape(db.Model):
     shape = db.Column(db.String(64), index=True, nullable=False)
     number = db.Column(db.Integer, nullable=False)
     feature = db.Column(db.String(32), nullable=False)
+    note = db.Column(db.String(128))
     x0 = db.Column(psql.REAL, nullable=False)
     y0 = db.Column(psql.REAL, nullable=False)
     ra_xy = db.Column(psql.REAL)

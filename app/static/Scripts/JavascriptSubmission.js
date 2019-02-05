@@ -1,7 +1,8 @@
 var a_id;
 var test_response;
 $(function () {
-    $('a#submit').bind('click', function () {
+    $('a#submit.button').unbind("click").bind('click', function () {
+        console.log("Button pressed");
 
         resetButtons();
         state.resetSelected();

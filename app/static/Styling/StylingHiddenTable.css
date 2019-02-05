@@ -2,6 +2,7 @@ table{
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 100%;
+    user-select: none;
 }
 
 .filterBlock{
@@ -75,6 +76,11 @@ th{
     padding-top: 0px
 }
 
-.tr-note {
+.collapse {
     display: none;
+}
+
+.btn-note {
+    border: none;
+    color: none;
 }
