@@ -230,8 +230,9 @@ $(document).on("click", "#obj_table tbody tr", function(e) {
     z_order=getZOrder();
     index = z_order[index];
     state.resetSelected()
-    state.selectShape(getHighlightedShape(index), false);
-    shapes[getHighlightedShape(index)].boundingRect.selectedIdx = 0;
+    console.log(getShapeByID(index));
+    state.selectShape(getShapeByID(index), false);
+    shapes[getShapeByID(index)].boundingRect.selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
 });
