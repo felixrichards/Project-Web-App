@@ -417,15 +417,33 @@
             survey_names = "{{galaxy.survey}}".split(',');
             surveys = [];
 
+            // aladin.setImageSurvey(aladin.createImageSurvey(
+            //     survey_names[0],
+            //     survey_names[0],
+            //     "{{ url_for('static', filename='') }}"+survey_names[0],
+            //     "equatorial",
+            //     11,
+            //     {imgFormat: 'png'}
+            // ));
+
             aladin.setImageSurvey(aladin.createImageSurvey(
-                survey_names[0],
-                survey_names[0],
-                "{{ url_for('static', filename='') }}"+survey_names[0],
+                "scal_test",
+                "scal_test",
+                "{{ url_for('static', filename='') }}"+"col",
                 "equatorial",
                 11,
                 {imgFormat: 'png'}
             ));
             
+            surveys.push({
+                    "id": "scal_test",
+                    "url": "{{ url_for('static', filename='') }}"+"col",
+                    "name": "scal_test",
+                    "maxOrder": 10,
+                    "frame": "equatorial",
+                    "format": "png"
+                });
+
             for (var i=0; i<survey_names.length; i++){
                 surveys.push({
                     "id": survey_names[i],
@@ -443,7 +461,7 @@
             $('.aladin-layersControl-container').css('top', '4');
             $('.aladin-layersControl-container').css('left', '41');
             $('.aladin-layersControl-container').css('background', 'none');
-            setTimeout(function() {HpxImageSurvey.SURVEYS = surveys;aladin.setImageSurvey(surveys[0].id);}, 1000);
+            setTimeout(function() {HpxImageSurvey.SURVEYS = surveys; aladin.setImageSurvey(surveys[0].id);}, 1000);
 
             // Creates a marker at a given RA, Dec
             // This will be used to navigate automatically to a given galaxy
@@ -459,12 +477,16 @@
                 ra = 0;
                 dec = 0;
             }
-
+            
+            // DELETE ME AFTER DEMO
+            ra = 20.;
+            dec = 3.45;
+            // DELETE ME AFTER DEMO
 
 
             // Navigates to given RA, Dec
             aladin.gotoRaDec(ra, dec);
-            aladin.setFoV(0.1);
+            aladin.setFoV(1);
 
             // These are listeners for panning and scrolling
             aladin.on('positionChanged', function (newPosition) {
