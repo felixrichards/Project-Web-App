@@ -429,7 +429,7 @@
             aladin.setImageSurvey(aladin.createImageSurvey(
                 "scal_test",
                 "scal_test",
-                "{{ url_for('static', filename='') }}"+"col",
+                "https://s3.eu-west-2.amazonaws.com/deepgalaxy/hips",
                 "equatorial",
                 11,
                 {imgFormat: 'png'}
@@ -437,7 +437,7 @@
             
             surveys.push({
                     "id": "scal_test",
-                    "url": "{{ url_for('static', filename='') }}"+"col",
+                    "url": "https://s3.eu-west-2.amazonaws.com/deepgalaxy/hips",
                     "name": "scal_test",
                     "maxOrder": 10,
                     "frame": "equatorial",
