@@ -2122,12 +2122,20 @@ function drawRect(shape,button=false,bounding=false,amend=false){
  */
 function drawCircle(shape){
     ctx.beginPath();
-    ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+    var stroke = True;
     ctx.arc(shape.x+shape.w/2,shape.y+shape.h/2,
         Math.sqrt(Math.pow(shape.w/2,2)+Math.pow(shape.h/2,2)),
         0,2*Math.PI);
     //ctx.arc(x0,y0,Math.sqrt(Math.pow(x,2)+Math.pow(y,2)),0,2*Math.PI);
-    ctx.fill();
+    
+    if (stroke) {
+        ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
+        ctx.lineWidth = 10;
+        ctx.stroke();
+    } else {
+        ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
+        ctx.fill();
+    }
     ctx.closePath();
 }
 
