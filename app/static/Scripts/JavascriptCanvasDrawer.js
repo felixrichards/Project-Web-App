@@ -850,13 +850,15 @@ function Shape(x0,y0,x,y,shape){
             // A bit of maths to properly calculate which point is to be amended and how
             // thickness boxes have dir 0 to points.length*2-1, loc boxes have dir points.length*2 to points.length*3-1
             if (dir<this.points.length*2+1){
+                idx=Math.floor((dir-1)/2);
+                this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
                 if (!modifier){
-                    idx=Math.floor((dir-1)/2);
-                    this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
-                } else {
+                    var l_increase = this.points[idx].l - Math.pow(Math.pow(this.points[idx].x-pos_0.x,2)+Math.pow(this.points[idx].y-pos_0.y,2),1/2);
                     for (var i = 0; i < this.points.length; i++) {
-                        this.points[i].l = Math.pow(Math.pow(this.points[i].x-pos.x,2)+Math.pow(this.points[i].y-pos.y,2),1/2)
-                        this.updatePoint(i);
+                        if (i!=idx){
+                            this.points[i].l += l_increase;
+                            this.updatePoint(i);
+                        }
                     }
                 }
             } else {
@@ -864,7 +866,7 @@ function Shape(x0,y0,x,y,shape){
                 this.points[idx].x=pos.x;
                 this.points[idx].y=pos.y;
             }
-            if (!modifier) this.updatePoint(idx);
+            this.updatePoint(idx);
         } else if (this.shape=="Region") {
             var idx=dir-1;
             this.points[idx].x=pos.x;
