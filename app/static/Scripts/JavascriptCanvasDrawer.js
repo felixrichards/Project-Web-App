@@ -1325,7 +1325,7 @@ function Shape(x0,y0,x,y,shape){
     }
     if (shape=="Snake"||shape=="Region"||shape=="Freehand"){
         // Default thickness
-        var l = 30;
+        var l = 10;
         var t_0;
         var theta
         

@@ -472,6 +472,9 @@
                     lS = Shape(0,0,0,0,"{{s.shape}}");
                     lS.id = "{{s.number}}";
                     lS.feature = "{{s.feature}}";
+                    {% if current_user.is_advanced() %}
+                    lS.note = "{{s.note}}";
+                    {% endif %}
                     {% if s.shape == "Line" %}
                         [lS.ra_dec, lS.dec_xy] = [{{s.ra_xy}}, {{s.dec_xy}}];
                         [lS.ra1, lS.dec1] = [{{s.ra1}}, {{s.dec1}}];
