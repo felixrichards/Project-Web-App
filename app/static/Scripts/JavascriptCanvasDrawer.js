@@ -863,7 +863,7 @@ function Shape(x0,y0,x,y,shape){
                 this.points[idx].x=pos.x;
                 this.points[idx].y=pos.y;
             }
-            this.updatePoint(idx);
+            if (!modifier) this.updatePoint(idx);
         } else if (this.shape=="Region") {
             var idx=dir-1;
             this.points[idx].x=pos.x;
