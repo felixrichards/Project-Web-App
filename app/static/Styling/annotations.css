@@ -1,0 +1,86 @@
+.galaxyBackground {
+    width: 100%;
+    height: calc(100% - 116px);
+}
+
+table, tbody {
+    background-color: transparent; 
+}
+
+table.dataTable tbody tr:nth-of-type(odd) {
+    background-color: #020202;
+}
+
+table.dataTable tbody tr:nth-of-type(even) {
+    background-color: #111111;
+}
+
+label, div .dataTables_wrapper .dataTables_info {
+    color: #eeeeee;
+}
+
+input {
+    background-color : #202020; 
+    font-weight: bold;
+    color: white;
+    text-align: left;
+    border: 1px solid grey;
+    padding: 5px;
+}
+
+th, tr {
+    color: white;
+    font-weight: bold;
+    text-align:center;
+    font-size:25px;
+}
+
+.ann-link, .ann-link:visited{
+    color: red;
+    text-decoration: none;
+}
+
+.ann-link:hover{
+    text-decoration: underline;
+}
+
+.annotations {
+    padding: 5%;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url(/static/Images/Backgrounds/Galaxy.jpg);
+    /* Full height */
+    height: 100%;
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.parallaxScroll {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    height: calc(100% - 116px);
+}
+
+.parallax.home {
+    margin-top: -100px;
+}
+
+@media only screen and (max-width: 1000px) {
+    r {
+        font-size: 35px;
+    }
+
+    p {
+        font-size: 15px;
+    }
+
+    .teamMemberContainer {
+        margin-top: 50px;
+    }
+}

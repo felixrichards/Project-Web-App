@@ -1,0 +1,43 @@
+{% import 'bootstrap/wtf.html' as wtf %}
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/manage.css')}}">
+
+<h1>Manage Users</h1>
+<div class="form">
+    <form id="search_form" class="form_data">
+        {{ wtf.form_field(form.search, autocomplete="off", spellcheck="false") }}
+        {{ wtf.form_field(form.submit, class="btn btn-default loginButton search-btn") }}
+    </form>
+</div>
+
+
+<div id="search_results">
+{% block results %}{% endblock %}
+</div>
+
+<script>
+    $('.search-btn').bind('click', function(event) {
+        event.preventDefault();
+        var url = "{{ url_for('auth.manage') }}";
+        var data = "csrf_token="+csrftoken+"&"+$('#search_form').serialize()
+        console.log(data)
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'POST',
+            success: function (response) {
+                response = JSON.parse(response)
+                $('#search_results').empty();
+                $('#search_results').html(response.html);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    })
+</script>
+
+
+{% endblock %}

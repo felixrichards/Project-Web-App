@@ -4,6 +4,8 @@ body, html {
     margin: 0;
     overflow-y: hidden;
     overflow-x: hidden;
+    background-color: #101010;
+    color: white;
 }
 
 ul {
@@ -28,8 +30,6 @@ li a, .dropbtn {
     padding: 20px 40px;
     text-decoration: none;
 }
-
-a:visited{}
 
 li a:hover, .dropdown:hover .dropbtn {
     text-decoration:underline;
@@ -106,4 +106,12 @@ li.dropdown {
         font-size: 6px;
         margin:5px;
     }
+}
+
+.error {
+    text-align: center;
+}
+
+a .error {
+    font-size: 30px;
 }

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='Styling/annotations.css')}}">
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" charset="utf-8"></script>
+
+<div class="parallaxScroll" id="table-div">
+    <div class="parallax">
+        <div class="annotations">
+            <table id="annotations-table" class="compact">
+                <thead>
+                    <tr>
+                        <th>Link</th>
+                        <th>Right Ascension</th>
+                        <th>Declination</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ann in anns %}
+                    {# This is a comment
+                        ann[0] - annotation record
+                        ann[1] - galaxy record of annotation
+                    #}
+                    <tr valign="top">
+                        <td><a class="ann-link" href='/verify/id/{{ann[0].a_id}}'>/verify/id/{{ann[0].a_id}}</a></td>
+                        <td>{{ann[1].ra}}</td>
+                        <td>{{ann[1].dec}}</td>
+                        <td>{{ann[0].timestamp}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $('#annotations-table').DataTable({
+        paging: false
+    });
+    // $('#annotations-table_filter > label').addClass("control-label");
+    // $('#annotations-table_filter > label> input').addClass("form-control");
+    
+</script>
+
+{% endblock %}

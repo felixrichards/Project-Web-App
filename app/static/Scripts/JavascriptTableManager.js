@@ -33,8 +33,19 @@ function updateTable(shapes){
         if (globalShapes[i].shape == "Snake") svg = document.getElementById("snake").innerHTML;
         if (globalShapes[i].shape == "Region") svg = document.getElementById("region").innerHTML;
         if (globalShapes[i].shape == "Freehand") svg = document.getElementById("freehand").innerHTML;
+
+        if (typeof(allow_note)!="undefined"){
+            if (allow_note){
+                var note_id = "note-"+globalShapes[i].id;
+                var note_input_id = "input-"+note_id;
+                var note_html = "<td id='" + note_id + "' class='note -btn'>\
+                        <i class='" + globalShapes[i].showNoteIcon + "'></i>\
+                </td>";
+                note_id = '#'+note_id;
+            } else var note_html = "";
+        }
         $("#obj_table").find('tbody')
-            .append($('<tr>')
+            .append($("<tr id='tr-" + globalShapes[i].id + "'>")
                 .addClass(class_str)
                 .append($('<td>' + svg + '</td>')
                 )
@@ -43,7 +54,26 @@ function updateTable(shapes){
                 )
                 .append($('<td id=' + globalShapes[i].id + '>' + globalShapes[i].feature + '</td>')
                 )
+                .append($(note_html))
         );
+        
+        $("#obj_table").find('tbody')
+            .append($("<tr id='tr-note-" + globalShapes[i].id + "' class='" + globalShapes[i].showNote +"'>")
+                .append($("<td colspan='4'>")
+                    .append($("<input class ='note-input' id='"+note_input_id + "' type='text' s_id=" + globalShapes[i].id + " value="+globalShapes[i].note+">")
+                        .keyup(function() {
+                            shapes[getShapeByID($(this).attr('s_id'))].note = $(this).val();
+                        })
+                    )
+                )
+        );
+        $(note_id).bind('click', function(){
+            globalShapes[parseInt($(this).attr('id').substr(-1))].flipNote()
+        });
+    }
+
+    function openNote(note_id){
+        
     }
     submitAppear(shapes);
 }
@@ -141,7 +171,7 @@ function updateRows(selected_idx=-1){
 
     if (selected_idx > -1) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selected");
-        $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selected");
+        $('#obj_table tbody tr:eq(' + selected_idx*2 + ')').addClass("selected");
 
         // Remove all highlighted from submit when clicking on a shape
         showFeatureless = false;
@@ -166,7 +196,7 @@ function updateRowsRed(selected_idx = -1, feature) {
     if (selected_idx > -1) {
         $('#obj_table tbody tr').not(':eq(2)').removeClass("selectedFeature");
         $('#obj_table tbody tr').removeClass("selected");
-        $('#obj_table tbody tr:eq(' + selected_idx + ')').addClass("selectedFeature");
+        $('#obj_table tbody tr:eq(' + selected_idx*2 + ')').addClass("selectedFeature");
 
         // Remove all highlighted from submit when clicking on a shape
         showFeatureless = false;
@@ -187,7 +217,7 @@ function updateRowsRed(selected_idx = -1, feature) {
         for (var i = 0; i < shapes.length; i++) {
             if (shapes[i].feature == "-") {
                 globalShapes.push(shapes[i]);
-                $('#obj_table tbody tr:eq(' + i + ')').addClass("selectedFeature");
+                $('#obj_table tbody tr:eq(' + i*2 + ')').addClass("selectedFeature");
             }
         }
     }
@@ -195,10 +225,14 @@ function updateRowsRed(selected_idx = -1, feature) {
 
 $(document).on("click", "#obj_table tbody tr", function(e) {
     var index = $(this).index();
+    if (index%2 == 1) return;
+    else index/=2;
     z_order=getZOrder();
     index = z_order[index];
-    state.selectShape(getHighlightedShape(index), false);
-    shapes[getHighlightedShape(index)].boundingRect.selectedIdx = 0;
+    state.resetSelected()
+    console.log(getShapeByID(index));
+    state.selectShape(getShapeByID(index), false);
+    shapes[getShapeByID(index)].boundingRect.selectedIdx = 0;
     resetCanvas();
     cursorLock = false;
 });
@@ -215,13 +249,17 @@ $('.square').on('click', function () {
     $(this).css('background-color', '#818181');
 });
 
+$('.sidenav').keydown(function(e){
+    if (!$(".note-input").is(":focus")) hotkey(e);
+})
+
 // Prevent clicking shapes when under the table
 var preventDrawing = false;
 $(".sidenav").hover(function () {
     preventDrawing = true
 }, function () {
    preventDrawing = false;
-    });
+});
 
 function showHideTable() {
     if (document.getElementById("mySidenav").style.width == "250px") {

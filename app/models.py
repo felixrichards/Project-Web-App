@@ -1,8 +1,9 @@
 from app import db
 from sqlalchemy.sql import func
 import sqlalchemy.dialects.postgresql as psql
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from app import login
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @login.user_loader
@@ -17,10 +18,49 @@ class User(UserMixin, db.Model):
     firstname = db.Column(db.String(64), index=True)
     lastname = db.Column(db.String(64), index=True)
     institution = db.Column(db.String(64), index=True)
-    advanced = db.Column(db.Boolean)
+    password_hash = db.Column(db.String(128))
+    advanced = db.Column(db.Integer)
+    annotations = db.relationship('Annotation', backref='user', lazy='dynamic')
 
     def get_id(self):
         return self.u_id
+
+    def is_advanced(self):
+        if self.advanced > 0:
+            return True
+        else:
+            return False
+
+    def get_access(self, as_str=False):
+        if as_str:
+            if self.advanced == 0:
+                return 'Basic'
+            if self.advanced == 1:
+                return 'Expert'
+            if self.advanced == 2:
+                return 'Superuser'
+            if self.advanced == 3:
+                return 'Admin'
+        return self.advanced
+
+    def set_access(self, access):
+        # 0 - basic
+        # 1 - expert
+        # 2 - superuser - can give expert
+        # 3 - admin - can give superuser
+        assert(type(access) is int), "Access must be integer"
+        assert(0 <= access <= 3), "Access must be between 0 and 3"
+        self.advanced = access
+
+    def set_password(self, password):
+        if password == "" or password is None:
+            self.password_hash = ""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        if self.password_hash == "" or self.password_hash is None:
+            return True
+        return check_password_hash(self.password_hash, password)
 
 
 class Galaxy(db.Model):
@@ -56,12 +96,18 @@ class Annotation(db.Model):
             s = Shape(a_id=self.a_id, shape=shape['shape'],
                         number=shape['id'], feature=shape['feature'],
                         x0=shape['x0'], y0=shape['y0'])
+            if current_user.is_authenticated:
+                if current_user.is_advanced():
+                    s.note=shape['note']
             s.parse_js_shape(shape)
             db.session.add(s)
         print("added shapes")
 
     def __repr__(self):
-        return '<Annotation ID: {}. Galaxy ID: {}. Timestamp: {}>'.format(self.a_id, self.g_id, self.timestamp)
+        if self.u_id is None:
+            return '<Annotation ID: {}. Galaxy ID: {}. Timestamp: {}>'.format(self.a_id, self.g_id, self.timestamp)
+        else:
+            return '<Annotation ID: {}. User ID: {}. Galaxy ID: {}. Timestamp: {}>'.format(self.a_id, self.u_id, self.g_id, self.timestamp)
 
     def modify_shapes(self, shapes):
         # Delete old shapes
@@ -73,6 +119,9 @@ class Annotation(db.Model):
             s = Shape(a_id=self.a_id, shape=shape['shape'],
                         number=shape['id'], feature=shape['feature'],
                         x0=shape['x0'], y0=shape['y0'])
+            if current_user.is_authenticated:
+                if current_user.is_advanced():
+                    s.note=shape['note']
             s.parse_js_shape(shape)
             db.session.add(s)
 
@@ -83,6 +132,7 @@ class Shape(db.Model):
     shape = db.Column(db.String(64), index=True, nullable=False)
     number = db.Column(db.Integer, nullable=False)
     feature = db.Column(db.String(32), nullable=False)
+    note = db.Column(db.String(128))
     x0 = db.Column(psql.REAL, nullable=False)
     y0 = db.Column(psql.REAL, nullable=False)
     ra_xy = db.Column(psql.REAL)

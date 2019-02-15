@@ -1,22 +1,35 @@
 var a_id;
 var test_response;
 $(function () {
-    $('a#submit').bind('click', function () {
+    $('a#submit.button').unbind("click").bind('click', function () {
+        console.log("Button pressed");
 
         resetButtons();
         state.resetSelected();
         state = State();
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRF-Token", csrftoken)
+                }
+            }
+        })
 
         if (checkFeatures()){
             $.ajax({
                 data: JSON.stringify(shapes),
                 contentType: "application/json; charset=utf-8",
                 type: 'POST',
-                success: function (response) {
+                success: function(response) {
                     response = JSON.parse(response)
                     a_id = response.a_id
-                    $("#annotationIDResult").html("The ID for this annotation is "+a_id
-                         +"<br>You can access it at <a href='/verify/id/"+a_id+"'>/verify/id/"+a_id+"</a>")
+                    if (response.is_authenticated)
+                        $("#annotationIDResult").html("The ID for this annotation is "+a_id
+                         +"<br>You can access it at <a href='/verify/id/"+a_id+"'>/verify/id/"+a_id+"</a>");
+                    else {
+                        $("#annotationIDResult").html("You can login/register to access your future annotations.");
+                    }
                 },
                 error: function (error) {
                     console.log(error);

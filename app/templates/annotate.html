@@ -24,7 +24,17 @@
         <input type="text" placeholder="Ids, Galaxies, Surveys" name="search" ; autocomplete="off" onkeydown="search(this)">
     </div>
 </div>
-<div id="mySidenav" class="sidenav">
+{% if current_user.is_authenticated %}
+{% if current_user.is_advanced() %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        $('.Advanced').css('display', 'block');
+    }, false);
+    var allow_note = true;
+</script>
+{% endif %}
+{% endif %}
+<div id="mySidenav" class="sidenav hotkey-enabled" tabindex="0">
     <div class="extra" style="width:  100%; height: 100%;">
         <div class="tables" id="obj_table_div" style="width: 100%;  height:100%;">
             <div class="filterBlock">
@@ -78,6 +88,11 @@
                         <th>Shape</th>
                         <th>ID</th>
                         <th>Feature</th>
+                        {% if current_user.is_authenticated %}
+                        {% if current_user.is_advanced() %}
+                        <th>Note</th>
+                        {% endif %}
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -87,7 +102,6 @@
             <script src="{{ url_for('static', filename='Scripts/JavascriptGalaxySearch.js') }}"></script>
             <script src="{{ url_for('static', filename='Scripts/JavascriptSubmission.js') }}"></script>
             <script src="{{ url_for('static', filename='Scripts/JavascriptFeatureInfo.js') }}"></script>
-            <script src="{{ url_for('static', filename='Scripts/JavascriptAdvancedMode.js') }}"></script>
         </div>
     </div>
 </div>
@@ -98,7 +112,7 @@
     </div>
 </div>
 
-<div id="featureTable" class="FeatureTable">
+<div id="featureTable" class="FeatureTable hotkey-enabled" tabindex="0">
     <div class="FeatureList" id="featureList">
 
         <h3>Mergers</h3>
@@ -224,7 +238,7 @@
     </div>
 </div>
 
-<div id="myCheatSheet" class="cheatSheet">
+<div id="myCheatSheet" class="cheatSheet hotkey-enabled" tabindex="0">
     <div class="cheatSheetTable">
         <h3>Galaxy Type</h3>
         <div>
@@ -383,11 +397,15 @@
     </div>
 </div>
 
-<div id="target">
+<div id="target" tabindex="0">
     <div id="canv_cont">
         <div id="aladin-lite-div" style="width: 100%; height:100%; border:none"></div>
         <script type="text/javascript" src="//aladin.u-strasbg.fr/AladinLite/api/v2/beta/aladin.min.js" charset="utf-8"></script>
         <script type="text/javascript">
+            $('#target').focus()
+            $('#target').click(function(){
+                $('#target').focus()
+            })
             var aladin = A.aladin('#aladin-lite-div', {
                 fov: 0.2,
                 showGotoControl: false,
@@ -468,6 +486,7 @@
             var loadedShapes=[]
             
             {% if shapes is not none %}
+                console.log({{shapes|length}})
                 {% for s in shapes %}
                     lS = Shape(0,0,0,0,"{{s.shape}}");
                     lS.id = "{{s.number}}";
@@ -476,7 +495,8 @@
                     lS.note = "{{s.note}}";
                     {% endif %}
                     {% if s.shape == "Line" %}
-                        [lS.ra_dec, lS.dec_xy] = [{{s.ra_xy}}, {{s.dec_xy}}];
+                        console.log({{s.ra_xy}});
+                        [lS.ra_xy, lS.dec_xy] = [{{s.ra_xy}}, {{s.dec_xy}}];
                         [lS.ra1, lS.dec1] = [{{s.ra1}}, {{s.dec1}}];
                         [lS.ra2, lS.dec2] = [{{s.ra2}}, {{s.dec2}}];
                         [lS.ra3, lS.dec3] = [{{s.ra3}}, {{s.dec3}}];
@@ -573,5 +593,5 @@
         </div>
     </div>
 </div>
-<script> var advanced = {{ session['advanced'] }}; </script>
+
 {% endblock %}
