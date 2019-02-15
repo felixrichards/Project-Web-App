@@ -852,11 +852,11 @@ function Shape(x0,y0,x,y,shape){
             if (dir<this.points.length*2+1){
                 idx=Math.floor((dir-1)/2);
                 this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
-                if (!modifier){
+                if (modifier){
                     var l_increase = this.points[idx].l - Math.pow(Math.pow(this.points[idx].x-pos_0.x,2)+Math.pow(this.points[idx].y-pos_0.y,2),1/2);
                     for (var i = 0; i < this.points.length; i++) {
                         if (i!=idx){
-                            this.points[i].l += l_increase;
+                            this.points[i].l = this.points[i].l0 + l_increase;
                             this.updatePoint(i);
                         }
                     }
