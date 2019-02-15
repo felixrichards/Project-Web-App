@@ -854,7 +854,7 @@ function Shape(x0,y0,x,y,shape){
                     idx=Math.floor((dir-1)/2);
                     this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
                 } else {
-                    for (var i = 0; i < this.points.length*2+1; i++) {
+                    for (var i = 0; i < this.points.length; i++) {
                         this.points[i].l = Math.pow(Math.pow(this.points[i].x-pos.x,2)+Math.pow(this.points[i].y-pos.y,2),1/2)
                     }
                 }
