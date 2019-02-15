@@ -44,10 +44,9 @@ function checkFeatures()
 {
     globalShapes = [];
     features=['Shells','Plumes','Tital Tails','Streams',
-            'Ghosted Halo','Cirrus',
-            'Bar','Ring','Spiral Arm','Dust Lane',
-            'Halo',
-            'Main Galaxy','Dwarf Galaxy','Not Sure']
+            'Main Galaxy','Dwarf Galaxy', 'Companion Galaxy','Background Galaxy of Interest',
+            'Halo','Bar','Ring','Spiral Arm','Dust Lane',
+            'Instrument','Satellite Trail', 'High Background', 'Ghosted Halo', 'Cirrus', 'Not Sure']
 
     for (var i = 0; i < shapes.length; i++) {
         if (!features.includes(shapes[i].feature)) {
