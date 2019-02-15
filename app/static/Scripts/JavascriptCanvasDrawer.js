@@ -2122,7 +2122,7 @@ function drawRect(shape,button=false,bounding=false,amend=false){
  */
 function drawCircle(shape){
     ctx.beginPath();
-    var stroke = True;
+    var stroke = true;
     ctx.arc(shape.x+shape.w/2,shape.y+shape.h/2,
         Math.sqrt(Math.pow(shape.w/2,2)+Math.pow(shape.h/2,2)),
         0,2*Math.PI);
