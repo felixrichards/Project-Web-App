@@ -855,7 +855,8 @@ function Shape(x0,y0,x,y,shape){
                     this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
                 } else {
                     for (var i = 0; i < this.points.length; i++) {
-                        this.points[2].l = Math.pow(Math.pow(this.points[i].x-pos.x,2)+Math.pow(this.points[i].y-pos.y,2),1/2)
+                        this.points[i].l = Math.pow(Math.pow(this.points[i].x-pos.x,2)+Math.pow(this.points[i].y-pos.y,2),1/2)
+                        this.updatePoint(i);
                     }
                 }
             } else {
@@ -1398,7 +1399,7 @@ function Shape(x0,y0,x,y,shape){
             else theta=calcAngle(1);
             
             if (update){
-                t_0=selfObj.points[i].t_0;
+                t_0 = selfObj.points[i].t_0;
                 d = selfObj.points[i].d;
             }
 
