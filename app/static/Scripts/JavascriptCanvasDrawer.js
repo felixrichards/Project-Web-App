@@ -829,7 +829,7 @@ function Shape(x0,y0,x,y,shape){
      * @param {number} dir The dir of the amend box that is being interacted with
      * @returns {undefined}
      */
-    function amend(pos,pos_0,dir){
+    function amend(pos,pos_0,dir,modifier=false){
         var inc=0;
         if (this.shape=="Line") {
             if (dir==1){
@@ -850,8 +850,14 @@ function Shape(x0,y0,x,y,shape){
             // A bit of maths to properly calculate which point is to be amended and how
             // thickness boxes have dir 0 to points.length*2-1, loc boxes have dir points.length*2 to points.length*3-1
             if (dir<this.points.length*2+1){
-                idx=Math.floor((dir-1)/2);
-                this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
+                if (!modifier){
+                    idx=Math.floor((dir-1)/2);
+                    this.points[idx].l=Math.pow(Math.pow(this.points[idx].x-pos.x,2)+Math.pow(this.points[idx].y-pos.y,2),1/2)
+                } else {
+                    for (var i = 0; i < this.points.length*2+1; i++) {
+                        this.points[i].l = Math.pow(Math.pow(this.points[i].x-pos.x,2)+Math.pow(this.points[i].y-pos.y,2),1/2)
+                    }
+                }
             } else {
                 idx=dir-this.points.length*2-1;
                 this.points[idx].x=pos.x;
@@ -1195,10 +1201,10 @@ function Shape(x0,y0,x,y,shape){
             this.boundingRect.redraw()
             this.boundingRect.selectedIdx=i;
         },
-        interact: function(pos,pos_0){
+        interact: function(pos, pos_0, modifier=false){
             if (this.boundingRect.selectedIdx==-1) this.move(pos,pos_0);
             else{
-                this.amend(pos,pos_0,this.boundingRect.selectedIdx);
+                this.amend(pos,pos_0,this.boundingRect.selectedIdx, modifier);
             }
         },
         normaliseCoords: function (){
@@ -1749,7 +1755,7 @@ element.addEventListener("mousemove", function(e){
     // If user is clicking a shape
     if (state.focusNo > -1) {
         if (t-t_0>75){
-            shapes[state.focusNo].interact(mP,mP_0);
+            shapes[state.focusNo].interact(mP, mP_0, checkModifier(e, true));
             resetCanvas();
             shapeAmended = true;
             stopDropDown = true;
@@ -1807,9 +1813,11 @@ $( "#target" ).keydown(function(e){
 
 /**
  * Checks whether a modifier is being pressed (ctrl,shift,alt)
+ * @param {boolean} shift whether just shift key is tested 
  * @returns {boolean}
  */
-function checkModifier(e){
+function checkModifier(e, shift){
+    if (shift) return e.shiftKey;
     return (e.ctrlKey||e.shiftKey||e.altKey);
 }
 
