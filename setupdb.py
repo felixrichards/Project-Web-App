@@ -10,4 +10,4 @@ with app.app_context():
         u.set_access(3)
         db.session.add(u)
     db.session.commit()
-    print("added")
+    print("Successfully initialised database")
