@@ -359,3 +359,12 @@ li ul
 .HideText:hover{
     color:forestgreen;
 }
+
+.wc_cont{
+    mix-blend-mode: difference;
+    position: absolute;
+    right: 0px;
+    z-index: 20;
+    user-select: none;
+    pointer-events: none
+}

@@ -1754,6 +1754,11 @@ element.addEventListener("mousemove", function(e){
 
     t=e.timeStamp;
     mP = getMousePos(drawCanvas, e);
+
+    // Update world coordinates
+    var curr_ra; var curr_dec;
+    [curr_ra, curr_dec] = aladin.pix2world(mP.x,mP.y);
+    $('#wc_cont').text("RA: "+Number.parseFloat(curr_ra).toFixed(3)+". Dec: "+Number.parseFloat(curr_dec).toFixed(3));
     
     // If user is clicking a shape
     if (state.focusNo > -1) {
