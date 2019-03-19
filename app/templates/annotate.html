@@ -426,10 +426,12 @@
             //     {imgFormat: 'png'}
             // ));
 
+            temp_url = "https://s3.eu-west-2.amazonaws.com/deepgalaxy/hips"
+
             aladin.setImageSurvey(aladin.createImageSurvey(
                 "scal_test",
                 "scal_test",
-                "https://s3.eu-west-2.amazonaws.com/deepgalaxy/hips",
+                temp_url,
                 "equatorial",
                 11,
                 {imgFormat: 'png'}
@@ -437,7 +439,7 @@
             
             surveys.push({
                     "id": "scal_test",
-                    "url": "https://s3.eu-west-2.amazonaws.com/deepgalaxy/hips",
+                    "url": temp_url,
                     "name": "scal_test",
                     "maxOrder": 10,
                     "frame": "equatorial",
@@ -479,8 +481,8 @@
             }
             
             // DELETE ME AFTER DEMO
-            ra = 20.;
-            dec = 3.45;
+            ra = 127.36;
+            dec = 25.43;
             // DELETE ME AFTER DEMO
 
 
