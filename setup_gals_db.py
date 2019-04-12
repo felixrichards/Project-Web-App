@@ -16,7 +16,6 @@ def load_hips_prop(fpath):
 
 app = create_app()
 with app.app_context():
-    Galaxy.query.filter_by(name="dummy").delete()
     Galaxy.query.filter().update({"active": False})
     surveys = next(os.walk(join("app", "static", "Surveys")))[1]
     for survey in surveys:
