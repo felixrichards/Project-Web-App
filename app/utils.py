@@ -1,9 +1,8 @@
-from app.models import Galaxy, Annotation
+from app.models import Galaxy
 import random
 
 
 def get_random_galaxy(survey=None):
     if survey is None:
-        start = Galaxy.query.first().g_id
-        rand = random.randrange(start, start+Galaxy.query.count())
-    return Galaxy.query.get(rand)
+        gals = Galaxy.query.filter(Galaxy.active == True).all()
+    return random.choice(gals)

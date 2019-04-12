@@ -407,6 +407,7 @@
             $('#target').click(function(){
                 $('#target').focus()
             })
+
             var aladin = A.aladin('#aladin-lite-div', {
                 fov: 0.2,
                 showGotoControl: false,
@@ -416,48 +417,33 @@
             });
 
             survey_names = "{{galaxy.survey}}".split(',');
+            galaxy_name = "{{galaxy.name}}";
+            band_names = "{{galaxy.bands}}".split(',');
             surveys = [];
 
-            // aladin.setImageSurvey(aladin.createImageSurvey(
-            //     survey_names[0],
-            //     survey_names[0],
-            //     "{{ url_for('static', filename='') }}"+survey_names[0],
-            //     "equatorial",
-            //     11,
-            //     {imgFormat: 'png'}
-            // ));
-
-            temp_url = "https://s3.eu-west-2.amazonaws.com/deepgalaxy/hips_NGC_2592"
-
             aladin.setImageSurvey(aladin.createImageSurvey(
-                "scal_test",
-                "scal_test",
-                temp_url,
+                survey_names[0] + "_" + galaxy_name + "_" + band_names[0],
+                survey_names[0] + "_" + galaxy_name + "_" + band_names[0],
+                "{{ url_for('static', filename='') }}" + "Surveys/" + 
+                    survey_names[0] + "/" + galaxy_name + "/" + band_names[0],
                 "equatorial",
-                11,
+                10,
                 {imgFormat: 'png'}
             ));
-            
-            surveys.push({
-                    "id": "scal_test",
-                    "url": temp_url,
-                    "name": "scal_test",
-                    "maxOrder": 10,
-                    "frame": "equatorial",
-                    "format": "png"
-                });
 
             for (var i=0; i<survey_names.length; i++){
-                surveys.push({
-                    "id": survey_names[i],
-                    "url": "{{ url_for('static', filename='') }}"+survey_names[i],
-                    "name": survey_names[i],
-                    "maxOrder": 11,
-                    "frame": "equatorial",
-                    "format": "png"
-                });
+                for (var i=0; i<band_names.length; i++){
+                    surveys.push({
+                        "id": survey_names[i] + "_" + galaxy_name + "_" + band_names[i],
+                        "name": survey_names[i] + "_" + galaxy_name + "_" + band_names[i],
+                        "url": "{{ url_for('static', filename='') }}" + "Surveys/" + 
+                            survey_names[0] + "/" + galaxy_name + "/" + band_names[0],
+                        "maxOrder": 10,
+                        "frame": "equatorial",
+                        "format": "png"
+                    });
+                }
             }
-
 
             $('.aladin-location').css('display', 'none');
             $('.aladin-logo-container').css('display', 'none');
@@ -475,21 +461,18 @@
             try {
                 ra = {{galaxy.ra}};
                 dec = {{galaxy.dec}};
+                fov = {{galaxy.fov}}*10;
             } catch(error) {
                 console.error("Received invalid coordinates from server.");
                 ra = 0;
                 dec = 0;
+                fov = 0.2;
             }
-            
-            // DELETE ME AFTER DEMO
-            ra = 127.42;
-            dec = 26.09;
-            // DELETE ME AFTER DEMO
 
 
             // Navigates to given RA, Dec
             aladin.gotoRaDec(ra, dec);
-            aladin.setFoV(1);
+            aladin.setFoV(fov);
 
             // These are listeners for panning and scrolling
             aladin.on('positionChanged', function (newPosition) {
