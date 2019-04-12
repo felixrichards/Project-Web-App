@@ -20,6 +20,3 @@ SQLAlchemy = "==1.2.4"
 Werkzeug = "==0.14.1"
 
 [dev-packages]
-
-[requires]
-python_version = "3.6"
