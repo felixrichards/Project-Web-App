@@ -23,7 +23,7 @@ with app.app_context():
         for gal in gals:
             bands = next(os.walk(join("app", "static", "Surveys", survey, gal)))[1]
             properties = load_hips_prop(join("app", "static", "Surveys", survey, gal, bands[0]))
-            check_dup = Galaxy.query.filter_by(name=gal, survey=survey, bands=",".join(bands))
+            check_dup = Galaxy.query.filter_by(name=gal)
             if check_dup.count() == 0:
                 g = Galaxy(name=gal, survey=survey, bands=",".join(bands),
                            ra=float(properties['hips_initial_ra']),
@@ -31,11 +31,13 @@ with app.app_context():
                            fov=float(properties['hips_initial_fov']))
                 db.session.add(g)
             else:
-                print("Record already exists", check_dup.all())
+                print("Record already exists, updating bands/surveys", check_dup.all())
+                dup = check_dup.first()
+                if "col" in bands:
+                    bands.remove("col")
+                    bands.insert(0, "col")
+                dup.survey = ",".join(surveys)
+                dup.bands = ",".join(bands)
                 check_dup.update({"active": True})
     db.session.flush()
-    ag = Galaxy.query.all()
-    for g in ag:
-        if g.active:
-            print(g)
     db.session.commit()

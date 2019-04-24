@@ -366,5 +366,10 @@ li ul
     right: 0px;
     z-index: 20;
     user-select: none;
-    pointer-events: none
+    pointer-events: none;
+}
+
+.aladin-layerBox{
+    z-index: 20;
+    pointer-events: inherit;
 }

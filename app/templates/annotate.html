@@ -406,6 +406,7 @@
             $('#target').focus()
             $('#target').click(function(){
                 $('#target').focus()
+                console.log("Clicking #target")
             })
 
             var aladin = A.aladin('#aladin-lite-div', {
@@ -432,12 +433,12 @@
             ));
 
             for (var i=0; i<survey_names.length; i++){
-                for (var i=0; i<band_names.length; i++){
+                for (var j=0; j<band_names.length; j++){
                     surveys.push({
-                        "id": survey_names[i] + "_" + galaxy_name + "_" + band_names[i],
-                        "name": survey_names[i] + "_" + galaxy_name + "_" + band_names[i],
+                        "id": survey_names[i] + "_" + galaxy_name + "_" + band_names[j],
+                        "name": survey_names[i] + "_" + galaxy_name + "_" + band_names[j],
                         "url": "{{ url_for('static', filename='') }}" + "Surveys/" + 
-                            survey_names[0] + "/" + galaxy_name + "/" + band_names[0],
+                            survey_names[i] + "/" + galaxy_name + "/" + band_names[j],
                         "maxOrder": 10,
                         "frame": "equatorial",
                         "format": "png"
@@ -450,6 +451,9 @@
             $('.aladin-layersControl-container').css('top', '4');
             $('.aladin-layersControl-container').css('left', '41');
             $('.aladin-layersControl-container').css('background', 'none');
+            $('.aladin-layerBox').click(function(e) {
+                e.stopPropagation();
+            })
             setTimeout(function() {HpxImageSurvey.SURVEYS = surveys; aladin.setImageSurvey(surveys[0].id);}, 1000);
 
             // Creates a marker at a given RA, Dec
