@@ -13,8 +13,9 @@
                 <thead>
                     <tr>
                         <th>Link</th>
-                        <th>Right Ascension</th>
-                        <th>Declination</th>
+                        <th>Galaxy Name</th>
+                        <th>RA</th>
+                        <th>Dec</th>
                         <th>Timestamp</th>
                     </tr>
                 </thead>
@@ -26,6 +27,7 @@
                     #}
                     <tr valign="top">
                         <td><a class="ann-link" href='/verify/id/{{ann[0].a_id}}'>/verify/id/{{ann[0].a_id}}</a></td>
+                        <td>{{ann[1].name}}</td>
                         <td>{{ann[1].ra}}</td>
                         <td>{{ann[1].dec}}</td>
                         <td>{{ann[0].timestamp}}</td>
