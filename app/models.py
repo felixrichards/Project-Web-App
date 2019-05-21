@@ -67,12 +67,16 @@ class Galaxy(db.Model):
     g_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     survey = db.Column(db.String(64), index=True)
+    bands = db.Column(db.String(64), index=True)
     ra = db.Column(psql.REAL, index=True)
     dec = db.Column(psql.REAL, index=True)
+    fov = db.Column(psql.REAL, index=True)
+    active = db.Column(db.Boolean(), default=True)
     annotations = db.relationship('Annotation', backref='name', lazy='dynamic')
 
     def __repr__(self):
-        return '<Galaxy ID: {}. Name: {}.>'.format(self.g_id, self.name)
+        return '<Galaxy ID: {}. Name: {}. Survey(s): {}. Bands: {}.>'\
+            .format(self.g_id, self.name, self.survey, self.bands)
 
 
 class Annotation(db.Model):
@@ -117,8 +121,8 @@ class Annotation(db.Model):
         # Add new shapes
         for shape in shapes:
             s = Shape(a_id=self.a_id, shape=shape['shape'],
-                        number=shape['id'], feature=shape['feature'],
-                        x0=shape['x0'], y0=shape['y0'])
+                      number=shape['id'], feature=shape['feature'],
+                      x0=shape['x0'], y0=shape['y0'])
             if current_user.is_authenticated:
                 if current_user.is_advanced():
                     s.note=shape['note']

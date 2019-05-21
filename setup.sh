@@ -1,2 +1,2 @@
 flask db upgrade
-python setupdb.py
+python3 setupdb.py

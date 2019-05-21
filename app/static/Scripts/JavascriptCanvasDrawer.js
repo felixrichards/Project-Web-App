@@ -1706,7 +1706,7 @@ element.addEventListener("mousedown", function(e){
         
         // Check collision for all shapes (reverse loop for z-order)
         for (var i = shapes.length - 1; i >= 0; i--) {
-            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode) {
+            if (shapes[i].isInside(mP_0) && !buttonPressed && !shapePressed && !preventDrawing && !exploringMode  && !checkModifier(e, true)) {
                 state.selectShape(i);
                 shapes[i].boundingRect.selectedIdx = -1;
                 allShapes();
