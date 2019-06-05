@@ -15,21 +15,26 @@ class AnnotateView(MethodView):
             # no given id or name
             galaxy = get_random_galaxy()
             # comment out to keep url as /annotate
-            
+
             if session['advanced']:
-                return redirect(url_for('.annotate_by_id',g_id=galaxy.g_id))
-        
+                return redirect(url_for('.annotate_by_id', g_id=galaxy.g_id))
+
         if g_id is not None:
             # find galaxy by id
             galaxy = Galaxy.query.get(g_id)
-            
+
         if g_name is not None:
             # find galaxy by name
             galaxy = Galaxy.query.filter_by(name=g_name).one_or_none()
-            
+
         if g_survey is not None:
             # find galaxy by survey
             galaxy = get_random_galaxy(survey=g_survey)
+
+        if galaxy is None:
+            return render_template('complete.html', title='Complete')
+        if not galaxy:  # if list is empty
+            return render_template('empty.html', title='No Galaxies')
 
         shapes = None
         # verify annotation
