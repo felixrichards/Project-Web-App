@@ -4,7 +4,7 @@ from app.errors import bp
 
 
 @bp.app_errorhandler(401)
-def forbidden(error):
+def unauthorised(error):
     return render_template('errors/401.html', title='401'), 401
 
 
