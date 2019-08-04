@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class='error'>
+    <h1>{{ _('There are currently no galaxies available for annotation.') }}</h1>
+    <h1>{{ _('Please check back at a later date. Thank you for participating.') }}</h1>
+    <li><a href="{{ url_for('main.index') }}">{{ _('Back') }}</a></li>
+</div>
+
+{% endblock %}
