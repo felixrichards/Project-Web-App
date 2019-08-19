@@ -20,3 +20,4 @@ SQLAlchemy = "==1.2.4"
 Werkzeug = "==0.14.1"
 
 [dev-packages]
+flake8 = "*"
