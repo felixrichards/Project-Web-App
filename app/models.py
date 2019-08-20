@@ -62,6 +62,12 @@ class User(UserMixin, db.Model):
             return True
         return check_password_hash(self.password_hash, password)
 
+    def __repr__(self):
+        return '<User ID: {}. Username: {}. No of annotations: {}.>'\
+            .format(self.u_id,
+                    self.username,
+                    Annotation.query.filter_by(u_id=self.u_id).count())
+
 
 class Galaxy(db.Model):
     g_id = db.Column(db.Integer, primary_key=True)
