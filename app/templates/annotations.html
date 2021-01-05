@@ -1,3 +1,4 @@
+{% import 'bootstrap/wtf.html' as wtf %}
 {% extends "base.html" %}
 
 {% block content %}
@@ -6,30 +7,45 @@
 <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
 <script type="text/javascript" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" charset="utf-8"></script>
 
+<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.12/css/dataTables.checkboxes.css" rel="stylesheet" />
+<!-- <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.12/js/dataTables.checkboxes.min.js"></script> -->
+<script type="text/javascript" src="{{url_for('static', filename='Scripts/checkboxes_test.js')}}"></script>
+
+
 <div class="parallaxScroll" id="table-div">
     <div class="parallax">
         <div class="annotations">
+            <p><button id='download-button'>Download Masks</button></p>
             <table id="annotations-table" class="compact">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Link</th>
                         <th>Galaxy Name</th>
                         <th>RA</th>
                         <th>Dec</th>
+                        {% if show_users %}
+                        <th>Username</th>
+                        {% endif %}
                         <th>Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for ann in anns %}
-                    {# This is a comment
+                    {#
                         ann[0] - annotation record
                         ann[1] - galaxy record of annotation
+                        ann[2] - user record for annotation (only passed for view_annotations)
                     #}
                     <tr valign="top">
+                        <td></td>
                         <td><a class="ann-link" href='/verify/id/{{ann[0].a_id}}'>/verify/id/{{ann[0].a_id}}</a></td>
                         <td>{{ann[1].name}}</td>
                         <td>{{ann[1].ra}}</td>
                         <td>{{ann[1].dec}}</td>
+                        {% if show_users %}
+                        <td>{{ann[2].username}}</td>
+                        {% endif %}
                         <td>{{ann[0].timestamp}}</td>
                     </tr>
                 {% endfor %}
@@ -38,13 +54,39 @@
         </div>
     </div>
 </div>
+
+
+
 <script>
-    $('#annotations-table').DataTable({
-        paging: false
+    var table = $('#annotations-table').DataTable({
+        'paging': false,
+        'columnDefs': [
+            {
+                'targets': 0,
+                'checkboxes': {
+                    'selectRow': true
+                }
+            }
+        ],
+        'select': {
+            'style': 'multi'
+        },
+        'order': [[1, 'asc']]
     });
-    // $('#annotations-table_filter > label').addClass("control-label");
-    // $('#annotations-table_filter > label> input').addClass("form-control");
-    
+
+    $('#download-button').click(function(e){
+        var rows_selected = table.column(0).checkboxes.selected();
+        console.log(rows_selected)
+        // Iterate over all selected checkboxes
+        var annotationIDs = [];
+        console.log('Start');
+        $.each(rows_selected, function(index, rowId){
+            // Create a hidden element
+            console.log(rowId)
+            annotationIDs.push(rowId)
+        });
+        console.log(annotationIDs);
+    });
 </script>
 
 {% endblock %}

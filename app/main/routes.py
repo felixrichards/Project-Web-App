@@ -1,10 +1,10 @@
 from flask import render_template, request, redirect, url_for, session, g
 from flask_login import current_user
 from app import db
-from app.models import Galaxy, Annotation
-from app.utils import get_random_galaxy
-from app.main.views import AnnotateView
+from app.models import Galaxy, Annotation, User
+from app.main.views import AnnotateView, ListAnnotationView, GetAnnotationView
 from app.main import bp
+from app.main.forms import DownloadForm
 
 
 def create_annotation_route(url, endpoint, view=AnnotateView):
@@ -14,11 +14,28 @@ def create_annotation_route(url, endpoint, view=AnnotateView):
     bp.add_url_rule(url, view_func=annotate_view, methods=['POST',])
 
 
+def create_get_route(url, endpoint, view=ListAnnotationView):
+    list_annotate_view = view.as_view(endpoint)
+    bp.add_url_rule(url, defaults={},
+                    view_func=list_annotate_view, methods=['GET',])
+
+
+def create_get_annotations_route(url, endpoint, view=ListAnnotationView):
+    get_annotate_view = view.as_view(endpoint)
+    bp.add_url_rule(url, defaults={},
+                    view_func=list_annotate_view, methods=['GET',])
+
+
 create_annotation_route('/annotate', 'annotate')
 create_annotation_route('/annotate/id/<g_id>', 'annotate_by_id')
 create_annotation_route('/annotate/name/<g_name>', 'annotate_by_name')
 create_annotation_route('/annotate/name/<g_survey>', 'annotate_by_survey')
 create_annotation_route('/verify/id/<a_id>', 'verify_by_id')
+
+create_get_route('/view_annotations/<username>', 'view_user_annotations')
+create_get_route('/view_annotations', 'view_annotations')
+
+create_get_route('/get_annotations/<a_ids>', 'get_annotations', view=GetAnnotationView)
 
 
 @bp.route('/')
@@ -49,17 +66,6 @@ def news():
 @bp.route('/tutorial')
 def Tutorial():
     return render_template('tutorial.html', title='Tutorial')
-
-
-@bp.route('/my_annotations')
-def annotations():
-    if current_user.is_authenticated:
-        anns = db.session.query(Annotation, Galaxy).\
-            join(Galaxy, Galaxy.g_id == Annotation.g_id).\
-            filter(Annotation.u_id == current_user.get_id()).\
-            all()
-
-        return render_template('annotations.html', title='My Annotations', anns=anns)
 
 
 @bp.route('/AdvancedLogin', methods=['GET', 'POST'])

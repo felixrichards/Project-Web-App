@@ -35,6 +35,22 @@ th, tr {
     font-size:25px;
 }
 
+
+button {
+    background-color: crimson;
+    color: white;
+    font-weight: bold;
+    text-align: left;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 20px;
+    border: 0px;
+}
+
+button:hover{
+    background-color:forestgreen;
+}
+
 .ann-link, .ann-link:visited{
     color: red;
     text-decoration: none;

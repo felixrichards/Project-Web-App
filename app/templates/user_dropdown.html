@@ -4,7 +4,10 @@
 <li class="dropdown" id="dropdown">
     <a class="dropbtn">{{current_user.username}}</a>
     <div class="dropdown-content tutorial">
-        <a href="{{ url_for('main.annotations') }}">My annotations</a>
+        <a href="{{ url_for('main.view_user_annotations', username=current_user.username) }}">My annotations</a>
+        {% if current_user.get_access() > 2 %}
+        <a href="{{ url_for('main.view_annotations') }}">All annotations</a>
+        {% endif %}
         {% if current_user.get_access() > 1 %}
         <a href="{{ url_for('auth.manage') }}">Manage users</a>
         {% endif %}

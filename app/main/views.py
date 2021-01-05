@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, session
 from flask.views import MethodView
 from flask_login import current_user
-from app.models import Galaxy, Annotation, Shape
+from app.models import Galaxy, Annotation, Shape, User
 from app.utils import get_random_galaxy
 from app import db
 import json
@@ -54,9 +54,9 @@ class AnnotateView(MethodView):
                 return redirect(url_for('.annotate'))
 
         session['g_id'] = galaxy.g_id
-        
+
         return render_template('annotate.html', title='Annotate', galaxy=galaxy, shapes=shapes)
-    
+
     def post(self, g_id=None, g_name=None, g_survey=None, a_id=None, u_id=None):
         shapes = request.get_json()
         print("In post request")
@@ -71,3 +71,29 @@ class AnnotateView(MethodView):
         a_id = a.a_id
         return json.dumps({"a_id": a_id,
                            "is_authenticated": current_user.is_authenticated}), 200, {'ContentType': 'application/json'} 
+
+
+class ListAnnotationView(MethodView):
+    def get(self, username=None):
+        if current_user.is_authenticated:
+            if username is None:
+                if current_user.get_access() > 1:
+                    anns = db.session.query(Annotation, Galaxy, User).\
+                        join(User, Annotation.u_id == User.u_id).\
+                        join(Galaxy, Galaxy.g_id == Annotation.g_id).\
+                        all()
+            else:
+                u_id = User.query.filter_by(username=username).first().u_id
+                anns = db.session.query(Annotation, Galaxy).\
+                    join(Galaxy, Galaxy.g_id == Annotation.g_id).\
+                    filter(Annotation.u_id == u_id).\
+                    all()
+
+            return render_template('annotations.html', title='View Annotations', anns=anns, show_users=(True if username is None else False))
+        else:
+            return redirect(url_for('error.unauthorised'))
+
+
+class GetAnnotationView(MethodView):
+    def get(self, a_ids=None):
+        pass
