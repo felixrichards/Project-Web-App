@@ -12,3 +12,4 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.sqlite3')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    PATH_TO_SURVEYS = os.environ.get('PATH_TO_SURVEYS')

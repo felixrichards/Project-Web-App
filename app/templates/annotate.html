@@ -425,7 +425,7 @@
             aladin.setImageSurvey(aladin.createImageSurvey(
                 survey_names[0] + "_" + galaxy_name + "_" + band_names[0],
                 survey_names[0] + "_" + galaxy_name + "_" + band_names[0],
-                "{{ url_for('static', filename='') }}" + "Surveys/" + 
+                "{{ url_for('main.survey_static', filename='') }}" + "Surveys/" + 
                     survey_names[0] + "/" + galaxy_name + "/" + band_names[0],
                 "equatorial",
                 10,
@@ -437,7 +437,7 @@
                     surveys.push({
                         "id": survey_names[i] + "_" + galaxy_name + "_" + band_names[j],
                         "name": survey_names[i] + "_" + galaxy_name + "_" + band_names[j],
-                        "url": "{{ url_for('static', filename='') }}" + "Surveys/" + 
+                        "url": "{{ url_for('main.survey_static', filename='') }}" + "Surveys/" + 
                             survey_names[i] + "/" + galaxy_name + "/" + band_names[j],
                         "maxOrder": 10,
                         "frame": "equatorial",

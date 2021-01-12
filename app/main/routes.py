@@ -1,6 +1,6 @@
-from flask import render_template, request, redirect, url_for, session, g
+from flask import render_template, request, redirect, url_for, session, g, send_from_directory
 from flask_login import current_user
-from app import db
+from app import db, Config
 from app.models import Galaxy, Annotation, User
 from app.main.views import AnnotateView, ListAnnotationView, GetAnnotationView
 from app.main import bp
@@ -20,12 +20,6 @@ def create_get_route(url, endpoint, view=ListAnnotationView):
                     view_func=list_annotate_view, methods=['GET',])
 
 
-def create_get_annotations_route(url, endpoint, view=ListAnnotationView):
-    get_annotate_view = view.as_view(endpoint)
-    bp.add_url_rule(url, defaults={},
-                    view_func=list_annotate_view, methods=['GET',])
-
-
 create_annotation_route('/annotate', 'annotate')
 create_annotation_route('/annotate/id/<g_id>', 'annotate_by_id')
 create_annotation_route('/annotate/name/<g_name>', 'annotate_by_name')
@@ -36,6 +30,13 @@ create_get_route('/view_annotations/<username>', 'view_user_annotations')
 create_get_route('/view_annotations', 'view_annotations')
 
 create_get_route('/get_annotations/<a_ids>', 'get_annotations', view=GetAnnotationView)
+
+
+@bp.route('/cdn/<path:filename>')
+def survey_static(filename):
+    if Config.PATH_TO_SURVEYS == '':
+        return redirect(url_for('static', filename=filename))
+    return send_from_directory(Config.PATH_TO_SURVEYS, filename)
 
 
 @bp.route('/')
