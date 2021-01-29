@@ -29,7 +29,7 @@ create_annotation_route('/verify/id/<a_id>', 'verify_by_id')
 create_get_route('/view_annotations/<username>', 'view_user_annotations')
 create_get_route('/view_annotations', 'view_annotations')
 
-create_get_route('/get_annotations/<a_ids>', 'get_annotations', view=GetAnnotationView)
+create_get_route('/get_annotations/', 'get_annotations', view=GetAnnotationView)
 
 
 @bp.route('/cdn/<path:filename>')
@@ -37,6 +37,11 @@ def survey_static(filename):
     if Config.PATH_TO_SURVEYS == '':
         return redirect(url_for('static', filename=filename))
     return send_from_directory(Config.PATH_TO_SURVEYS, filename)
+
+
+@bp.route('/cdn/fits/<path:filename>')
+def fits_headers_static(filename):
+    return send_from_directory(Config.PATH_TO_FITS_HEADERS, filename)
 
 
 @bp.route('/')

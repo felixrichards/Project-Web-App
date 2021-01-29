@@ -1,10 +1,11 @@
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, send_file
 from flask.views import MethodView
 from flask_login import current_user
 from app.models import Galaxy, Annotation, Shape, User
-from app.utils import get_random_galaxy
+from app.utils import get_random_galaxy, get_annotations, compress_images
 from app import db
 import json
+from werkzeug.wrappers import Response
 
 
 class AnnotateView(MethodView):
@@ -95,5 +96,74 @@ class ListAnnotationView(MethodView):
 
 
 class GetAnnotationView(MethodView):
-    def get(self, a_ids=None):
-        pass
+    def get(self):
+        """
+        Retrieves annotation labels.
+
+        Args:
+            a_ids (list of str, optional): Annotation IDs to generate masks for.
+                Defaults to None, in which case all annotation IDs will be considered.
+            features (list of str, optional): Features to create masks for.
+                Defaults to None, in which case all features will be considered.
+            seg_type (list of str, optional): Type of segmentation mask to generate.
+                Defaults to 'semantic'. Choices are ['binary', 'semantic', 'instance'].
+            file_type (str, optional): File type to save annotations with.
+                Defaults to 'fits', with a basic header. Choices are ['fits', 'np'].
+                Numpy arrays are bit packed before zipping, call np.unpackbits before using. 
+
+        Returns:
+            500:
+                description: Incorrect parameters.
+            200:
+                description: Generated annotation masks.
+
+        """
+        keys = list(request.args.keys())
+        a_ids = None
+        features = None
+        seg_type = 'semantic'
+        file_type = 'fits'
+
+        # Grab annotations by a_ids
+        if 'a_ids' in keys:
+            a_ids = request.args.getlist('a_ids')
+            annotations = Annotation.query.filter(Annotation.a_id.in_(a_ids))
+        elif 'g_ids' in keys:
+            g_ids = request.args.getlist('g_ids')
+            annotations = Annotation.query.filter(Annotation.g_id.in_(g_ids))
+        elif 'galaxies' in keys:
+            g_names = request.args.getlist('g_names')
+            g_ids = [g.g_id for g in Galaxy.query.filter(Galaxy.name.in_(g_names))]
+            annotations = Annotation.query.filter(Annotation.g_id.in_(g_ids))
+        else:
+            annotations = Annotation.query
+
+        if 'features' in keys:
+            features = request.args.getlist('features')
+            # Trim annotations by removing those without desired features
+            annotations = annotations.join(Shape).filter(Shape.feature.in_(features))
+        if not annotations.all():
+            feature_string = f" with features {', '.join(features)}" if features else ""
+            return "No annotations found" + feature_string + "."
+
+        if 'seg_type' in keys:
+            seg_type = request.args['seg_type']
+
+        if 'file_type' in keys:
+            file_type = request.args['file_type']
+
+        # Join with Galaxy table for name/ra/dec info
+        annotations = annotations.join(Galaxy).all()
+        images, names, centres, missing_headers = get_annotations(
+            annotations=annotations,
+            features=features,
+            segmentation_type=seg_type,
+            file_type=file_type
+        )
+
+        comp_images = compress_images(images, names, centres, missing_headers)
+
+        return send_file(
+            comp_images,
+            attachment_filename='annotations.zip',
+            as_attachment=True)
