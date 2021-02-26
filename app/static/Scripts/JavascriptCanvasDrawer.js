@@ -230,10 +230,35 @@ function Rect(x, y, w, h,theta=0){
  *  @returns {Point}
  */
 function Point(x, y){
+    // [ra, dec] = aladin.pix2world(x, y);
     return {
         x:x,
-        y:y
-    }; 
+        y:y,
+        x0:x,
+        y0:y,
+        ra: ra,
+        dec: dec,
+        ra0: ra,
+        dec0: dec,
+        change: function(){
+            this.x0 = this.x;
+            this.y0 = this.y;
+            this.ra0 = this.ra;
+            this.dec0 = this.dec;
+        },
+        reset: function(){
+            this.x = this.x0;
+            this.y = this.y0;
+            this.ra = this.ra0;
+            this.dec = this.dec0;
+        },
+        worldToPix: function(){
+            [this.x, this.y] = aladin.world2pix(this.ra, this.dec);
+        },
+        pixToWorld: function(){
+            [this.ra, this.dec] = aladin.pix2world(this.x, this.y);
+        }
+    }
 }
 
 /** 
@@ -655,7 +680,6 @@ function Shape(x0,y0,x,y,shape){
                 drawRect(shape,false,true);
             } else {
                 drawRect(shape,false,true);
-                
             }
         }
         
@@ -985,13 +1009,22 @@ function Shape(x0,y0,x,y,shape){
             for (var i=0; i<this.points.length; i++){
                 [this.points[i].x,this.points[i].y]=aladin.world2pix(this.points[i].ra_xy,this.points[i].dec_xy);
             }
-        } else {
+        } else if (this.shape=="Circle"){
             [this.x,this.y]=aladin.world2pix(this.ra_xy,this.dec_xy);
             [this.xw,this.yh]=aladin.world2pix(this.ra_wh,this.dec_wh);
             [this.w,this.h]=[this.xw-this.x,this.yh-this.y];
+        } else {
+            this.tl.worldToPix();
+            this.tr.worldToPix();
+            this.bl.worldToPix();
+            this.br.worldToPix();
+            this.tc.worldToPix();
+            this.bc.worldToPix();
+            this.recalculateBasicPoints();
+
         }
         this.changePos(false);
-        this.redraw()
+        this.redraw();
     }
     
     /**
@@ -1019,7 +1052,16 @@ function Shape(x0,y0,x,y,shape){
             for (var i=0; i<this.points.length; i++){
                 [this.points[i].ra_xy,this.points[i].dec_xy]=aladin.pix2world(this.points[i].x,this.points[i].y);
             }
+        } else if (this.shape=="Circle"){
+            [this.ra_xy,this.dec_xy]=aladin.pix2world(this.x, this.y);
+            [this.ra_wh,this.dec_wh]=aladin.pix2world(this.x+this.w, this.y+this.h);
         } else {
+            this.tl.pixToWorld();
+            this.tr.pixToWorld();
+            this.bl.pixToWorld();
+            this.br.pixToWorld();
+            this.tc.pixToWorld();
+            this.bc.pixToWorld();
             [this.ra_xy,this.dec_xy]=aladin.pix2world(this.x, this.y);
             [this.ra_wh,this.dec_wh]=aladin.pix2world(this.x+this.w, this.y+this.h);
         }
@@ -1038,6 +1080,7 @@ function Shape(x0,y0,x,y,shape){
         h0:y-y0,
         theta: 0,
         theta0: 0,
+        warp_angle: 0,
         centre:{
             x:x0+(x-x0)/2,
             y:y0+(y-y0)/2,
@@ -1072,7 +1115,9 @@ function Shape(x0,y0,x,y,shape){
             else if (this.shape=="Snake") drawSnake(this);
             else if (this.shape=="Region") drawRegion(this);
             else if (this.shape=="Freehand") drawFreehand(this);
-            else drawShape(this.x,this.y,this.w,this.h,shape,this.theta,this.centre); 
+            else if (this.shape=="Rect") drawRect(this);
+            else if (this.shape=="Circle") drawCircle(this);
+            else if (this.shape=="Ellipse") drawEllipse(this);
             if (this.selected) {
                 this.createBoundingRect();
             }
@@ -1153,7 +1198,10 @@ function Shape(x0,y0,x,y,shape){
                     this.points[i].y0=this.points[i].y;
                 }
             }
-            if (update_world_coordinates) this.pixToWorld();
+            if (update_world_coordinates) {
+                this.setIndividualPoints();
+                this.pixToWorld();
+            }
             this.boundingRect.selectedIdx=0;
         },
         resetPos: function(){
@@ -1163,7 +1211,7 @@ function Shape(x0,y0,x,y,shape){
             this.y=this.y0;
             this.w=this.w0;
             this.h=this.h0;
-            this.theta=this.theta0
+            this.theta=this.theta0;
             if (this.shape=="Line") {
                 this.x1=this.x10;
                 this.y1=this.y10;
@@ -1194,6 +1242,7 @@ function Shape(x0,y0,x,y,shape){
                     this.points[i].y=this.points[i].y0;
                 }
             }
+            this.setIndividualPoints();
             this.pixToWorld();
             this.boundingRect.selectedIdx=0;
         },
@@ -1209,6 +1258,7 @@ function Shape(x0,y0,x,y,shape){
             else{
                 this.amend(pos,pos_0,this.boundingRect.selectedIdx, modifier);
             }
+            this.setIndividualPoints();
         },
         normaliseCoords: function (){
             if (this.w<0){
@@ -1235,7 +1285,44 @@ function Shape(x0,y0,x,y,shape){
             }
         },
         pixToWorld: pixToWorld,
-        worldToPix: worldToPix
+        worldToPix: worldToPix,
+        recalculateBasicPoints: function(){
+            this.w = Math.sqrt((this.tl.x-this.tr.x)**2 + (this.tl.y-this.tr.y)**2);
+            this.h = Math.sqrt((this.tl.x-this.bl.x)**2 + (this.tl.y-this.bl.y)**2);
+            this.theta = -Math.atan((this.tl.y - this.tr.y) / (this.tl.x - this.tr.x));
+            this.centre.x = this.tl.x + this.w/2;
+            this.centre.y = this.tl.y + this.h/2;
+            if (this.theta!=0){
+                rotatePoint(this.centre, this.theta, this.tl);
+            }
+            this.x = rotateXCoord(this.tl.x, this.tl.y, -this.theta, this.centre);
+            this.y = rotateYCoord(this.tl.x, this.tl.y, -this.theta, this.centre);
+        },
+        setIndividualPoints: function(){
+            [this.tl.x, this.tl.y] = [this.x, this.y];
+            [this.tc.x, this.tc.y] = [this.x + this.w/2, this.y];
+            [this.tr.x, this.tr.y] = [this.x + this.w, this.y];
+            [this.bl.x, this.bl.y] = [this.x, this.y + this.h];
+            [this.bc.x, this.bc.y] = [this.x + this.w/2, this.y + this.h];
+            [this.br.x, this.br.y] = [this.x + this.w, this.y + this.h];
+            this.tl.change();
+            this.tc.change();
+            this.tr.change();
+            this.bl.change();
+            this.bc.change();
+            this.br.change();
+            if (this.theta!=0){
+                rotateRect(this, this.centre, this.theta)
+            }
+        },
+        initIndividualPoints: function(){
+            this.tl = Point(this.x, this.y);
+            this.tc = Point(this.x + this.w/2, this.y);
+            this.tr = Point(this.x + this.w, this.y);
+            this.bl = Point(this.x, this.y + this.h);
+            this.bc = Point(this.x + this.w/2, this.y + this.h);
+            this.br = Point(this.x + this.w, this.y + this.h);
+        }
     }
     
     // Line specific object functionality
@@ -1277,7 +1364,7 @@ function Shape(x0,y0,x,y,shape){
         selfObj.detectionBoxes=[];
         selfObj.drawBoxes = function(){
             for (var i=0; i<this.detectionBoxes.length; i++){
-                this.detectionBoxes[i].draw()
+                this.detectionBoxes[i].draw();
             }
         }
         selfObj.createBoxes = function(){
@@ -1583,6 +1670,7 @@ function Shape(x0,y0,x,y,shape){
             return count&1;  // Same as (count%2 == 1) 
         }
     }
+    selfObj.initIndividualPoints();
     selfObj.pixToWorld();
     return selfObj;
 }
@@ -1737,7 +1825,6 @@ element.addEventListener("mousedown", function(e){
     updateCursor(focusObject.cursor);
 
     resetCanvas();
-    
     
 }, false);
 
@@ -2099,17 +2186,19 @@ function drawRect(shape,button=false,bounding=false,amend=false){
         ctx.rect(shape.x,shape.y,shape.w,shape.h);
     } else {
         if (amend) {
-            rect=rotateRect(shape,shape.p)
+            rect=rotateBox(shape, shape.p)
         }
         else {
-            if (!bounding&&!amend) rect=rotateRect(shape,shape.p);
-            if (bounding) rect=rotateRect(shape,shape.centre);
+            // if (!bounding&&!amend) rect=rotateBox(shape, shape.p, shape.theta);
+            // if (!bounding&&!amend) rotateRect(shape, shape.centre, shape.theta);
+            if (!bounding&&!amend) rect=shape;
+            if (bounding) rect=rotateBox(shape, shape.centre);
         }
-        ctx.moveTo(rect.x_t_l,rect.y_t_l);
-        ctx.lineTo(rect.x_t_r,rect.y_t_r)
-        ctx.lineTo(rect.x_b_r,rect.y_b_r)
-        ctx.lineTo(rect.x_b_l,rect.y_b_l)
-        ctx.lineTo(rect.x_t_l,rect.y_t_l)
+        ctx.moveTo(rect.tl.x,rect.tl.y);
+        ctx.lineTo(rect.tr.x,rect.tr.y)
+        ctx.lineTo(rect.br.x,rect.br.y)
+        ctx.lineTo(rect.bl.x,rect.bl.y)
+        ctx.lineTo(rect.tl.x,rect.tl.y)
     }
     
     if (button) ctx.fillStyle='rgba(255,255,255,0.2)';
@@ -2165,29 +2254,47 @@ function drawEllipse(shape){
     ctx.beginPath();
     // Transform coordinates
     var e;
-    if (shape.theta!=0) {
-        shape.shape="Ellipse";
-        e=rotateRect(shape,shape.p); 
-    }else{
-        e={
-            x_t_l:shape.x,              y_t_l:shape.y,
-            x_t_c:shape.x+shape.w/2,    y_t_c:shape.y,
-            x_t_r:shape.x+shape.w,      y_t_r:shape.y,
-            x_b_l:shape.x,              y_b_l:shape.y+shape.h,
-            x_b_c:shape.x+shape.w/2,    y_b_c:shape.y+shape.h,
-            x_b_r:shape.x+shape.w,      y_b_r:shape.y+shape.h
+    shape.shape = "Ellipse"; 
+    if (shape.theta==0){
+        e = {
+            tl: {
+                x: shape.x,
+                y: shape.y
+            },
+            tc: {
+                x: shape.x+shape.w/2,
+                y: shape.y,
+            },
+            tr: {
+                x:shape.x+shape.w,
+                y:shape.y,
+            },
+            bl: {
+                x: shape.x,
+                y: shape.y+shape.h,
+            },
+            bc: {
+                x: shape.x+shape.w/2,
+                y: shape.y+shape.h,
+            },
+            br: {
+                x: shape.x+shape.w,
+                y: shape.y+shape.h
+            }
         }
+    } else {
+        e = shape
     }
     // Draw two bezier curves between top and bottom of bounding box
-    ctx.moveTo(e.x_t_c,e.y_t_c);
+    ctx.moveTo(e.tc.x,e.tc.y);
     ctx.bezierCurveTo(
-        e.x_t_r,e.y_t_r,
-        e.x_b_r,e.y_b_r,
-        e.x_b_c,e.y_b_c);
+        e.tr.x,e.tr.y,
+        e.br.x,e.br.y,
+        e.bc.x,e.bc.y);
     ctx.bezierCurveTo(
-        e.x_b_l,e.y_b_l,
-        e.x_t_l,e.y_t_l,
-        e.x_t_c,e.y_t_c);
+        e.bl.x,e.bl.y,
+        e.tl.x,e.tl.y,
+        e.tc.x,e.tc.y);
     ctx.fillStyle = "rgba(255, 0, 0, 0.15)";
     ctx.fill();
     ctx.closePath();
@@ -2321,7 +2428,22 @@ function rotateCoords(x,y,theta,p={x:0,y:0}){
 }
 
 /**
- * Calculates Y component of coordinate rotation
+ * Rotates a given point
+ * 
+ * @param {Point} point Point
+ * @param {number} theta Angle to rotate by
+ * @param {Point} p Point to rotate about
+ * @returns {Point}
+ */
+function rotatePoint(point,theta,p={x:0,y:0}){
+    x = rotateXCoord(point.x,point.y,theta,p),
+    y = rotateYCoord(point.x,point.y,theta,p)
+    point.x = x
+    point.y = y
+}
+
+/**
+ * Calculates X component of coordinate rotation
  * 
  * @param {number} x X component
  * @param {number} y Y component
@@ -2353,27 +2475,37 @@ function rotateYCoord(x,y,theta,p={x:0,y:0}){
 /**
  * Calculates Y component of coordinate rotation
  * 
- * @param {Shape} rect The object to rotate
- * @param {number} rect.theta Angle to rotate by
+ * @param {Shape} shape The object to rotate
  * @param {Point} p Point to rotate about
+ * @param {number} theta Angle to rotate by
  * @returns {Shape}
  */
-function rotateRect(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
+function rotateRect(shape, p={x:shape.x+shape.w/2,y:shape.y+shape.h/2}, theta=0){
+    rotatePoint(shape.tl, theta, p);
+    rotatePoint(shape.tr, theta, p);
+    rotatePoint(shape.bl, theta, p);
+    rotatePoint(shape.br, theta, p);
+    rotatePoint(shape.tc, theta, p);
+    rotatePoint(shape.bc, theta, p);
+}
+
+function rotateBox(rect,p={x:rect.x+rect.w/2,y:rect.y+rect.h/2}){
     o={};
-    o.x_t_l=rotateXCoord(rect.x,rect.y,rect.theta,p);
-    o.y_t_l=rotateYCoord(rect.x,rect.y,rect.theta,p);
-    o.x_t_r=rotateXCoord(rect.x+rect.w,rect.y,rect.theta,p);
-    o.y_t_r=rotateYCoord(rect.x+rect.w,rect.y,rect.theta,p);
-    o.x_b_l=rotateXCoord(rect.x,rect.y+rect.h,rect.theta,p);
-    o.y_b_l=rotateYCoord(rect.x,rect.y+rect.h,rect.theta,p);
-    o.x_b_r=rotateXCoord(rect.x+rect.w,rect.y+rect.h,rect.theta,p);
-    o.y_b_r=rotateYCoord(rect.x+rect.w,rect.y+rect.h,rect.theta,p);
-    
-    if (rect.shape=="Ellipse"){
-        o.x_t_c=rotateXCoord(rect.x+rect.w/2,rect.y,rect.theta,p)
-        o.y_t_c=rotateYCoord(rect.x+rect.w/2,rect.y,rect.theta,p)
-        o.x_b_c=rotateXCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
-        o.y_b_c=rotateYCoord(rect.x+rect.w/2,rect.y+rect.h,rect.theta,p)
+    o.tl = {
+        x: rotateXCoord(rect.x,rect.y,rect.theta,p),
+        y: rotateYCoord(rect.x,rect.y,rect.theta,p)
+    }
+    o.tr = {
+        x: rotateXCoord(rect.x+rect.w,rect.y,rect.theta,p),
+        y: rotateYCoord(rect.x+rect.w,rect.y,rect.theta,p)
+    }
+    o.bl = {
+        x: rotateXCoord(rect.x,rect.y+rect.h,rect.theta,p),
+        y: rotateYCoord(rect.x,rect.y+rect.h,rect.theta,p)
+    }
+    o.br = {
+        x: rotateXCoord(rect.x+rect.w,rect.y+rect.h,rect.theta,p),
+        y: rotateYCoord(rect.x+rect.w,rect.y+rect.h,rect.theta,p)
     }
     return o;
 }

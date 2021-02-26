@@ -32,14 +32,15 @@ class AnnotateView(MethodView):
             # find galaxy by survey
             galaxy = get_random_galaxy(survey=g_survey)
 
-        if galaxy is None:
-            return render_template('complete.html', title='Complete')
-        if not galaxy:  # if list is empty
-            return render_template('empty.html', title='No Galaxies')
-
         shapes = None
-        # verify annotation
-        if a_id is not None:
+        if a_id is None:
+            if galaxy is None:
+                return render_template('complete.html', title='Complete')
+            if not galaxy:  # if list is empty
+                print(a_id)
+                return render_template('empty.html', title='No Galaxies')
+        else:
+            # verify annotation
             annotation = Annotation.query.filter_by(a_id=a_id).one_or_none()
             if annotation is None:
                 return redirect(url_for('.annotate'))

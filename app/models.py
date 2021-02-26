@@ -90,6 +90,7 @@ class Annotation(db.Model):
     g_id = db.Column(db.Integer, db.ForeignKey('galaxy.g_id'))
     u_id = db.Column(db.Integer, db.ForeignKey('user.u_id'))
     timestamp = db.Column(db.DateTime, index=True, default=func.now(), server_default=func.now())
+    repaired = db.Column(db.Boolean(), default=False)
     shapes = db.relationship('Shape', backref='name', lazy='dynamic')
 
     def __init__(self, **kwargs):
@@ -104,8 +105,8 @@ class Annotation(db.Model):
         print(self)
         for shape in shapes:
             s = Shape(a_id=self.a_id, shape=shape['shape'],
-                        number=shape['id'], feature=shape['feature'],
-                        x0=shape['x0'], y0=shape['y0'])
+                      number=shape['id'], feature=shape['feature'],
+                      x0=shape['x0'], y0=shape['y0'])
             if current_user.is_authenticated:
                 if current_user.is_advanced():
                     s.note=shape['note']
@@ -169,6 +170,18 @@ class Shape(db.Model):
     y_points = db.Column(psql.ARRAY(psql.REAL))
     ra_points = db.Column(psql.ARRAY(psql.REAL))
     dec_points = db.Column(psql.ARRAY(psql.REAL))
+    ra_tl = db.Column(psql.REAL)
+    ra_tr = db.Column(psql.REAL)
+    ra_tc = db.Column(psql.REAL)
+    ra_bl = db.Column(psql.REAL)
+    ra_br = db.Column(psql.REAL)
+    ra_bc = db.Column(psql.REAL)
+    dec_tl = db.Column(psql.REAL)
+    dec_tr = db.Column(psql.REAL)
+    dec_tc = db.Column(psql.REAL)
+    dec_bl = db.Column(psql.REAL)
+    dec_br = db.Column(psql.REAL)
+    dec_bc = db.Column(psql.REAL)
 
     def __repr__(self):
         return '<Shape ID: {}. Annotation ID: {}. Shape: {}>'.format(self.s_id, self.a_id, self.shape)
@@ -182,6 +195,19 @@ class Shape(db.Model):
             self.ra_wh = shape['ra_wh']
             self.dec_wh = shape['dec_wh']
             self.theta = shape['theta']
+        if shape['shape'] == 'Rect' or shape['shape'] == 'Ellipse':
+            self.ra_tl = shape['tl']['ra']
+            self.ra_tr = shape['tr']['ra']
+            self.ra_tc = shape['tc']['ra']
+            self.ra_bl = shape['bl']['ra']
+            self.ra_br = shape['br']['ra']
+            self.ra_bc = shape['bc']['ra']
+            self.dec_tl = shape['tl']['dec']
+            self.dec_tr = shape['tr']['dec']
+            self.dec_tc = shape['tc']['dec']
+            self.dec_bl = shape['bl']['dec']
+            self.dec_br = shape['br']['dec']
+            self.dec_bc = shape['bc']['dec']
         if shape['shape'] == 'Line':
             self.ra_xy = shape['ra_xy']
             self.dec_xy = shape['dec_xy']
@@ -211,4 +237,3 @@ class Shape(db.Model):
             self.y_points += [si['y_b'] for si in reversed(shape['points'])]
             self.ra_points += [si['ra_xy_b'] for si in reversed(shape['points'])]
             self.dec_points += [si['dec_xy_b'] for si in reversed(shape['points'])]
-    
