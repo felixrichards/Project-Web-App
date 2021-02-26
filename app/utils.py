@@ -14,6 +14,29 @@ from app import Config
 from app.draw import get_draw_function
 
 
+FEATURES = {
+    'Shells': 1,
+    'Plumes': 2,
+    'Tital Tails': 3,
+    'Streams': 4,
+    'Main Galaxy': 5,
+    'Dwarf Galaxy': 6,
+    'Companion Galaxy': 7,
+    'Background Galaxy of Interest': 8,
+    'Halo': 9,
+    'Bar': 10,
+    'Ring': 11,
+    'Spiral Arm': 12,
+    'Dust Lane': 13,
+    'Instrument': 14,
+    'Satellite Trail': 15,
+    'High Background': 16,
+    'Ghosted Halo': 17,
+    'Cirrus': 18,
+    'Not Sure': 19
+}
+
+
 # Attempts to return list of galaxies not already annotated by the user
 # Returns empty list if no active galaxies
 # Returns none if no active galaxies that user has not annotated
@@ -46,8 +69,10 @@ def get_annotations(annotations, features, segmentation_type='semantic', file_ty
     images = []
     names = []
     centres = []
+    missing_headers = []
     for annotation in annotations:
         # Somehow I set backref as 'name' for the Annotation's relationship with Galaxy
+        print(annotation.name.name)
         galaxy_fits_path = os.path.join(
             Config.PATH_TO_FITS_HEADERS,
             annotation.name.name
@@ -61,9 +86,10 @@ def get_annotations(annotations, features, segmentation_type='semantic', file_ty
             images.append(image)
             names.append(name)
             centres.append(centre)
-            annotations.pop(0)
+        else:
+            missing_headers.append(annotation)
 
-    return images, names, centres, annotations
+    return images, names, centres, missing_headers
 
 
 def binary_mask(mask_size, features, shapes, wcs):
@@ -84,12 +110,19 @@ def semantic_mask(mask_size, features, shapes, wcs):
         for shape in feature_shapes:
             draw = get_draw_function(shape.shape)
             draw(array[i], shape, wcs)
+        array[i][array[i] > 0] = FEATURES[feature]
 
     return array
 
 
 def instance_mask(mask_size, features, shapes, wcs):
-    pass
+    array = np.zeros(mask_size, dtype=np.uint8)
+    for i, shape in enumerate(shapes):
+        draw = get_draw_function(shape.shape)
+        draw(array[i], shape, wcs)
+        array[i][array[i] > 0] = FEATURES[shape.feature]
+
+    return array
 
 
 def create_image(annotation, features, header, segmentation_type='semantic', file_type='fits'):

@@ -132,7 +132,7 @@ class GetAnnotationView(MethodView):
             g_ids = request.args.getlist('g_ids')
             annotations = Annotation.query.filter(Annotation.g_id.in_(g_ids))
         elif 'galaxies' in keys:
-            g_names = request.args.getlist('g_names')
+            g_names = request.args.getlist('galaxies')
             g_ids = [g.g_id for g in Galaxy.query.filter(Galaxy.name.in_(g_names))]
             annotations = Annotation.query.filter(Annotation.g_id.in_(g_ids))
         else:

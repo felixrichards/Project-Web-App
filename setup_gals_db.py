@@ -15,21 +15,23 @@ def load_hips_prop(fpath):
 
 
 app = create_app()
+base_survey_path = "D:/MATLAS Data/HiPS/Surveys"
 with app.app_context():
     Galaxy.query.filter().update({"active": False})
-    surveys = next(os.walk(join("app", "static", "Surveys")))[1]
+    surveys = next(os.walk(base_survey_path))[1]
     for survey in surveys:
-        gals = next(os.walk(join("app", "static", "Surveys", survey)))[1]
+        gals = next(os.walk(join(base_survey_path, survey)))[1]
         for gal in gals:
-            bands = next(os.walk(join("app", "static", "Surveys", survey, gal)))[1]
-            properties = load_hips_prop(join("app", "static", "Surveys", survey, gal, bands[0]))
+            bands = next(os.walk(join(base_survey_path, survey, gal)))[1]
+            properties = load_hips_prop(join(base_survey_path, survey, gal, bands[0]))
             check_dup = Galaxy.query.filter_by(name=gal)
             if check_dup.count() == 0:
-                g = Galaxy(name=gal, survey=survey, bands=",".join(bands),
-                           ra=float(properties['hips_initial_ra']),
-                           dec=float(properties['hips_initial_dec']),
-                           fov=float(properties['hips_initial_fov']))
-                db.session.add(g)
+                continue
+                # g = Galaxy(name=gal, survey=survey, bands=",".join(bands),
+                #            ra=float(properties['hips_initial_ra']),
+                #            dec=float(properties['hips_initial_dec']),
+                #            fov=float(properties['hips_initial_fov']))
+                # db.session.add(g)
             else:
                 print("Record already exists, updating bands/surveys", check_dup.all())
                 dup = check_dup.first()
