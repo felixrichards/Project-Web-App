@@ -300,12 +300,19 @@ def main():
     if args.set_repaired_column is not None:
         app = create_app()
         with app.app_context():
-            for ann in Annotation.query.all():
+            broken = Annotation.query.join(Shape).filter(
+                Shape.shape.in_([
+                    'Ellipse',
+                    'Rect'
+                ])
+            )
+            print([a.a_id for a in broken.all()])
+            for ann in broken.all():
                 ann.repaired = args.set_repaired_column
             commit_db(
                 "Setting repaired=" +
                 str(args.set_repaired_column) +
-                " for all annotations."
+                " for all annotations with ellipses/rectangles."
             )
     else:
         repair_annotations()
