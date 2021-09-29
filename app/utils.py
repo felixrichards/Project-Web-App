@@ -57,7 +57,7 @@ def get_random_galaxy(survey=None):
     return random.choice(gals)
 
 
-def get_annotations(annotations, features, segmentation_type='semantic', file_type='fits'):
+def get_annotations_as_zip(annotations, features, segmentation_type='semantic', file_type='fits'):
     def get_first_fits(path):
         walk = list(os.walk(galaxy_fits_path))
         for item in walk:
@@ -66,30 +66,30 @@ def get_annotations(annotations, features, segmentation_type='semantic', file_ty
                 if fpath[len(fpath)-4:] == 'fits':
                     return os.path.join(item[0], fpath)
 
-    images = []
-    names = []
-    centres = []
     missing_headers = []
-    for annotation in annotations:
-        # Somehow I set backref as 'name' for the Annotation's relationship with Galaxy
-        print(annotation.name.name)
-        galaxy_fits_path = os.path.join(
-            Config.PATH_TO_FITS_HEADERS,
-            annotation.name.name
-        )
 
-        # Retrive path to first fits file for galaxy and create annotation mask
-        first_fits = get_first_fits(galaxy_fits_path)
-        if first_fits is not None:
-            header = fits.getheader(first_fits)
-            image, name, centre = create_image(annotation, features, header, segmentation_type, file_type)
-            images.append(image)
-            names.append(name)
-            centres.append(centre)
-        else:
-            missing_headers.append(annotation)
+    zip_memory_file = BytesIO()
+    with zipfile.ZipFile(zip_memory_file, 'w') as zf:
+        for annotation in annotations:
+            # Somehow I set backref as 'name' for the Annotation's relationship with Galaxy
+            print(annotation.name.name)
+            galaxy_fits_path = os.path.join(
+                Config.PATH_TO_FITS_HEADERS,
+                annotation.name.name
+            )
 
-    return images, names, centres, missing_headers
+            # Retrieve path to first fits file for galaxy, create annotation mask, then compress into zip
+            first_fits = get_first_fits(galaxy_fits_path)
+            if first_fits is not None:
+                header = fits.getheader(first_fits)
+                image, name, centre = create_image(annotation, features, header, segmentation_type, file_type)
+                add_image_to_zip(image, name, centre, zf)
+            else:
+                missing_headers.append(annotation)
+        write_missing_headers(missing_headers, zf)
+    zip_memory_file.seek(0)
+
+    return zip_memory_file
 
 
 def binary_mask(mask_size, features, shapes, wcs):
@@ -108,6 +108,7 @@ def semantic_mask(mask_size, features, shapes, wcs):
     for i, feature in enumerate(features):
         feature_shapes = [s for s in shapes if s.feature == feature]
         for shape in feature_shapes:
+            print(shape, feature)
             draw = get_draw_function(shape.shape)
             draw(array[i], shape, wcs)
         array[i][array[i] > 0] = FEATURES[feature]
@@ -193,29 +194,27 @@ def create_image(annotation, features, header, segmentation_type='semantic', fil
     return mask, name, (annotation.name.ra, annotation.name.dec)
 
 
-def compress_images(images, filenames, centres, missing_headers):
+def add_image_to_zip(image, filename, centre, zfile):
     def write_image(image, centre, file_object):
         if isinstance(image, np.ndarray):
             np.savez(file_object, shape=image.shape, centre=centre, mask=np.packbits(image))
-        elif isinstance(image,  fits.PrimaryHDU):
+        elif isinstance(image, fits.PrimaryHDU):
             image.writeto(file_object)
 
-    zip_memory_file = BytesIO()
-    with zipfile.ZipFile(zip_memory_file, 'w') as zf:
-        for filename, image, centre in zip(filenames, images, centres):
-            file_object = BytesIO()
-            write_image(image, centre, file_object)
-            zf.writestr(
-                filename,
-                file_object.getbuffer(),
-                compress_type=zipfile.ZIP_DEFLATED
-            )
-        zf.writestr(
-            'missing_headers.txt',
-            '\n'.join(
-                f'{a.name.name}, a_id={a.a_id}' for a in
-                sorted(missing_headers, key=lambda a: a.name.name)
-            )
+    file_object = BytesIO()
+    write_image(image, centre, file_object)
+    zfile.writestr(
+        filename,
+        file_object.getbuffer(),
+        compress_type=zipfile.ZIP_DEFLATED
+    )
+
+
+def write_missing_headers(missing_headers, zfile):
+    zfile.writestr(
+        'missing_headers.txt',
+        '\n'.join(
+            f'{a.name.name}, a_id={a.a_id}' for a in
+            sorted(missing_headers, key=lambda a: a.name.name)
         )
-    zip_memory_file.seek(0)
-    return zip_memory_file
+    )

@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, session, send_fil
 from flask.views import MethodView
 from flask_login import current_user
 from app.models import Galaxy, Annotation, Shape, User
-from app.utils import get_random_galaxy, get_annotations, compress_images
+from app.utils import get_random_galaxy, get_annotations_as_zip
 from app import db
 import json
 from werkzeug.wrappers import Response
@@ -155,16 +155,14 @@ class GetAnnotationView(MethodView):
 
         # Join with Galaxy table for name/ra/dec info
         annotations = annotations.join(Galaxy).all()
-        images, names, centres, missing_headers = get_annotations(
+        compressed_annotations = get_annotations_as_zip(
             annotations=annotations,
             features=features,
             segmentation_type=seg_type,
             file_type=file_type
         )
 
-        comp_images = compress_images(images, names, centres, missing_headers)
-
         return send_file(
-            comp_images,
+            compressed_annotations,
             attachment_filename='annotations.zip',
             as_attachment=True)
