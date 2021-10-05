@@ -17,7 +17,7 @@ from app.draw import get_draw_function
 FEATURES = {
     'Shells': 1,
     'Plumes': 2,
-    'Tital Tails': 3,
+    'Tidal Tails': 3,
     'Streams': 4,
     'Main Galaxy': 5,
     'Dwarf Galaxy': 6,
@@ -86,6 +86,7 @@ def get_annotations_as_zip(annotations, features, segmentation_type='semantic', 
                 add_image_to_zip(image, name, centre, zf)
             else:
                 missing_headers.append(annotation)
+        write_info(segmentation_type, features, zf)
         write_missing_headers(missing_headers, zf)
     zip_memory_file.seek(0)
 
@@ -154,7 +155,7 @@ def create_image(annotation, features, header, segmentation_type='semantic', fil
     if features is not None:
         annotated_shapes = annotated_shapes.filter(Shape.feature.in_(features))
     else:
-        features = [s.feature for s in annotated_shapes.all()]
+        features = FEATURES.keys()
     annotated_shapes = annotated_shapes.all()
 
     # Select mask type
@@ -178,8 +179,8 @@ def create_image(annotation, features, header, segmentation_type='semantic', fil
     name = '-'.join(
         f'{var_name}={var}'
         for var, var_name in zip(
-            [annotation.name.name, annotation.a_id, annotation.u_id, features, segmentation_type],
-            ['name', 'a_id', 'user', 'features', 'seg_type']
+            [annotation.name.name, annotation.a_id, annotation.u_id],
+            ['name', 'a_id', 'user']
         )
     )
 
@@ -207,6 +208,14 @@ def add_image_to_zip(image, filename, centre, zfile):
         filename,
         file_object.getbuffer(),
         compress_type=zipfile.ZIP_DEFLATED
+    )
+
+
+def write_info(seg_type, features, zfile):
+    zfile.writestr(
+        'info.txt',
+        f'seg_type={seg_type},\n'
+        f'features={features}'
     )
 
 
