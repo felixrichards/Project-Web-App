@@ -68,7 +68,9 @@ function updateTable(shapes){
                 )
         );
         $(note_id).bind('click', function(){
-            globalShapes[parseInt($(this).attr('id').substr(-1))].flipNote()
+            noteID = $(this).attr('id');
+            shapeID = parseInt(noteID.substr('note-'.length));
+            globalShapes[getShapeByID(shapeID)].flipNote();
         });
     }
 
@@ -225,12 +227,11 @@ function updateRowsRed(selected_idx = -1, feature) {
 
 $(document).on("click", "#obj_table tbody tr", function(e) {
     var index = $(this).index();
-    if (index%2 == 1) return;
-    else index/=2;
+    if (index%2 == 1) return; //row is an expanded note
+    else index/=2; //div row index by 2 to get actual shape index
     z_order=getZOrder();
     index = z_order[index];
     state.resetSelected()
-    console.log(getShapeByID(index));
     state.selectShape(getShapeByID(index), false);
     shapes[getShapeByID(index)].boundingRect.selectedIdx = 0;
     resetCanvas();
