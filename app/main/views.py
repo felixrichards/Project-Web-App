@@ -104,6 +104,8 @@ class GetAnnotationView(MethodView):
         Args:
             a_ids (list of str, optional): Annotation IDs to generate masks for.
                 Defaults to None, in which case all annotation IDs will be considered.
+            u_ids (list of str, optional): User IDs to filter annotations by.
+                Defaults to None, in which case all user IDs will be considered.
             features (list of str, optional): Features to create masks for.
                 Defaults to None, in which case all features will be considered.
             seg_type (list of str, optional): Type of segmentation mask to generate.
@@ -121,6 +123,7 @@ class GetAnnotationView(MethodView):
         """
         keys = list(request.args.keys())
         a_ids = None
+        u_ids = None
         features = None
         seg_type = 'semantic'
         file_type = 'fits'
@@ -129,6 +132,9 @@ class GetAnnotationView(MethodView):
         if 'a_ids' in keys:
             a_ids = request.args.getlist('a_ids')
             annotations = Annotation.query.filter(Annotation.a_id.in_(a_ids))
+        elif 'u_ids' in keys:
+            u_ids = request.args.getlist('u_ids')
+            annotations = Annotation.query.filter(Annotation.u_id.in_(u_ids))
         elif 'g_ids' in keys:
             g_ids = request.args.getlist('g_ids')
             annotations = Annotation.query.filter(Annotation.g_id.in_(g_ids))
