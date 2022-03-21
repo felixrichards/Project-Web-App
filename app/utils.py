@@ -218,7 +218,6 @@ def write_info(seg_type, features, zfile):
         f'features={features}'
     )
 
-
 def write_missing_headers(missing_headers, zfile):
     zfile.writestr(
         'missing_headers.txt',
@@ -227,3 +226,6 @@ def write_missing_headers(missing_headers, zfile):
             sorted(missing_headers, key=lambda a: a.name.name)
         )
     )
+
+def pos_(x):
+    return x.lower() in ('true', 't', 'yes', 'y', '1')

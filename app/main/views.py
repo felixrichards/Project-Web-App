@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, session, send_fil
 from flask.views import MethodView
 from flask_login import current_user
 from app.models import Galaxy, Annotation, Shape, User
-from app.utils import get_random_galaxy, get_annotations_as_zip
+from app.utils import get_random_galaxy, get_annotations_as_zip, pos_
 from app import db
 import json
 from werkzeug.wrappers import Response
@@ -112,7 +112,9 @@ class GetAnnotationView(MethodView):
                 Defaults to 'semantic'. Choices are ['binary', 'semantic', 'instance'].
             file_type (str, optional): File type to save annotations with.
                 Defaults to 'fits', with a basic header. Choices are ['fits', 'np'].
-                Numpy arrays are bit packed before zipping, call np.unpackbits before using. 
+                Numpy arrays are bit packed before zipping, call np.unpackbits before using.
+            remove_negatives (boolean, optional): If positive and features is given, samples
+                that do not contain any of the features will not be included.
 
         Returns:
             500:
@@ -148,7 +150,10 @@ class GetAnnotationView(MethodView):
         if 'features' in keys:
             features = request.args.getlist('features')
             # Trim annotations by removing those without desired features
-            annotations = annotations.join(Shape).filter(Shape.feature.in_(features))
+            if 'remove_negatives' in keys:
+                if pos_(request.args['remove_negatives']):
+                    print('removing negatives')
+                    annotations = annotations.join(Shape).filter(Shape.feature.in_(features))
         if not annotations.all():
             feature_string = f" with features {', '.join(features)}" if features else ""
             return "No annotations found" + feature_string + "."
