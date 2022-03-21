@@ -84,7 +84,7 @@ def manage():
     if s_form.validate_on_submit():
         user = User.query.filter_by(username=s_form.search.data).first()
         if user is not None:
-            if user.advanced > 2 or user.advanced >= current_user.get_access():
+            if user.get_access() > 2 or user.get_access() >= my_access:
                 user = None
         return json.dumps({"success": True,
                             "html": render_template('search_results.html', user=user, form=r_form)}),\
