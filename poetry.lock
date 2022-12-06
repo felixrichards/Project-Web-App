@@ -31,7 +31,7 @@ test = ["coverage", "ipython", "objgraph", "pytest-astropy (>=0.8)", "pytest-xdi
 
 [[package]]
 name = "babel"
-version = "2.9.0"
+version = "2.9.1"
 description = "Internationalization utilities"
 category = "main"
 optional = false
@@ -281,9 +281,6 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 
-[package.dependencies]
-numpy = ">=1.14.5"
-
 [[package]]
 name = "psycopg2-binary"
 version = "2.8.6"
@@ -468,8 +465,8 @@ astropy = [
     {file = "astropy-4.2.tar.gz", hash = "sha256:2c194f8a429b8399de64a413a06881ea49f0525cabaa2d78fc132b9e970adc6a"},
 ]
 babel = [
-    {file = "Babel-2.9.0-py2.py3-none-any.whl", hash = "sha256:9d35c22fcc79893c3ecc85ac4a56cde1ecf3f19c540bba0922308a6c06ca6fa5"},
-    {file = "Babel-2.9.0.tar.gz", hash = "sha256:da031ab54472314f210b0adcff1588ee5d1d1d0ba4dbd07b94dba82bde791e05"},
+    {file = "Babel-2.9.1-py2.py3-none-any.whl", hash = "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9"},
+    {file = "Babel-2.9.1.tar.gz", hash = "sha256:bc0c176f9f6a994582230df350aa6e05ba2ebe4b3ac317eab29d9be5d2768da0"},
 ]
 bezier = [
     {file = "bezier-2021.2.12-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:d2812bc93acecefa3b7ae4b539bd59b91db98fb1b2f4e98f3bbf337c8481d1dd"},
